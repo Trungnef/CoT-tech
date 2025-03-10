@@ -43,5 +43,5 @@ db/questions/
 *.log
 
 # Jupyter Notebook
-.ipynb_checkpoints
+.ipynb_checkpoints/
 *.ipynb
