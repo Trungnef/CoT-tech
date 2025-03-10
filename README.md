@@ -1,16 +1,17 @@
 # LLM Evaluation for Classical Problems
 
-Hệ thống đánh giá và so sánh hiệu năng của các mô hình ngôn ngữ lớn (LLM) khi giải quyết các bài toán cổ điển được trích xuất từ tài liệu PDF.
+Hệ thống đánh giá và so sánh hiệu năng của các mô hình ngôn ngữ lớn (LLM) khi giải quyết các bài toán cổ điển được trích xuất từ tài liệu PDF hoặc được tạo tự động.
 
 ## Tổng quan
 
 Dự án này cung cấp một framework toàn diện để:
 
-1. Trích xuất các câu hỏi và bài toán từ tài liệu PDF "Những bài toán cổ điển"
-2. Áp dụng nhiều loại prompt khác nhau (Standard, Chain-of-Thought, Hybrid-CoT, v.v.) 
-3. Đánh giá hiệu năng của các mô hình ngôn ngữ lớn khác nhau (Llama-3.3-70B, Qwen-2.5-72B, Gemini)
-4. Tối ưu hóa việc sử dụng GPU để xử lý các mô hình nặng (>70B tham số)
-5. Tạo báo cáo và biểu đồ so sánh chi tiết
+1. Tạo tự động các bài toán cổ điển đa dạng với nhiều loại và độ khó khác nhau
+2. Trích xuất các câu hỏi và bài toán từ tài liệu PDF "Những bài toán cổ điển"
+3. Áp dụng nhiều loại prompt khác nhau (Standard, Chain-of-Thought, Hybrid-CoT, v.v.) 
+4. Đánh giá hiệu năng của các mô hình ngôn ngữ lớn khác nhau (Llama-3.3-70B, Qwen-2.5-72B, Gemini)
+5. Tối ưu hóa việc sử dụng GPU để xử lý các mô hình nặng (>70B tham số)
+6. Tạo báo cáo và biểu đồ so sánh chi tiết
 
 ## Yêu cầu hệ thống
 
@@ -75,23 +76,54 @@ CPU_OFFLOAD_GB=24
 ```
 .
 ├── db/                        # Thư mục chứa dữ liệu
-│   ├── Nhung bai toan co.pdf  # File PDF chứa các bài toán cổ điển
+│   ├── Nhung_bai_toan_co_dien.pdf  # File PDF chứa các bài toán cổ điển đã tạo
 │   └── questions/             # Thư mục chứa các câu hỏi đã trích xuất
+│       └── problems.json      # File JSON chứa tất cả các bài toán đã tạo
 ├── cache/                     # Cache cho mô hình đã tải
 ├── offload/                   # Thư mục để offload mô hình khi cần
 ├── results/                   # Kết quả đánh giá và báo cáo
+├── generate_problems.py       # Module tạo các bài toán cơ bản
+├── generate_classical_problems.py # Module tạo các bài toán cổ điển
+├── generate_all_problems.py   # Module tạo tất cả các loại bài toán
 ├── extract_questions.py       # Module trích xuất câu hỏi từ PDF
 ├── prompts.py                 # Các mẫu prompt (Standard, CoT, Hybrid-CoT)
 ├── model_manager.py           # Quản lý việc tải và tối ưu hóa mô hình
 ├── model_evaluator.py         # Đánh giá và phân tích hiệu năng mô hình
 ├── evaluate_models.py         # Script chính để chạy đánh giá
+├── analyze_problems.py        # Script phân tích các bài toán đã tạo
 ├── requirements.txt           # Các thư viện cần thiết
 └── README.md                  # Tài liệu hướng dẫn
 ```
 
 ## Cách sử dụng
 
-### Trích xuất câu hỏi từ PDF
+### Tạo bài toán tự động
+
+Tạo tất cả các loại bài toán (khoảng 2345 bài):
+
+```bash
+python generate_all_problems.py
+```
+
+Tạo các bài toán cơ bản:
+
+```bash
+python generate_problems.py
+```
+
+Tạo các bài toán cổ điển:
+
+```bash
+python generate_classical_problems.py
+```
+
+Phân tích các bài toán đã tạo:
+
+```bash
+python analyze_problems.py
+```
+
+### Trích xuất câu hỏi từ PDF (trong trường hợp đã load thì không cần)
 
 ```bash
 python extract_questions.py
@@ -99,7 +131,7 @@ python extract_questions.py
 
 ### Đánh giá các mô hình
 
-Chạy đánh giá với cấu hình mặc định:
+Chạy đánh giá với cấu hình mặc định (sử dụng problems.json):
 
 ```bash
 python evaluate_models.py
@@ -109,6 +141,7 @@ Tùy chỉnh các tham số:
 
 ```bash
 python evaluate_models.py \
+    --questions_json db/questions/problems.json \
     --models llama qwen gemini \
     --prompt_types standard hybrid_cot \
     --batch_size 10 \
@@ -117,11 +150,34 @@ python evaluate_models.py \
 
 ### Các tham số quan trọng
 
+- `--questions_json`: Đường dẫn đến file JSON chứa các câu hỏi (mặc định: db/questions/problems.json)
 - `--batch_size`: Số câu hỏi xử lý cùng lúc (mặc định: 10)
 - `--max_workers`: Số luồng xử lý song song (mặc định: 3, một cho mỗi GPU)
 - `--models`: Chọn mô hình để đánh giá (mặc định: tất cả)
 - `--prompt_types`: Loại prompt để sử dụng (mặc định: tất cả)
 - `--use_4bit`: Sử dụng lượng tử hóa 4-bit để tiết kiệm VRAM (mặc định: True)
+
+## Tạo bài toán tự động
+
+Hệ thống có thể tạo tự động nhiều loại bài toán khác nhau:
+
+1. **Bài toán logic**: Các câu đố logic đơn giản
+2. **Bài toán kiểu luận**: Các bài toán yêu cầu giải thích chi tiết
+3. **Thơ toán học**: Các bài toán được trình bày dưới dạng thơ
+4. **Bài toán từ vựng**: Các bài toán liên quan đến từ vựng toán học
+5. **Bài toán trắc nghiệm**: Các câu hỏi trắc nghiệm
+6. **Bài toán chuyển động**: Các bài toán về vận tốc, thời gian, quãng đường
+7. **Bài toán về tuổi**: Các bài toán liên quan đến tuổi tác
+8. **Bài toán chia kẹo**: Các bài toán về chia đều
+9. **Bài toán hồ bơi**: Các bài toán về thời gian đổ đầy/xả cạn
+10. **Bài toán phân số**: Các bài toán về phân số
+11. **Bài toán công việc**: Các bài toán về thời gian hoàn thành công việc
+12. **Bài toán hỗn hợp**: Các bài toán về nồng độ, hỗn hợp
+13. **Bài toán số học**: Các bài toán về số học
+14. **Bài toán hình học**: Các bài toán về hình học
+15. **Bài toán tỷ lệ**: Các bài toán về tỷ lệ
+
+Mỗi loại bài toán có nhiều mẫu (templates) khác nhau và được tạo với các tham số ngẫu nhiên để đảm bảo tính đa dạng. Các bài toán được phân loại theo độ khó (Dễ, Trung bình, Khó) và được gắn các thẻ (tags) phù hợp.
 
 ## Tối ưu hóa hiệu năng
 
