@@ -45,3 +45,4 @@ db/questions/
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb
+CoT.ipynb
