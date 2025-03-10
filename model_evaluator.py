@@ -58,7 +58,7 @@ class ModelEvaluator:
             "cot": chain_of_thought_prompt,
             "hybrid_cot": hybrid_cot_prompt,
             "zero_shot_cot": zero_shot_cot_prompt,
-            "tree_of_thought": tree_of_thought_prompt
+            #"tree_of_thought": tree_of_thought_prompt
         }
         
         # Metrics

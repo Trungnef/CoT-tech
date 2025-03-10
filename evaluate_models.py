@@ -41,7 +41,7 @@ def setup_argparse():
     parser.add_argument(
         "--questions_json",
         type=str,
-        default="db/questions/classical_problems.json",
+        default="db/questions/problems.json",
         help="Path to JSON file containing questions"
     )
     
@@ -120,8 +120,15 @@ def main():
     # Load questions
     try:
         with open(args.questions_json, 'r', encoding='utf-8') as f:
-            all_questions = json.load(f)
-        print(f"✅ Loaded {len(all_questions)} questions")
+            data = json.load(f)
+        
+        # Extract questions from the nested structure
+        if "questions" in data:
+            all_questions = [q["question"] for q in data["questions"]]
+            print(f"✅ Loaded {len(all_questions)} questions from {args.questions_json}")
+        else:
+            all_questions = data
+            print(f"✅ Loaded {len(all_questions)} questions")
         
         if args.max_questions:
             all_questions = all_questions[:args.max_questions]
@@ -143,7 +150,7 @@ def main():
         "cot": chain_of_thought_prompt,
         "hybrid_cot": hybrid_cot_prompt,
         "zero_shot_cot": zero_shot_cot_prompt,
-        "tree_of_thought": tree_of_thought_prompt
+        #"tree_of_thought": tree_of_thought_prompt
     }
     
     # Process questions in batches for each model and prompt type

@@ -3,163 +3,169 @@ import fitz  # PyMuPDF
 import re
 import json
 from tqdm import tqdm
+from typing import List, Dict
 
-def extract_questions_from_pdf(pdf_path, output_json_path=None):
-    """
-    Extract questions from a PDF document containing classical problems
-    
-    Args:
-        pdf_path (str): Path to the PDF file
-        output_json_path (str, optional): Path to save extracted questions
+class QuestionExtractor:
+    def __init__(self, pdf_path: str):
+        self.pdf_path = pdf_path
+        self.questions_dir = 'db/questions'
+        os.makedirs(self.questions_dir, exist_ok=True)
         
-    Returns:
-        list: List of extracted questions
-    """
-    print(f"📄 Attempting to extract questions from: {pdf_path}")
-    print(f"📍 Full absolute path: {os.path.abspath(pdf_path)}")
-    
-    if not os.path.exists(pdf_path):
-        print(f"❌ Error: PDF file not found at {pdf_path}")
-        return []
-    
-    try:
-        # Open the PDF file
-        print("🔍 Opening PDF file...")
-        pdf_document = fitz.open(pdf_path)
-        num_pages = len(pdf_document)
-        print(f"✅ Successfully opened PDF with {num_pages} pages")
-        
+    def extract_questions(self):
+        doc = fitz.open(self.pdf_path)
+        current_section = None
         questions = []
-        current_question = ""
-        in_question = False
+        current_question = None
+        question_text = []
+        solution_text = []
+        is_in_solution = False
         
-        # Các mẫu để nhận dạng câu hỏi
-        question_patterns = [
-            r'^\d+\.\s',           # Số + dấu chấm (vd: "1. ")
-            r'Câu\s+\d+[:.]\s*',   # "Câu" + số (vd: "Câu 1:", "Câu 1.")
-            r'Bài\s+\d+[:.]\s*',   # "Bài" + số (vd: "Bài 1:", "Bài 1.")
-            r'Bài\s+toán\s+\d+[:.]\s*',  # "Bài toán" + số
-            r'Câu\s+hỏi\s+\d+[:.]\s*',   # "Câu hỏi" + số
-            r'Exercise\s+\d+[:.]\s*',     # Tiếng Anh
-            r'Problem\s+\d+[:.]\s*'       # Tiếng Anh
-        ]
-        
-        # Compile patterns for better performance
-        patterns = [re.compile(pattern, re.IGNORECASE | re.UNICODE) for pattern in question_patterns]
-        
-        print(f"📖 Processing {num_pages} pages...")
-        
-        # Process each page
-        for page_num in tqdm(range(num_pages)):
-            try:
-                page = pdf_document[page_num]
-                text = page.get_text("text")  # Extract text with better formatting
-                
-                # Debug: Print first few characters of text
-                if page_num == 0:
-                    print(f"\n📝 Sample of extracted text from first page:")
-                    print(text[:500] + "...")
-                
-                # Split text into lines and clean them
-                lines = [line.strip() for line in text.split('\n') if line.strip()]
-                
-                for line in lines:
-                    # Check if line contains any question marker
-                    is_question_start = any(pattern.search(line) for pattern in patterns)
-                    
-                    if is_question_start:
-                        # Debug: Print found question marker
-                        print(f"\n🔍 Found question marker: {line[:100]}...")
-                        
-                        # If we were already processing a question, save it
-                        if current_question:
-                            questions.append(current_question.strip())
-                            print(f"✅ Saved question: {current_question[:100]}...")
-                        
-                        # Start a new question
-                        current_question = line
-                        in_question = True
-                    elif in_question and line:
-                        # Continue adding to the current question if line is not empty
-                        # and doesn't match any question pattern
-                        if not any(pattern.search(line) for pattern in patterns):
-                            current_question += " " + line
+        for page in doc:
+            text = page.get_text()
+            # Xử lý các ký tự xuống dòng đặc biệt và dấu câu
+            text = text.replace('\r\n', ' ').replace('\n\n', '\n').strip()
+            text = re.sub(r'\s+', ' ', text)  # Chuẩn hóa khoảng trắng
+            lines = [line.strip() for line in text.split('\n') if line.strip()]
             
-            except Exception as e:
-                print(f"⚠️ Warning: Error processing page {page_num}: {e}")
-                continue
+            for line in lines:
+                # Tìm phần mới
+                if line.startswith('Phần'):
+                    if current_section and questions:
+                        self._save_questions(current_section, questions)
+                        questions = []
+                    current_section = line.split(': ')[1].strip()
+                    continue
+                
+                # Tìm câu hỏi mới
+                if line.startswith('Bài'):
+                    if current_question:
+                        if question_text:
+                            current_question['question'] = ' '.join(question_text)
+                        if solution_text:
+                            current_question['solution'] = ' '.join(solution_text)
+                        questions.append(current_question)
+                    
+                    # Reset cho câu hỏi mới
+                    current_question = {
+                        'id': len(questions) + 1,
+                        'question': '',
+                        'solution': '',
+                        'type': current_section
+                    }
+                    question_text = []
+                    solution_text = []
+                    is_in_solution = False
+                    continue
+                
+                # Xác định phần hướng dẫn giải
+                if 'Hướng dẫn giải' in line or 'Lời giải' in line or 'Giải' in line:
+                    is_in_solution = True
+                    continue
+                
+                # Thêm nội dung vào câu hỏi hoặc lời giải
+                if current_question:
+                    if not is_in_solution:
+                        question_text.append(line)
+                    else:
+                        solution_text.append(line)
         
-        # Add the last question if there is one
+        # Xử lý câu hỏi cuối cùng
         if current_question:
-            questions.append(current_question.strip())
+            if question_text:
+                current_question['question'] = ' '.join(question_text)
+            if solution_text:
+                current_question['solution'] = ' '.join(solution_text)
+            questions.append(current_question)
         
-        # Remove duplicate questions and empty strings
-        questions = [q for q in questions if q]
-        questions = list(dict.fromkeys(questions))
+        # Lưu phần cuối cùng
+        if current_section and questions:
+            self._save_questions(current_section, questions)
         
-        print(f"\n✅ Extracted {len(questions)} questions")
+        doc.close()
+        print(f"✅ Đã trích xuất xong các câu hỏi từ file PDF")
+    
+    def _save_questions(self, section: str, questions: List[Dict]):
+        # Chuẩn hóa tên file
+        filename = section.lower().replace(' ', '_')
+        filename = re.sub(r'[^a-z0-9_]', '', filename)
+        filepath = os.path.join(self.questions_dir, f'{filename}.json')
         
-        # Print sample of extracted questions
-        if questions:
-            print("\n📋 Sample of extracted questions:")
-            for i, q in enumerate(questions[:5], 1):
-                print(f"\nQuestion {i}: {q[:200]}...")
-        else:
-            print("\n⚠️ No questions were extracted. Showing first page content for debugging:")
-            first_page = pdf_document[0].get_text("text")
-            print("\nFirst page content:")
-            print(first_page[:1000])
+        # Chuẩn hóa dữ liệu và xử lý văn bản
+        for q in questions:
+            # Chuẩn hóa câu hỏi
+            q['question'] = self._normalize_text(q['question'])
+            # Chuẩn hóa lời giải
+            q['solution'] = self._normalize_text(q['solution'])
+            # Thêm metadata
+            q['difficulty'] = self._estimate_difficulty(q['question'], q['solution'])
+            q['tags'] = self._extract_tags(q['question'])
         
-        # Save to JSON if path provided
-        if output_json_path and questions:
-            try:
-                os.makedirs(os.path.dirname(output_json_path), exist_ok=True)
-                with open(output_json_path, 'w', encoding='utf-8') as json_file:
-                    json.dump(questions, json_file, ensure_ascii=False, indent=2)
-                print(f"✅ Saved {len(questions)} questions to {output_json_path}")
-            except Exception as e:
-                print(f"❌ Error saving to JSON: {e}")
+        # Lưu file JSON với định dạng đẹp
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump({
+                'section': section,
+                'questions': questions
+            }, f, ensure_ascii=False, indent=2)
         
-        # Close the PDF document
-        pdf_document.close()
+        print(f"✓ Đã lưu {len(questions)} câu hỏi từ phần '{section}' vào {filepath}")
+    
+    def _normalize_text(self, text: str) -> str:
+        if not text:
+            return ""
+        # Chuẩn hóa khoảng trắng
+        text = re.sub(r'\s+', ' ', text)
+        # Chuẩn hóa dấu câu
+        text = re.sub(r'\s*([.,!?])\s*', r'\1 ', text)
+        # Chuẩn hóa dấu ngoặc
+        text = re.sub(r'\s*([()[\]])\s*', r'\1', text)
+        return text.strip()
+    
+    def _estimate_difficulty(self, question: str, solution: str) -> str:
+        # Ước lượng độ khó dựa trên độ dài và độ phức tạp
+        complexity = len(solution.split()) / len(question.split()) if question else 1
+        if complexity > 2:
+            return "Khó"
+        elif complexity > 1.5:
+            return "Trung bình"
+        return "Dễ"
+    
+    def _extract_tags(self, question: str) -> List[str]:
+        # Trích xuất từ khóa quan trọng
+        keywords = {
+            'số học': ['số', 'chữ số', 'ước số', 'bội số', 'tổng', 'hiệu', 'tích', 'thương'],
+            'hình học': ['tam giác', 'hình vuông', 'hình chữ nhật', 'diện tích', 'chu vi'],
+            'đại số': ['phương trình', 'biểu thức', 'số x', 'nghiệm'],
+            'logic': ['nếu', 'thì', 'hoặc', 'và', 'suy ra'],
+            'thực tế': ['tiền', 'tuổi', 'giờ', 'ngày', 'tháng', 'năm']
+        }
         
-        return questions
-        
-    except Exception as e:
-        print(f"❌ Error extracting questions: {e}")
-        print(f"Error type: {type(e).__name__}")
-        import traceback
-        traceback.print_exc()
-        return []
+        tags = []
+        text = question.lower()
+        for category, words in keywords.items():
+            if any(word in text for word in words):
+                tags.append(category)
+        return tags
 
-if __name__ == "__main__":
-    # Create db/questions directory if it doesn't exist
-    os.makedirs("db/questions", exist_ok=True)
-    
-    # Try different possible file names
-    possible_paths = [
-        "./db/Nhung_bai_toan_co2.pdf",
-        # "./db/Nhung bai toan co.pdf",
-        # "db/Nhung_bai_toan_co.pdf",
-        # "db/Nhung bai toan co.pdf",
-        # "./Nhung bai toan co.pdf",
-        # "Nhung bai toan co.pdf"
-    ]
-    
-    pdf_path = None
-    for path in possible_paths:
-        if os.path.exists(path):
-            pdf_path = path
-            print(f"✅ Found PDF at: {path}")
-            break
-    
-    if not pdf_path:
-        print("❌ PDF not found. Tried following paths:")
-        for path in possible_paths:
-            print(f"  - {os.path.abspath(path)}")
-    else:
-        # Extract and save questions
-        questions = extract_questions_from_pdf(
-            pdf_path, 
-            output_json_path="db/questions/classical_problems.json"
-        ) 
+    def get_statistics(self):
+        total_questions = 0
+        sections = {}
+        
+        for filename in os.listdir(self.questions_dir):
+            if filename.endswith('.json'):
+                filepath = os.path.join(self.questions_dir, filename)
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    count = len(data.get('questions', []))
+                    sections[os.path.splitext(filename)[0]] = count
+                    total_questions += count
+        
+        print("\n📊 Thống kê:")
+        print(f"Tổng số câu hỏi: {total_questions}")
+        print("\nPhân bố theo phần:")
+        for section, count in sections.items():
+            print(f"- {section}: {count} câu")
+
+if __name__ == '__main__':
+    extractor = QuestionExtractor('db/Nhung_bai_toan_co_dien.pdf')
+    extractor.extract_questions()
+    extractor.get_statistics() 
