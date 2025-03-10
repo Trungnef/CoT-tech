@@ -46,12 +46,29 @@ Hệ thống sử dụng nhiều cơ chế xử lý song song:
 pip install -r requirements.txt
 ```
 
-2. Đặt khóa API (nếu sử dụng API models):
+2. Cấu hình file `.env`:
 
-```bash
-export OPENAI_API_KEY="your_openai_api_key"
-export GEMINI_API_KEY="your_gemini_api_key"
+Tạo file `.env` trong thư mục gốc và thêm các thông tin sau:
+
+```env
+# API Keys
+OPENAI_API_KEY=your_openai_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Model Paths
+QWEN_MODEL_PATH=cache/model/Qwen_Qwen2.5-72B-Instruct/models--Qwen--Qwen2.5-72B-Instruct/snapshots/495f39366efef23836d0cfae4fbe635880d2be31
+QWEN_TOKENIZER_PATH=cache/tokenizer/Qwen_Qwen2.5-72B-Instruct/models--Qwen--Qwen2.5-72B-Instruct/snapshots/495f39366efef23836d0cfae4fbe635880d2be31
+
+LLAMA_MODEL_PATH=cache/model/meta-llama_Llama-3.3-70B-Instruct/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b
+LLAMA_TOKENIZER_PATH=cache/tokenizer/meta-llama_Llama-3.3-70B-Instruct/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b
+
+# GPU Configuration
+MAX_GPU_MEMORY_GB=47.5
+SYSTEM_RESERVE_MEMORY_GB=2.5
+CPU_OFFLOAD_GB=24
 ```
+
+> **Lưu ý**: File `.env` chứa thông tin nhạy cảm, đảm bảo không commit file này lên git.
 
 ## Cấu trúc dự án
 

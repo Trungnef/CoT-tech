@@ -1,17 +1,47 @@
-# Ignore virtual environment
-.venv/
-
-# Ignore environment variables file
+# Environment variables
 .env
+.env.*
 
-# Ignore Python bytecodes and other cache files
+# Python
 __pycache__/
-*.pyc
-cache/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Ignore other unnecessary files
+# Virtual Environment
+.venv
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+cache/
+offload/
+results/
+db/questions/
 *.log
-*.csv
-*.dat
-.DS_Store
-.ipynb_checkpoints/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb

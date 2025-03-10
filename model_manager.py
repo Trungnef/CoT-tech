@@ -3,6 +3,7 @@ Model manager for loading and optimizing LLMs with efficient multi-GPU usage.
 """
 
 import os
+from dotenv import load_dotenv
 import torch
 import gc
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -14,19 +15,24 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 from concurrent.futures import ThreadPoolExecutor
 import threading
 
-# Model paths
-qwen_model_path = r"cache/model/Qwen_Qwen2.5-72B-Instruct/models--Qwen--Qwen2.5-72B-Instruct/snapshots/495f39366efef23836d0cfae4fbe635880d2be31"
-qwen_tokenizer_path = r"cache/tokenizer/Qwen_Qwen2.5-72B-Instruct/models--Qwen--Qwen2.5-72B-Instruct/snapshots/495f39366efef23836d0cfae4fbe635880d2be31"
+# Load environment variables
+load_dotenv()
 
-llama_model_path = r"cache/model/meta-llama_Llama-3.3-70B-Instruct/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b"
-llama_tokenizer_path = r"cache/tokenizer/meta-llama_Llama-3.3-70B-Instruct/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b"
+# Model paths from environment variables
+qwen_model_path = os.getenv("QWEN_MODEL_PATH")
+qwen_tokenizer_path = os.getenv("QWEN_TOKENIZER_PATH")
 
-# Configure API keys if needed
-if "OPENAI_API_KEY" in os.environ:
-    openai.api_key = os.environ["OPENAI_API_KEY"]
+llama_model_path = os.getenv("LLAMA_MODEL_PATH")
+llama_tokenizer_path = os.getenv("LLAMA_TOKENIZER_PATH")
 
-if "GEMINI_API_KEY" in os.environ:
-    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+# GPU configuration from environment variables
+MAX_GPU_MEMORY = float(os.getenv("MAX_GPU_MEMORY_GB", 47.5))
+SYSTEM_RESERVE = float(os.getenv("SYSTEM_RESERVE_MEMORY_GB", 2.5))
+CPU_OFFLOAD = float(os.getenv("CPU_OFFLOAD_GB", 24))
+
+# Configure API keys
+openai.api_key = os.getenv("OPENAI_API_KEY")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Thread-local storage for models
 thread_local = threading.local()
@@ -75,7 +81,7 @@ def create_optimal_device_map(model_size_gb=70):
     for i in range(num_gpus):
         total = torch.cuda.get_device_properties(i).total_memory / 1024**3
         allocated = torch.cuda.memory_allocated(i) / 1024**3
-        available = total - allocated - 2  # Reserve 2GB for operations
+        available = total - allocated - SYSTEM_RESERVE  # Reserve memory from env config
         gpu_memories.append(available)
     
     total_available = sum(gpu_memories)
@@ -89,7 +95,7 @@ def create_optimal_device_map(model_size_gb=70):
     memory_map = {}
     for i in range(num_gpus):
         memory_map[f"cuda:{i}"] = f"{int(gpu_memories[i])}GiB"
-    memory_map["cpu"] = "24GiB"  # Allow some CPU offloading if needed
+    memory_map["cpu"] = f"{CPU_OFFLOAD}GiB"  # CPU offload from env config
     
     return memory_map
 
