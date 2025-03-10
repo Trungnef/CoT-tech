@@ -157,9 +157,6 @@ Báo cáo HTML bao gồm:
 - Biểu đồ hiệu năng
 - Mẫu câu trả lời
 
-## Giấy phép
-
-MIT
 
 ## Tác giả
 
