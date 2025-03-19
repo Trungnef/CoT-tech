@@ -106,7 +106,7 @@ Note: API models (like Gemini) are processed sequentially to avoid rate limiting
    ```
 
 ## Project Structure
-
+```
 llm-evaluation-framework/
 ├── evaluate_models.py # Main script for model evaluation
 ├── model_manager.py # Module for loading and managing models
@@ -127,7 +127,7 @@ llm-evaluation-framework/
 │ └── comprehensive_evaluation_report.html
 ├── model_cache/ # Cache for loaded models
 └── offload/ # Directory for model offloading
-
+```
 
 ## Usage
 
