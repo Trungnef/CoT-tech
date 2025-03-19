@@ -10,7 +10,7 @@ import os
 
 class UnifiedProblemGenerator:
     def __init__(self):
-        self.pdf = canvas.Canvas('db/Nhung_bai_toan_co_dien.pdf', pagesize=A4)
+        self.pdf = canvas.Canvas('./db/Nhung_bai_toan_co_dien.pdf', pagesize=A4)
         try:
             pdfmetrics.registerFont(TTFont('times', r'C:\Windows\Fonts\times.ttf'))
             pdfmetrics.registerFont(TTFont('timesbd', r'C:\Windows\Fonts\timesbd.ttf'))
@@ -719,10 +719,10 @@ class UnifiedProblemGenerator:
     def save_problems(self, problems: List[Dict]):
         try:
             # Tạo thư mục nếu chưa tồn tại
-            os.makedirs('db/questions', exist_ok=True)
-            print(f"✓ Đã tạo thư mục db/questions")
+            os.makedirs('./db/questions', exist_ok=True)
+            print(f"✓ Đã tạo thư mục ./db/questions")
             
-            filepath = 'db/questions/problems.json'
+            filepath = './db/questions/problems.json'
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump({
                     "total_problems": len(problems),
@@ -841,7 +841,7 @@ class UnifiedProblemGenerator:
         
         # Lưu file PDF
         self.pdf.save()
-        print(f"✓ Đã tạo file PDF: db/Nhung_bai_toan_co_dien.pdf")
+        print(f"✓ Đã tạo file PDF: ./db/Nhung_bai_toan_co_dien.pdf")
         
         # Lưu file JSON
         self.save_problems(problems)

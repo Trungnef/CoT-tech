@@ -391,7 +391,7 @@ class ClassicalProblemGenerator:
         return tags
 
     def save_problems(self, problems: List[Dict]):
-        filepath = 'db/questions/classical_problems.json'
+        filepath = './db/questions/classical_problems.json'
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump({
                 "section": "Classical Problems",

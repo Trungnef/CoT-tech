@@ -1,219 +1,228 @@
-# LLM Evaluation for Classical Problems
+# LLM Evaluation Framework
 
-Hệ thống đánh giá và so sánh hiệu năng của các mô hình ngôn ngữ lớn (LLM) khi giải quyết các bài toán cổ điển được trích xuất từ tài liệu PDF hoặc được tạo tự động.
+## Overview
 
-## Tổng quan
+This project is a comprehensive evaluation framework for large language models (LLMs), designed to compare the performance of different models (Llama, Qwen, Gemini) across various prompt engineering strategies. The framework processes questions through multiple models and prompt types, generating detailed performance metrics and visualizations that highlight differences in accuracy, response time, response quality, and error rates.
 
-Dự án này cung cấp một framework toàn diện để:
+Key features:
+- Multi-model evaluation with standardized metrics
+- Support for various prompt engineering strategies
+- Parallel processing for efficient evaluation
+- Comprehensive reporting with interactive visualizations
+- Advanced performance metrics and quality assessments
+- Memory-optimized loading for large models
 
-1. Tạo tự động các bài toán cổ điển đa dạng với nhiều loại và độ khó khác nhau
-2. Trích xuất các câu hỏi và bài toán từ tài liệu PDF "Những bài toán cổ điển"
-3. Áp dụng nhiều loại prompt khác nhau (Standard, Chain-of-Thought, Hybrid-CoT, v.v.) 
-4. Đánh giá hiệu năng của các mô hình ngôn ngữ lớn khác nhau (Llama-3.3-70B, Qwen-2.5-72B, Gemini)
-5. Tối ưu hóa việc sử dụng GPU để xử lý các mô hình nặng (>70B tham số)
-6. Tạo báo cáo và biểu đồ so sánh chi tiết
+## System Requirements
 
-## Yêu cầu hệ thống
+### Hardware
+- CUDA-compatible GPU(s) with at least 16GB VRAM (24GB+ recommended)
+- Minimum 16GB system RAM (32GB+ recommended)
+- 100GB+ storage space for models and evaluation results
 
-- Python 3.8+
-- 3 GPU AMD 6000 (mỗi card 47.5GB VRAM, tổng 142.5GB)
-- CUDA toolkit phiên bản mới nhất
-- Tối thiểu 32GB RAM hệ thống
-- Ổ cứng SSD với ít nhất 200GB trống
+### Software
+- Python 3.9+
+- PyTorch 2.0+
+- CUDA Toolkit 11.7+
+- Required libraries:
+  - transformers
+  - accelerate
+  - bitsandbytes
+  - pandas
+  - numpy
+  - matplotlib
+  - seaborn
+  - plotly
+  - tqdm
+  - psutil
+  - rich
+  - tenacity
+  - python-dotenv
 
-## Cấu hình GPU
+## GPU Configuration
 
-Hệ thống được tối ưu hóa để tận dụng tối đa 3 GPU AMD 6000:
-- Mỗi GPU có 47.5GB VRAM
-- Để lại 2.5GB mỗi GPU cho system operations
-- Phân bổ model tự động dựa trên kích thước:
-  - Model ≤45GB: Sử dụng 1 GPU
-  - Model ≤90GB: Sử dụng 2 GPU
-  - Model >90GB: Sử dụng cả 3 GPU
+The framework is designed to work with various GPU configurations:
 
-## Xử lý song song
+### Single GPU Setup
+- Automatically optimizes memory usage
+- Supports 4-bit quantization to fit larger models on smaller GPUs
+- Manages CPU offloading for memory-intensive operations
 
-Hệ thống sử dụng nhiều cơ chế xử lý song song:
-1. **Model Parallelism**: Phân chia mô hình lớn trên nhiều GPU
-2. **Data Parallelism**: Xử lý nhiều câu hỏi cùng lúc
-3. **Batch Processing**: Xử lý câu hỏi theo batch để tối ưu hiệu suất
-4. **Multi-threading**: Sử dụng ThreadPoolExecutor để quản lý tác vụ
+### Multi-GPU Setup
+- Automatically distributes model layers across available GPUs
+- Creates optimal device maps based on available memory
+- Balances memory usage across GPUs (uses approximately 85% of each GPU)
+- Supports CPU offloading for additional memory requirements
 
-## Cài đặt
+### Optimal Configuration
+For best results:
+- Use 2+ GPUs with 24GB+ VRAM each
+- Configure environment variables:
+  - `MAX_GPU_MEMORY_GB`: Maximum GPU memory to use per GPU
+  - `SYSTEM_RESERVE_MEMORY_GB`: Memory to reserve for system operations
+  - `CPU_OFFLOAD_GB`: Amount of CPU memory for model offloading
 
-1. Cài đặt các thư viện cần thiết:
+## Parallel Processing Methods
 
-```bash
-pip install -r requirements.txt
+The framework leverages several parallel processing techniques:
+
+1. **Concurrent Model Evaluation**: Evaluates different models concurrently using separate threads
+2. **Batch Processing**: Processes questions in configurable batch sizes
+3. **ThreadPoolExecutor**: Uses thread pools for parallel generation of responses
+4. **Multi-GPU Parallelism**: Distributes model computation across available GPUs
+5. **Caching Mechanisms**: Implements model caching to avoid redundant loading
+
+Note: API models (like Gemini) are processed sequentially to avoid rate limiting issues.
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/llm-evaluation-framework.git
+   cd llm-evaluation-framework
+   ```
+
+2. Install required packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Create a `.env` file in the root directory with the following variables:
+   ```
+   QWEN_MODEL_PATH=/path/to/qwen/model
+   QWEN_TOKENIZER_PATH=/path/to/qwen/tokenizer
+   LLAMA_MODEL_PATH=/path/to/llama/model
+   LLAMA_TOKENIZER_PATH=/path/to/llama/tokenizer
+   GEMINI_API_KEY=your_gemini_api_key
+   OPENAI_API_KEY=your_openai_api_key
+   
+   MAX_GPU_MEMORY_GB=47.5
+   SYSTEM_RESERVE_MEMORY_GB=2.5
+   CPU_OFFLOAD_GB=24
+   ```
+
+4. Create necessary directories:
+   ```bash
+   mkdir -p db/questions results model_cache offload
+   ```
+
+## Project Structure
+
+llm-evaluation-framework/
+├── evaluate_models.py # Main script for model evaluation
+├── model_manager.py # Module for loading and managing models
+├── model_evaluator.py # Evaluation logic and metrics
+├── prompts.py # Prompt engineering strategies
+├── .env # Environment variables
+├── requirements.txt # Required packages
+├── db/ # Database of questions
+│ └── questions/
+│ └── problems.json # Input questions for evaluation
+├── results/ # Evaluation results
+│ └── YYYYMMDD_HHMMSS/ # Results organized by timestamp
+│ ├── plots/ # Generated visualizations
+│ ├── processed_results.csv
+│ ├── model_statistics.csv
+│ ├── prompt_statistics.csv
+│ ├── combined_statistics.csv
+│ └── comprehensive_evaluation_report.html
+├── model_cache/ # Cache for loaded models
+└── offload/ # Directory for model offloading
 ```
 
-2. Cấu hình file `.env`:
+## Usage
 
-Tạo file `.env` trong thư mục gốc và thêm các thông tin sau:
+### Basic Usage
 
-```env
-# API Keys
-OPENAI_API_KEY=your_openai_api_key_here
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Model Paths
-QWEN_MODEL_PATH=cache/model/Qwen_Qwen2.5-72B-Instruct/models--Qwen--Qwen2.5-72B-Instruct/snapshots/495f39366efef23836d0cfae4fbe635880d2be31
-QWEN_TOKENIZER_PATH=cache/tokenizer/Qwen_Qwen2.5-72B-Instruct/models--Qwen--Qwen2.5-72B-Instruct/snapshots/495f39366efef23836d0cfae4fbe635880d2be31
-
-LLAMA_MODEL_PATH=cache/model/meta-llama_Llama-3.3-70B-Instruct/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b
-LLAMA_TOKENIZER_PATH=cache/tokenizer/meta-llama_Llama-3.3-70B-Instruct/models--meta-llama--Llama-3.3-70B-Instruct/snapshots/6f6073b423013f6a7d4d9f39144961bfbfbc386b
-
-# GPU Configuration
-MAX_GPU_MEMORY_GB=47.5
-SYSTEM_RESERVE_MEMORY_GB=2.5
-CPU_OFFLOAD_GB=24
-```
-
-> **Lưu ý**: File `.env` chứa thông tin nhạy cảm, đảm bảo không commit file này lên git.
-
-## Cấu trúc dự án
-
-```
-.
-├── db/                        # Thư mục chứa dữ liệu
-│   ├── Nhung_bai_toan_co_dien.pdf  # File PDF chứa các bài toán cổ điển đã tạo
-│   └── questions/             # Thư mục chứa các câu hỏi đã trích xuất
-│       └── problems.json      # File JSON chứa tất cả các bài toán đã tạo
-├── cache/                     # Cache cho mô hình đã tải
-├── offload/                   # Thư mục để offload mô hình khi cần
-├── results/                   # Kết quả đánh giá và báo cáo
-├── generate_problems.py       # Module tạo các bài toán cơ bản
-├── generate_classical_problems.py # Module tạo các bài toán cổ điển
-├── generate_all_problems.py   # Module tạo tất cả các loại bài toán
-├── extract_questions.py       # Module trích xuất câu hỏi từ PDF
-├── prompts.py                 # Các mẫu prompt (Standard, CoT, Hybrid-CoT)
-├── model_manager.py           # Quản lý việc tải và tối ưu hóa mô hình
-├── model_evaluator.py         # Đánh giá và phân tích hiệu năng mô hình
-├── evaluate_models.py         # Script chính để chạy đánh giá
-├── analyze_problems.py        # Script phân tích các bài toán đã tạo
-├── requirements.txt           # Các thư viện cần thiết
-└── README.md                  # Tài liệu hướng dẫn
-```
-
-## Cách sử dụng
-
-### Tạo bài toán tự động
-
-Tạo tất cả các loại bài toán (khoảng 2345 bài):
-
-```bash
-python generate_all_problems.py
-```
-
-Tạo các bài toán cơ bản:
-
-```bash
-python generate_problems.py
-```
-
-Tạo các bài toán cổ điển:
-
-```bash
-python generate_classical_problems.py
-```
-
-Phân tích các bài toán đã tạo:
-
-```bash
-python analyze_problems.py
-```
-
-### Trích xuất câu hỏi từ PDF (trong trường hợp đã load thì không cần)
-
-```bash
-python extract_questions.py
-```
-
-### Đánh giá các mô hình
-
-Chạy đánh giá với cấu hình mặc định (sử dụng problems.json):
+Run the evaluation with default settings:
 
 ```bash
 python evaluate_models.py
 ```
 
-Tùy chỉnh các tham số:
+### Advanced Usage
+
+Customize the evaluation with command-line arguments:
 
 ```bash
 python evaluate_models.py \
-    --questions_json db/questions/problems.json \
-    --models llama qwen gemini \
-    --prompt_types standard hybrid_cot \
-    --batch_size 10 \
-    --max_workers 3
+  --questions_json db/questions/custom_problems.json \
+  --models llama qwen gemini \
+  --prompt_types standard cot hybrid_cot zero_shot_cot \
+  --batch_size 10 \
+  --max_questions 100 \
+  --results_dir custom_results \
+  --use_4bit \
+  --max_workers 3
 ```
 
-### Các tham số quan trọng
+### Important Parameters
 
-- `--questions_json`: Đường dẫn đến file JSON chứa các câu hỏi (mặc định: db/questions/problems.json)
-- `--batch_size`: Số câu hỏi xử lý cùng lúc (mặc định: 10)
-- `--max_workers`: Số luồng xử lý song song (mặc định: 3, một cho mỗi GPU)
-- `--models`: Chọn mô hình để đánh giá (mặc định: tất cả)
-- `--prompt_types`: Loại prompt để sử dụng (mặc định: tất cả)
-- `--use_4bit`: Sử dụng lượng tử hóa 4-bit để tiết kiệm VRAM (mặc định: True)
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--questions_json` | Path to JSON file with questions | `db/questions/problems.json` |
+| `--models` | Models to evaluate | `llama qwen gemini` |
+| `--prompt_types` | Prompt types to evaluate | `standard cot hybrid_cot zero_shot_cot` |
+| `--batch_size` | Questions to process in parallel | `10` |
+| `--max_questions` | Maximum questions to evaluate | `None` (all questions) |
+| `--results_dir` | Directory to save results | `results` |
+| `--use_4bit` | Use 4-bit quantization | `True` |
+| `--max_workers` | Maximum parallel workers | `3` |
+| `--resume` | Resume from existing results | `False` |
+| `--results_file` | Path to results file to resume from | `None` |
 
-## Tạo bài toán tự động
+## Running Tests
 
-Hệ thống có thể tạo tự động nhiều loại bài toán khác nhau:
+To run a quick test with a small subset of questions:
 
-1. **Bài toán logic**: Các câu đố logic đơn giản
-2. **Bài toán kiểu luận**: Các bài toán yêu cầu giải thích chi tiết
-3. **Thơ toán học**: Các bài toán được trình bày dưới dạng thơ
-4. **Bài toán từ vựng**: Các bài toán liên quan đến từ vựng toán học
-5. **Bài toán trắc nghiệm**: Các câu hỏi trắc nghiệm
-6. **Bài toán chuyển động**: Các bài toán về vận tốc, thời gian, quãng đường
-7. **Bài toán về tuổi**: Các bài toán liên quan đến tuổi tác
-8. **Bài toán chia kẹo**: Các bài toán về chia đều
-9. **Bài toán hồ bơi**: Các bài toán về thời gian đổ đầy/xả cạn
-10. **Bài toán phân số**: Các bài toán về phân số
-11. **Bài toán công việc**: Các bài toán về thời gian hoàn thành công việc
-12. **Bài toán hỗn hợp**: Các bài toán về nồng độ, hỗn hợp
-13. **Bài toán số học**: Các bài toán về số học
-14. **Bài toán hình học**: Các bài toán về hình học
-15. **Bài toán tỷ lệ**: Các bài toán về tỷ lệ
-
-Mỗi loại bài toán có nhiều mẫu (templates) khác nhau và được tạo với các tham số ngẫu nhiên để đảm bảo tính đa dạng. Các bài toán được phân loại theo độ khó (Dễ, Trung bình, Khó) và được gắn các thẻ (tags) phù hợp.
-
-## Tối ưu hóa hiệu năng
-
-1. **Quản lý bộ nhớ GPU**:
-   - Lượng tử hóa 4-bit giảm 75% dung lượng VRAM cần thiết
-   - Tự động dọn dẹp bộ nhớ sau mỗi batch
-   - Phân phối model tối ưu trên nhiều GPU
-
-2. **Xử lý song song**:
-   - Chia batch thành các phần nhỏ cho mỗi GPU
-   - Sử dụng thread pool để quản lý tác vụ
-   - Cân bằng tải giữa các GPU
-
-3. **Khôi phục lỗi**:
-   - Tự động thử lại khi gặp lỗi API
-   - Lưu kết quả thường xuyên
-   - Có thể tiếp tục từ điểm dừng
-
-## Kết quả đánh giá
-
-Kết quả được lưu trong thư mục `results` với cấu trúc:
-```
-results/
-  ├── YYYYMMDD_HHMMSS/           # Timestamp của lần chạy
-  │   ├── evaluation_results.json # Kết quả chi tiết
-  │   ├── plots/                 # Các biểu đồ so sánh
-  │   └── report.html            # Báo cáo tổng hợp
+```bash
+python evaluate_models.py --max_questions 5 --models llama --prompt_types standard
 ```
 
-Báo cáo HTML bao gồm:
-- So sánh thời gian xử lý
-- So sánh độ chính xác
-- Biểu đồ hiệu năng
-- Mẫu câu trả lời
+For a more comprehensive test:
 
+```bash
+python evaluate_models.py --models llama qwen gemini --prompt_types standard cot --max_questions 20
+```
 
-## Tác giả
+## Visualizations and Results
 
-Truneee
+The framework generates a comprehensive HTML report with numerous visualizations for in-depth analysis:
+
+### Core Visualizations
+- Response time distributions by model and prompt type
+- Error rate heatmaps
+- Response length comparisons
+- Processing speed comparisons
+- Response time vs. length scatter plots
+
+### Advanced Visualizations
+- 3D surface plots for model performance
+- Interactive sunburst charts for error distribution
+- Parallel categories plots for variable relationships
+- Time series with confidence intervals
+- Quality metrics radar charts
+- Stacked area charts for response type distribution
+
+### Performance Metrics
+- Response quality scores
+- Complexity metrics
+- Coherence assessments
+- Efficiency scores
+- Quality-speed indices
+- Cost-efficiency comparisons
+- Time consistency measurements
+- Useful content ratios
+
+The report is fully interactive, with tooltips, filters, and drill-down capabilities for deeper analysis.
+
+## Example Report
+
+After running an evaluation, access the comprehensive report at:
+
+results/[timestamp]/comprehensive_evaluation_report_[timestamp].html
+
+This report contains all visualizations, metrics, and analyses in an easy-to-navigate interface.
+
+---
+
+For issues, feature requests, or contributions, please open an issue or pull request in the repository.

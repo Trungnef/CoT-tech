@@ -26,12 +26,22 @@ Problem: {query}
 
 Solution: """,
         
-        "classical_problem": f"""Hãy giải bài toán cổ điển sau một cách chi tiết và có hệ thống:
+        "classical_problem": f"""Solve the following classical problem in detail and systematically:
+
+Problem: {query}
+
+Solution: """,
+
+        "vietnamese": f"""Hãy giải bài toán sau một cách chi tiết và có hệ thống:
 
 Bài toán: {query}
 
 Lời giải: """
     }
+    
+    # Detect language and use Vietnamese prompt if the query contains Vietnamese characters
+    if any('\u00C0' <= c <= '\u1EF9' for c in query):
+        return prompts["vietnamese"]
     
     # Default to general if task_type not found
     return prompts.get(task_type.lower(), prompts["general"])
@@ -65,14 +75,26 @@ Thought process:
 1) Let me understand what the problem is asking.
 2) """,
         
-        "classical_problem": f"""Hãy giải bài toán cổ điển sau theo phương pháp suy luận từng bước. Trước tiên, hãy phân tích đề bài, xác định thông tin quan trọng, lập kế hoạch giải quyết, sau đó thực hiện từng bước tính toán cho đến khi có kết quả cuối cùng.
+        "classical_problem": f"""Solve the following classical problem using step-by-step reasoning. First, analyze the problem, identify the important information, plan your approach, then execute each calculation step until you reach the final result.
+
+Problem: {query}
+
+Reasoning process:
+1) I will carefully analyze the problem to understand what is being asked.
+2) """,
+
+        "vietnamese": f"""Hãy giải bài toán sau đây bằng cách suy luận từng bước một. Đầu tiên, phân tích bài toán, xác định thông tin quan trọng, lên kế hoạch giải quyết, sau đó thực hiện từng bước tính toán cho đến khi đạt được kết quả cuối cùng.
 
 Bài toán: {query}
 
 Quá trình suy luận:
-1) Tôi sẽ phân tích kỹ đề bài để hiểu yêu cầu.
+1) Tôi sẽ phân tích kỹ bài toán để hiểu yêu cầu đặt ra.
 2) """
     }
+    
+    # Detect language and use Vietnamese prompt if the query contains Vietnamese characters
+    if any('\u00C0' <= c <= '\u1EF9' for c in query):
+        return prompts["vietnamese"]
     
     # Default to general if task_type not found
     return prompts.get(task_type.lower(), prompts["general"])
@@ -111,24 +133,46 @@ Step 6: Provide your final answer based on your verified solution.
 
 Begin your solution:""",
         
-        "math": f"""Giải bài toán sau đây bằng kỹ thuật suy luận nâng cao:
+        "math": f"""Solve the following problem using advanced reasoning techniques:
+
+Problem: {query}
+
+Step 1: Break down the problem into simpler sub-problems.
+
+Step 2: For each sub-problem, explore 2-3 different approaches.
+
+Step 3: Solve each sub-problem step by step using the best approach.
+
+Step 4: Combine the solutions to create a complete solution.
+
+Step 5: Review your solution. Check for errors, verify calculations, and ensure solid reasoning.
+
+Step 6: Provide your final answer based on the verified solution.
+
+Begin your solution:""",
+
+        "vietnamese": f"""Giải bài toán sau đây bằng các kỹ thuật suy luận nâng cao:
 
 Bài toán: {query}
 
-Bước 1: Phân tích bài toán thành các bài toán con đơn giản hơn.
+Bước 1: Chia nhỏ bài toán thành các bài toán con đơn giản hơn.
 
-Bước 2: Với mỗi bài toán con, hãy đưa ra 2-3 cách tiếp cận khác nhau.
+Bước 2: Với mỗi bài toán con, khám phá 2-3 cách tiếp cận khác nhau.
 
-Bước 3: Giải quyết từng bài toán con theo cách tiếp cận tốt nhất, lập luận từng bước một.
+Bước 3: Giải từng bài toán con theo từng bước sử dụng cách tiếp cận tốt nhất.
 
-Bước 4: Kết hợp các lời giải của bài toán con để tạo thành lời giải hoàn chỉnh.
+Bước 4: Kết hợp các lời giải của các bài toán con để tạo thành lời giải hoàn chỉnh.
 
-Bước 5: Tự đánh giá lời giải của bạn. Kiểm tra lỗi, xác minh tính toán và đảm bảo lập luận vững chắc.
+Bước 5: Xem xét lại lời giải của bạn. Kiểm tra lỗi, xác minh tính toán và đảm bảo suy luận vững chắc.
 
-Bước 6: Đưa ra câu trả lời cuối cùng dựa trên lời giải đã xác minh.
+Bước 6: Đưa ra câu trả lời cuối cùng dựa trên lời giải đã được xác minh.
 
-Bắt đầu lời giải:"""
+Bắt đầu lời giải của bạn:"""
     }
+    
+    # Detect language and use Vietnamese prompt if the query contains Vietnamese characters
+    if any('\u00C0' <= c <= '\u1EF9' for c in query):
+        return prompts["vietnamese"]
     
     # Default to math if task_type not found (since most classical problems are math)
     return prompts.get(task_type.lower(), prompts["math"])
@@ -147,56 +191,82 @@ def zero_shot_cot_prompt(query, task_type="math"):
     - str: Formatted Zero-Shot CoT prompt
     """
     
-    base_prompt = f"""
+    # Detect language and use Vietnamese prompt if the query contains Vietnamese characters
+    if any('\u00C0' <= c <= '\u1EF9' for c in query):
+        base_prompt = f"""
 {query}
 
 Hãy suy nghĩ từng bước một.
 """
+    else:
+        base_prompt = f"""
+{query}
+
+Think step by step.
+"""
     return base_prompt
 
 
-# def tree_of_thought_prompt(query, task_type="math"):
-#     """
-#     Implement a Tree of Thought prompt that encourages the model to explore
-#     multiple reasoning branches and evaluate them.
+def tree_of_thought_prompt(query, task_type="math"):
+    """
+    Implement a Tree of Thought prompt that encourages the model to explore
+    multiple reasoning branches and evaluate them.
     
-#     Parameters:
-#     - query (str): The user's question or problem statement
-#     - task_type (str): Type of task ('general', 'math', etc.)
+    Parameters:
+    - query (str): The user's question or problem statement
+    - task_type (str): Type of task ('general', 'math', etc.)
     
-#     Returns:
-#     - str: Formatted Tree of Thought prompt
-#     """
+    Returns:
+    - str: Formatted Tree of Thought prompt
+    """
     
-#     prompts = {
-#         "general": f"""Solve the following problem using a tree of thought approach:
+    prompts = {
+        "general": f"""Solve the following problem using a tree of thought approach:
 
-# Problem: {query}
+Problem: {query}
 
-# First, identify 3 different approaches to solve this problem.
-# For each approach:
-# 1. Describe the approach
-# 2. Develop the solution step by step
-# 3. Evaluate the strengths and weaknesses of this approach
+First, identify 3 different approaches to solve this problem.
+For each approach:
+1. Describe the approach
+2. Develop the solution step by step
+3. Evaluate the strengths and weaknesses of this approach
 
-# Finally, select the best approach and provide the final answer based on it.
+Finally, select the best approach and provide the final answer based on it.
 
-# Begin your solution:""",
+Begin your solution:""",
         
-#         "math": f"""Giải bài toán sau đây bằng phương pháp cây suy luận (tree of thought):
+        "math": f"""Solve the following problem using a tree of thought approach:
 
-# Bài toán: {query}
+Problem: {query}
 
-# Đầu tiên, xác định 3 cách tiếp cận khác nhau để giải bài toán này.
-# Với mỗi cách tiếp cận:
-# 1. Mô tả phương pháp
-# 2. Phát triển lời giải từng bước một
-# 3. Đánh giá điểm mạnh và điểm yếu của phương pháp này
+First, identify 3 different approaches to solve this problem.
+For each approach:
+1. Describe the method
+2. Develop the solution step by step
+3. Evaluate the strengths and weaknesses of this approach
 
-# Cuối cùng, chọn phương pháp tốt nhất và đưa ra câu trả lời cuối cùng dựa trên phương pháp đó.
+Finally, select the best approach and provide the final answer based on it.
 
-# Bắt đầu lời giải:"""
-#     }
+Begin your solution:""",
+
+        "vietnamese": f"""Giải bài toán sau đây bằng phương pháp cây suy nghĩ:
+
+Bài toán: {query}
+
+Đầu tiên, xác định 3 cách tiếp cận khác nhau để giải quyết bài toán này.
+Đối với mỗi cách tiếp cận:
+1. Mô tả phương pháp
+2. Phát triển lời giải từng bước một
+3. Đánh giá điểm mạnh và điểm yếu của cách tiếp cận này
+
+Cuối cùng, chọn cách tiếp cận tốt nhất và đưa ra câu trả lời cuối cùng dựa trên cách tiếp cận đó.
+
+Bắt đầu lời giải của bạn:"""
+    }
     
-#     # Default to math if task_type not found
-#     return prompts.get(task_type.lower(), prompts["math"]) 
+    # Detect language and use Vietnamese prompt if the query contains Vietnamese characters
+    if any('\u00C0' <= c <= '\u1EF9' for c in query):
+        return prompts["vietnamese"]
+    
+    # Default to math if task_type not found
+    return prompts.get(task_type.lower(), prompts["math"]) 

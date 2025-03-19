@@ -14,4 +14,7 @@ tqdm>=4.65.0
 tenacity>=8.2.0
 python-dotenv>=1.0.0
 fpdf
+plotly
+rich
+scikit-learn
 # pip install wget ; python -c "import wget; wget.download('https://github.com/dejavu-fonts/dejavu-fonts/raw/master/ttf/DejaVuSansCondensed.ttf')" 

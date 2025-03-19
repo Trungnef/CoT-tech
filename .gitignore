@@ -41,8 +41,8 @@ offload/
 results/
 db/questions/
 *.log
+model_cache/
 
 # Jupyter Notebook
 .ipynb_checkpoints/
 *.ipynb
-CoT.ipynb
