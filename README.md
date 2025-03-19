@@ -77,7 +77,7 @@ Note: API models (like Gemini) are processed sequentially to avoid rate limiting
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/llm-evaluation-framework.git
+   git clone https://github.com/Trungnef/CoT-tech.git
    cd llm-evaluation-framework
    ```
 
