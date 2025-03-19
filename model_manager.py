@@ -20,6 +20,7 @@ import pickle
 import tempfile
 import random
 from pathlib import Path
+from functools import lru_cache
 
 # Load environment variables
 load_dotenv()
@@ -56,12 +57,38 @@ genai.configure(api_key=gemini_api_key)
 # Thread-local storage for models
 thread_local = threading.local()
 
-# Thêm biến toàn cục để lưu trữ mô hình đã tải
+# Cache configuration
+_CACHE_SIZE = 3  # Keep 3 models in cache
 _MODEL_CACHE = {}
 _TOKENIZER_CACHE = {}
 _LAST_USED = {}
 _CACHE_DIR = Path("./model_cache")
 _CACHE_DIR.mkdir(exist_ok=True)
+
+def optimize_memory_config():
+    """Optimize memory configuration for 4-bit quantization."""
+    return BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_device_map="auto",
+        llm_int8_enable_fp32_cpu_offload=True
+    )
+
+@lru_cache(maxsize=_CACHE_SIZE)
+def get_cached_model(model_key):
+    """Get model from cache with LRU policy."""
+    return _MODEL_CACHE.get(model_key)
+
+def optimize_batch_processing(questions, prompt_fn, max_workers=None):
+    """Optimize batch processing with parallel execution."""
+    if max_workers is None:
+        max_workers = min(4, os.cpu_count() or 1)
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        prompts = list(executor.map(lambda q: prompt_fn(q, "classical_problem"), questions))
+    return prompts
 
 def clear_memory():
     """Free GPU and CPU memory."""
@@ -126,27 +153,15 @@ def create_optimal_device_map(model_size_gb=70):
     return memory_map
 
 def load_model_optimized(model_path, tokenizer_path, model_type="llama", dtype=torch.bfloat16, use_4bit=True, model_size_gb=70):
-    """
-    Load and optimize a model with memory-efficient configuration.
-    
-    Args:
-        model_path: Path to the model files
-        tokenizer_path: Path to the tokenizer files
-        model_type: Type of model ('llama', 'qwen', etc.)
-        dtype: Torch data type (bfloat16, float16, etc.)
-        use_4bit: Whether to use 4-bit quantization
-        model_size_gb: Approximate model size in GB
-        
-    Returns:
-        tuple: (tokenizer, model)
-    """
+    """Load and optimize a model with memory-efficient configuration."""
     # Use cached model if available
     cache_key = f"{model_type}_{model_path}"
-    if cache_key in _MODEL_CACHE and cache_key in _TOKENIZER_CACHE:
+    cached_model = get_cached_model(cache_key)
+    if cached_model:
         print(f"✅ Using cached {model_type} model")
         _LAST_USED[cache_key] = time.time()
-        return _TOKENIZER_CACHE[cache_key], _MODEL_CACHE[cache_key]
-        
+        return _TOKENIZER_CACHE[cache_key], cached_model
+    
     clear_memory()
     
     print(f"🔄 Loading {model_type} model from {model_path}")
@@ -161,21 +176,14 @@ def load_model_optimized(model_path, tokenizer_path, model_type="llama", dtype=t
         )
         print("✅ Tokenizer loaded")
         
-        # Configure quantization
+        # Configure quantization with optimized settings
         if use_4bit:
-            print("⚙️ Using 4-bit quantization")
-            quantization_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.bfloat16,  # Sử dụng bfloat16 thay vì float16
-                bnb_4bit_use_double_quant=True,
-                bnb_4bit_compute_device_map=None,  # Allow auto compute map
-                llm_int8_enable_fp32_cpu_offload=False  # Disable CPU offloading trong quá trình load
-            )
+            print("⚙️ Using optimized 4-bit quantization")
+            quantization_config = optimize_memory_config()
         else:
             quantization_config = None
             
-        # Optimize GPU memory first
+        # Optimize GPU memory
         if torch.cuda.is_available():
             print(f"💾 Available GPU memory before loading:")
             for i in range(torch.cuda.device_count()):
@@ -184,168 +192,54 @@ def load_model_optimized(model_path, tokenizer_path, model_type="llama", dtype=t
                 free = total - allocated
                 print(f"  GPU {i}: {free:.2f}GB free / {total:.2f}GB total")
             
-            # Làm sạch memory trước khi load
             torch.cuda.empty_cache()
             gc.collect()
         
-        # Setup device map và max memory
+        # Setup optimized device map
         num_gpus = torch.cuda.device_count() if torch.cuda.is_available() else 0
         
         if num_gpus > 1:
-            print(f"🔧 Using custom device map for {num_gpus} GPUs")
-            # Tạo max_memory config cho từng GPU
+            print(f"🔧 Using optimized device map for {num_gpus} GPUs")
             max_memory = {}
             for i in range(num_gpus):
                 gpu_memory = torch.cuda.get_device_properties(i).total_memory / (1024**3)
-                # Để lại một chút memory để tránh OOM
                 usable_memory = int(gpu_memory * 0.85)
                 max_memory[i] = f"{usable_memory}GiB"
             
-            # Thêm CPU memory vào cấu hình
             max_memory["cpu"] = "32GiB"
         else:
             max_memory = None
         
-        # Start loading with progress indication
-        print("🔄 Starting model loading with progress tracking...")
-        
-        # Prepare base model kwargs
-        base_model_kwargs = {
-            "device_map": "auto",  # Sử dụng auto device map
-            "max_memory": max_memory,  # Cấu hình memory cho từng device
+        # Load model with optimized settings
+        model_kwargs = {
+            "device_map": "auto",
+            "max_memory": max_memory,
             "torch_dtype": dtype,
             "quantization_config": quantization_config if use_4bit else None,
             "trust_remote_code": True,
             "low_cpu_mem_usage": True,
             "cache_dir": _CACHE_DIR,
-            "offload_folder": "offload",  # Thêm thư mục offload
+            "offload_folder": "offload",
         }
         
-        # Add model-specific parameters based on model type
-        model_kwargs = base_model_kwargs.copy()
-        
-        # Llama models may not support sliding_window and some attention implementations
+        # Add model-specific optimizations
         if model_type.lower() == "llama":
-            # Remove parameters not supported by Llama
-            model_kwargs.pop("sliding_window", None)  # Ensure sliding_window is not passed
-            model_kwargs["attn_implementation"] = "eager"  # Use eager attention for Llama
+            model_kwargs["attn_implementation"] = "eager"
         else:
-            # For other models, we can use the full set of parameters
             model_kwargs["attn_implementation"] = "eager"
             model_kwargs["use_flash_attention_2"] = False
             model_kwargs["sliding_window"] = None
         
-        # Add loading progress
-        loading_start = time.time()
+        # Load model
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            **model_kwargs
+        )
         
-        # Load model with progress update thread
-        progress_step = 0
-        progress_done = False
-        
-        def show_progress():
-            nonlocal progress_step
-            progress_chars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-            while not progress_done:
-                elapsed = time.time() - loading_start
-                char = progress_chars[progress_step % len(progress_chars)]
-                print(f"\r{char} Loading model... (elapsed: {elapsed:.1f}s)", end="")
-                progress_step += 1
-                time.sleep(0.1)
-            print()  # New line after progress is done
-        
-        # Start progress thread
-        import threading
-        progress_thread = threading.Thread(target=show_progress)
-        progress_thread.daemon = True
-        progress_thread.start()
-        
-        try:
-            # Tạo thư mục offload nếu cần
-            os.makedirs("offload", exist_ok=True)
-            
-            # Load the model với các tùy chọn đã cấu hình
-            model = AutoModelForCausalLM.from_pretrained(
-                model_path,
-                **model_kwargs
-            )
-            
-            # Store in memory cache
-            _MODEL_CACHE[cache_key] = model
-            _TOKENIZER_CACHE[cache_key] = tokenizer
-            _LAST_USED[cache_key] = time.time()
-            
-        except Exception as e:
-            print(f"\n❌ Error loading model: {e}")
-            # Thử lại với cấu hình khác nếu gặp lỗi
-            try:
-                print("🔄 Retrying with simpler configuration...")
-                # Cấu hình đơn giản hơn, không sử dụng 4-bit
-                retry_kwargs = {
-                    "device_map": "auto",
-                    "torch_dtype": torch.bfloat16,
-                    "trust_remote_code": True,
-                    "low_cpu_mem_usage": True,
-                    "cache_dir": _CACHE_DIR,
-                }
-                
-                # Nếu là mô hình Llama, không thêm các tham số không được hỗ trợ
-                if model_type.lower() == "llama":
-                    retry_kwargs["attn_implementation"] = "eager"
-                else:
-                    retry_kwargs["attn_implementation"] = "eager"
-                    retry_kwargs["sliding_window"] = None
-                
-                model = AutoModelForCausalLM.from_pretrained(
-                    model_path,
-                    **retry_kwargs
-                )
-                
-                # Lưu vào cache nếu thành công
-                _MODEL_CACHE[cache_key] = model
-                _TOKENIZER_CACHE[cache_key] = tokenizer
-                _LAST_USED[cache_key] = time.time()
-                
-            except Exception as retry_error:
-                print(f"\n❌ Error loading model with simpler config: {retry_error}")
-                # Thử lại lần cuối với cấu hình tối giản nhất
-                try:
-                    print("🔄 Retrying with minimal configuration...")
-                    minimal_kwargs = {
-                        "device_map": "auto",
-                        "torch_dtype": torch.float16,  # Thử với float16
-                        "trust_remote_code": True,
-                    }
-                    
-                    model = AutoModelForCausalLM.from_pretrained(
-                        model_path,
-                        **minimal_kwargs
-                    )
-                    
-                    # Lưu vào cache nếu thành công
-                    _MODEL_CACHE[cache_key] = model
-                    _TOKENIZER_CACHE[cache_key] = tokenizer
-                    _LAST_USED[cache_key] = time.time()
-                    
-                except Exception as final_error:
-                    print(f"\n❌ All loading attempts failed: {final_error}")
-                    return tokenizer, None
-        finally:
-            # Stop progress thread
-            progress_done = True
-            progress_thread.join(timeout=1.0)
-        
-        loading_time = time.time() - loading_start
-        print(f"✅ Model loaded successfully in {loading_time:.2f} seconds")
-        
-        # Print GPU memory after loading
-        if torch.cuda.is_available():
-            print(f"💾 GPU memory after loading:")
-            for i in range(torch.cuda.device_count()):
-                total = torch.cuda.get_device_properties(i).total_memory / 1024**3
-                allocated = torch.cuda.memory_allocated(i) / 1024**3
-                reserved = torch.cuda.memory_reserved(i) / 1024**3
-                free = total - allocated
-                print(f"  GPU {i}: {free:.2f}GB free / {total:.2f}GB total (Reserved: {reserved:.2f}GB)")
+        # Store in cache
+        _MODEL_CACHE[cache_key] = model
+        _TOKENIZER_CACHE[cache_key] = tokenizer
+        _LAST_USED[cache_key] = time.time()
         
         return tokenizer, model
         
@@ -353,7 +247,6 @@ def load_model_optimized(model_path, tokenizer_path, model_type="llama", dtype=t
         print(f"❌ Error loading model: {e}")
         import traceback
         traceback.print_exc()
-        
         return tokenizer, None
 
 def get_thread_local_model(model_type):
@@ -413,7 +306,7 @@ def load_gemini_model(model_name="gemini-1.5-flash"):
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=2, min=4, max=60))
 def generate_text_with_model(prompt, model_type, max_tokens=1024, temperature=0.7):
     """
-    Generate text using specified model type with automatic model management.
+    Generate text using specified model type with improved performance monitoring.
     
     Args:
         prompt: Input prompt text
@@ -425,100 +318,103 @@ def generate_text_with_model(prompt, model_type, max_tokens=1024, temperature=0.
         str: Generated text
     """
     try:
+        # Get model with optimized caching
         tokenizer, model = get_thread_local_model(model_type)
         
         # Check if model failed to load
         if model is None:
             return f"[Error: Could not load {model_type} model. Please check GPU memory and model paths.]"
         
+        # Optimize memory before generation
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            gc.collect()
+        
+        # Generate text with optimized settings
         if model_type in ["llama", "qwen"]:
-            # Ensure tokenizer and model are available
-            if tokenizer is None:
-                return f"[Error: No tokenizer found for {model_type}.]"
-                
-            try:
-                # Đặt padding token nếu chưa có
-                if tokenizer.pad_token is None:
-                    tokenizer.pad_token = tokenizer.eos_token
-                
-                # Encode với padding và tạo attention mask
-                encoding = tokenizer(
-                    prompt, 
-                    return_tensors="pt", 
-                    padding=True, 
-                    truncation=True,
-                    return_attention_mask=True
+            # Fix pad_token if needed
+            if tokenizer.pad_token is None or tokenizer.pad_token == tokenizer.eos_token:
+                # Set a different pad token if it's the same as eos_token
+                tokenizer.pad_token = "[PAD]"
+                # Make sure the pad_token_id is different from eos_token_id
+                if tokenizer.pad_token_id == tokenizer.eos_token_id:
+                    # Add the pad token to the vocabulary if needed
+                    if "[PAD]" not in tokenizer.get_vocab():
+                        tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+                        # Resize model embeddings to match new vocabulary size
+                        model.resize_token_embeddings(len(tokenizer))
+            
+            # Tokenize with explicit attention mask
+            encoding = tokenizer(
+                prompt, 
+                return_tensors="pt", 
+                padding=True, 
+                truncation=True,
+                return_attention_mask=True  # Explicitly request attention mask
+            )
+            
+            # Move all tensors to correct device
+            inputs = {k: v.to(model.device) for k, v in encoding.items()}
+            
+            # Ensure attention_mask is properly set
+            if 'attention_mask' not in inputs:
+                # Create attention mask manually if needed
+                inputs['attention_mask'] = torch.ones_like(inputs['input_ids'])
+            
+            # Debug info
+            print(f"Input shape: {inputs['input_ids'].shape}, Attention mask shape: {inputs['attention_mask'].shape}")
+            
+            # Generate with optimized settings and explicit attention mask
+            with torch.no_grad():
+                outputs = model.generate(
+                    **inputs,
+                    max_new_tokens=max_tokens,
+                    temperature=temperature,
+                    do_sample=True,
+                    pad_token_id=tokenizer.pad_token_id,
+                    eos_token_id=tokenizer.eos_token_id,
+                    use_cache=True,  # Enable KV cache
+                    num_beams=1,     # Disable beam search for speed
+                    early_stopping=True
                 )
-                
-                # Chuyển cả input_ids và attention_mask sang device của model
-                input_ids = encoding['input_ids'].to(model.device)
-                attention_mask = encoding['attention_mask'].to(model.device)
-                
-                with torch.no_grad():
-                    outputs = model.generate(
-                        input_ids,
-                        attention_mask=attention_mask,  # Cung cấp attention mask
-                        max_new_tokens=max_tokens,
-                        temperature=temperature,
-                        top_p=0.95,
-                        do_sample=True,
-                        pad_token_id=tokenizer.eos_token_id
-                    )
-                
-                # Lấy text đầu ra từ vị trí cuối cùng của input
-                input_length = input_ids.size(1)
+            
+            # Decode output properly
+            # First get the length of the input
+            input_length = inputs['input_ids'].size(1)
+            # Then decode only the new tokens (skip the prompt)
+            generated_text = tokenizer.decode(outputs[0][input_length:], skip_special_tokens=True)
+            
+            # If the generated text is empty or too short, return the full output as fallback
+            if not generated_text or len(generated_text.strip()) < 10:
                 generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-                response = generated_text[len(tokenizer.decode(input_ids[0][:input_length], skip_special_tokens=True)):]
-                
-                # Check if response is empty
-                if not response or len(response.strip()) == 0:
-                    return "[Error: Model generated empty response. Try with different parameters.]"
-            except Exception as e:
-                print(f"❌ Error during model generation: {e}")
-                return f"[Error generating text with {model_type}: {str(e)}]"
+                # Remove the prompt part if it exists in the output
+                prompt_decoded = tokenizer.decode(inputs['input_ids'][0], skip_special_tokens=True)
+                if generated_text.startswith(prompt_decoded):
+                    generated_text = generated_text[len(prompt_decoded):]
+            
+            response = generated_text
             
         elif model_type == "gemini":
-            try:
-                # Add delay between requests to avoid rate limits
-                time.sleep(1)
-                
-                # Check if model is None (failed to load)
-                if model is None:
-                    return "[Error: Could not initialize Gemini API. Check your API key.]"
-                
-                response = model.generate_content(
-                    prompt,
-                    generation_config={
-                        "temperature": temperature,
-                        "max_output_tokens": max_tokens,
-                        "top_p": 0.95
-                    }
-                ).text
-                
-                # Validate response
-                if not response or len(response.strip()) == 0:
-                    raise ValueError("Empty response from Gemini API")
-                    
-            except Exception as e:
-                error_str = str(e).lower()
-                if any(err in error_str for err in ["429", "quota", "rate limit", "resource exhausted"]):
-                    print(f"⚠️ Gemini API quota/rate limit exceeded. Waiting before retry... ({e})")
-                    # Add longer delay for rate limit errors
-                    time.sleep(5)
-                    raise e  # Trigger retry with exponential backoff
-                elif "500" in error_str or "503" in error_str:
-                    print(f"⚠️ Gemini API server error. Retrying... ({e})")
-                    time.sleep(2)
-                    raise e  # Trigger retry
-                else:
-                    print(f"❌ Unexpected Gemini API error: {e}")
-                    return f"[Error: Could not generate response due to API error: {str(e)}]"
+            # Generate with Gemini API
+            response = model.generate_content(
+                prompt,
+                generation_config={
+                    "max_output_tokens": max_tokens,
+                    "temperature": temperature
+                }
+            ).text
+        
+        # Clear memory after generation
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            gc.collect()
         
         return response.strip()
         
     except Exception as e:
         print(f"❌ Error generating text: {e}")
-        # Provide a fallback response that won't break the evaluation
+        import traceback
+        traceback.print_exc()
         return f"[Error: Could not generate response: {str(e)}]"
 
 def parallel_generate(prompts, model_type, max_workers=3):
