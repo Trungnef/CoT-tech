@@ -30,7 +30,16 @@ from prompts import (
     chain_of_thought_prompt, 
     hybrid_cot_prompt,
     zero_shot_cot_prompt,
-    tree_of_thought_prompt
+    tree_of_thought_prompt,
+    # Add new prompt types
+    zero_shot_prompt,
+    few_shot_3_prompt,
+    few_shot_5_prompt,
+    few_shot_7_prompt,
+    cot_self_consistency_3_prompt,
+    cot_self_consistency_5_prompt,
+    cot_self_consistency_7_prompt,
+    react_prompt
 )
 from model_manager import (
     generate_text_with_model, 
@@ -68,10 +77,18 @@ class ModelEvaluator:
         # Prompt types
         self.prompt_types = {
             "standard": standard_prompt,
+            "zero_shot": zero_shot_prompt,
             "cot": chain_of_thought_prompt,
             "hybrid_cot": hybrid_cot_prompt,
             "zero_shot_cot": zero_shot_cot_prompt,
-            "tree_of_thought": tree_of_thought_prompt
+            "tree_of_thought": tree_of_thought_prompt,
+            "few_shot_3": few_shot_3_prompt,
+            "few_shot_5": few_shot_5_prompt,
+            "few_shot_7": few_shot_7_prompt,
+            "cot_self_consistency_3": cot_self_consistency_3_prompt,
+            "cot_self_consistency_5": cot_self_consistency_5_prompt,
+            "cot_self_consistency_7": cot_self_consistency_7_prompt,
+            "react": react_prompt
         }
         
         # Initialize results dictionary with all required keys
@@ -133,7 +150,7 @@ class ModelEvaluator:
         # Simple approximation: average 4 characters per token (for languages like Vietnamese)
         return len(text) // 3
     
-    def evaluate_single_question(self, question, model_info, prompt_type="standard"):
+    def evaluate_single_question(self, question, model_info, prompt_type="standard", example_selection="default", custom_examples=None, examples_file=None):
         """
         Evaluate a single question with a specific model and prompt type.
         
@@ -141,6 +158,9 @@ class ModelEvaluator:
             question (str): Question to evaluate
             model_info (dict): Model information dictionary
             prompt_type (str): Type of prompt to use
+            example_selection (str): Method to select examples for few-shot prompts ('default', 'random', 'custom', 'file')
+            custom_examples (list): List of custom examples for few-shot prompts
+            examples_file (str): Path to JSON file containing examples for few-shot prompts
             
         Returns:
             dict: Result metrics
@@ -149,26 +169,65 @@ class ModelEvaluator:
         model_type = model_info["type"]
         prompt_fn = self.prompt_types[prompt_type]
         
-        # Create prompt
-        prompt = prompt_fn(question, "classical_problem")
+        # Create prompt based on prompt type
+        if prompt_type.startswith("few_shot"):
+            # For few-shot prompts, pass the additional parameters
+            prompt = prompt_fn(question, "classical_problem", example_selection=example_selection, 
+                              custom_examples=custom_examples, examples_file=examples_file)
+        else:
+            # For other prompt types, use the standard approach
+            prompt = prompt_fn(question, "classical_problem")
         
         # Track metrics
         start_time = time.time()
         token_count = self.estimate_token_count(prompt)
         
-        # Generate answer
-        try:
-            if model_type == "local":
-                model = model_info["model"]
-                tokenizer = model_info["tokenizer"]
-                answer = generate_text_with_model(prompt, model_type="local", max_tokens=1024)
-            elif model_type == "gemini":
-                model = model_info["model"]
-                answer = generate_text_with_model(prompt, model_type="gemini", max_tokens=1024)
-            else:
-                answer = f"Unsupported model type: {model_type}"
-        except Exception as e:
-            answer = f"Error: {str(e)}"
+        # Special handling for self-consistency methods
+        if prompt_type.startswith("cot_self_consistency"):
+            try:
+                # Determine the number of iterations from the prompt type name
+                num_iterations = int(prompt_type.split("_")[-1])
+                
+                # Process the self-consistency method
+                answer = self._process_self_consistency(question, model_info, num_iterations)
+            except Exception as e:
+                answer = f"Error in self-consistency processing: {str(e)}"
+        # Special handling for ReAct prompts
+        elif prompt_type == "react":
+            try:
+                # Use a larger max_tokens value for ReAct as it requires more interaction
+                if model_type == "local":
+                    model = model_info["model"]
+                    tokenizer = model_info["tokenizer"]
+                    answer = generate_text_with_model(prompt, model_type="local", max_tokens=2048)
+                elif model_type == "gemini":
+                    model = model_info["model"]
+                    answer = generate_text_with_model(prompt, model_type="gemini", max_tokens=2048)
+                else:
+                    answer = f"Unsupported model type: {model_type}"
+                
+                # Make sure the response follows the ReAct format
+                if ("THINK:" not in answer and "SUY NGHĨ:" not in answer) or \
+                   (("ACTION:" not in answer and "HÀNH ĐỘNG:" not in answer) or \
+                    ("OBSERVATION:" not in answer and "QUAN SÁT:" not in answer)):
+                    # If the model didn't follow the format, structure the response
+                    answer = self._structure_react_response(answer)
+            except Exception as e:
+                answer = f"Error in ReAct processing: {str(e)}"
+        else:
+            # Generate answer for standard methods
+            try:
+                if model_type == "local":
+                    model = model_info["model"]
+                    tokenizer = model_info["tokenizer"]
+                    answer = generate_text_with_model(prompt, model_type="local", max_tokens=1024)
+                elif model_type == "gemini":
+                    model = model_info["model"]
+                    answer = generate_text_with_model(prompt, model_type="gemini", max_tokens=1024)
+                else:
+                    answer = f"Unsupported model type: {model_type}"
+            except Exception as e:
+                answer = f"Error: {str(e)}"
         
         # Calculate metrics
         end_time = time.time()
@@ -184,72 +243,284 @@ class ModelEvaluator:
             "token_count": token_count,
             "elapsed_time": latency,
             "tokens_per_second": tokens_per_second,
-            "response_length": response_length
+            "response_length": response_length,
+            "example_selection": example_selection if prompt_type.startswith("few_shot") else None
         }
         
         return result
     
-    def evaluate_all_questions(self, questions, model_names=None, prompt_types=None, max_questions=None):
+    def _process_self_consistency(self, question, model_info, num_iterations=3):
         """
-        Evaluate all questions with specified models and prompt types.
+        Process a question using the self-consistency method.
+        Generate multiple solutions and find the most consistent answer.
+        
+        Args:
+            question (str): Question to evaluate
+            model_info (dict): Model information dictionary
+            num_iterations (int): Number of iterations to generate
+            
+        Returns:
+            str: The most consistent answer with explanation
+        """
+        model_name = model_info["name"]
+        model_type = model_info["type"]
+        
+        # Generate multiple answers using CoT
+        cot_prompt_fn = self.prompt_types["cot"]
+        responses = []
+        answers = []
+        
+        print(f"🔄 Generating {num_iterations} different solutions for self-consistency...")
+        
+        for i in range(num_iterations):
+            # Create CoT prompt
+            prompt = cot_prompt_fn(question, "classical_problem")
+            
+            try:
+                if model_type == "local":
+                    model = model_info["model"]
+                    tokenizer = model_info["tokenizer"]
+                    response = generate_text_with_model(prompt, model_type="local", max_tokens=1024)
+                elif model_type == "gemini":
+                    model = model_info["model"]
+                    response = generate_text_with_model(prompt, model_type="gemini", max_tokens=1024)
+                else:
+                    response = f"Unsupported model type: {model_type}"
+                    
+                responses.append(response)
+                
+                # Extract the final answer from the CoT response
+                final_answer = self._extract_final_answer(response)
+                answers.append(final_answer)
+                
+                print(f"✅ Generated solution {i+1}/{num_iterations}")
+                
+            except Exception as e:
+                print(f"❌ Error generating solution {i+1}: {str(e)}")
+                responses.append(f"Error: {str(e)}")
+                answers.append("ERROR")
+        
+        # Find the most common answer
+        if answers:
+            # Count occurrences of each answer
+            answer_counts = {}
+            for ans in answers:
+                normalized_ans = self._normalize_answer(ans)
+                if normalized_ans in answer_counts:
+                    answer_counts[normalized_ans] += 1
+                else:
+                    answer_counts[normalized_ans] = 1
+            
+            # Find the most common answer
+            most_common_answer = max(answer_counts.items(), key=lambda x: x[1])
+            most_common_text = most_common_answer[0]
+            count = most_common_answer[1]
+            
+            # Create a summary of the self-consistency process
+            summary = f"Generated {num_iterations} different solutions using Chain-of-Thought reasoning.\n\n"
+            summary += f"The most consistent answer appeared {count}/{num_iterations} times:\n{most_common_text}\n\n"
+            
+            # Add details about each solution if needed
+            summary += "Individual solution summaries:\n"
+            for i, resp in enumerate(responses):
+                # Truncate long responses for the summary
+                short_resp = resp[:200] + "..." if len(resp) > 200 else resp
+                summary += f"Solution {i+1}: {short_resp}\n\n"
+            
+            return summary
+        else:
+            return "Failed to generate any valid solutions for self-consistency."
+    
+    def _extract_final_answer(self, cot_response):
+        """
+        Extract the final answer from a Chain-of-Thought response.
+        
+        Args:
+            cot_response (str): The full CoT response
+            
+        Returns:
+            str: The extracted final answer
+        """
+        # Common patterns that might indicate a final answer
+        patterns = [
+            r"Final answer:(.+?)(?:$|\n\n)",
+            r"Therefore, the answer is(.+?)(?:$|\n\n)", 
+            r"Thus, the answer is(.+?)(?:$|\n\n)",
+            r"The answer is(.+?)(?:$|\n\n)",
+            r"In conclusion,(.+?)(?:$|\n\n)",
+            r"Vậy kết quả là(.+?)(?:$|\n\n)",
+            r"Kết luận:(.+?)(?:$|\n\n)"
+        ]
+        
+        # Try each pattern
+        for pattern in patterns:
+            matches = re.search(pattern, cot_response, re.IGNORECASE | re.DOTALL)
+            if matches:
+                return matches.group(1).strip()
+        
+        # If no pattern matches, use the last paragraph/sentence as the answer
+        paragraphs = cot_response.split("\n\n")
+        if paragraphs:
+            last_paragraph = paragraphs[-1].strip()
+            if last_paragraph:
+                return last_paragraph
+        
+        # If all else fails, return the entire response
+        return cot_response
+    
+    def _normalize_answer(self, answer):
+        """
+        Normalize an answer for better comparison in self-consistency.
+        
+        Args:
+            answer (str): The raw answer
+            
+        Returns:
+            str: Normalized answer
+        """
+        # Remove whitespace, convert to lowercase
+        normalized = re.sub(r'\s+', ' ', answer).strip().lower()
+        
+        # Remove punctuation
+        normalized = re.sub(r'[.,;:!?()"\']', '', normalized)
+        
+        # For numerical answers, try to extract just the number
+        number_match = re.search(r'[-+]?\d*\.?\d+', normalized)
+        if number_match:
+            # If the answer contains a number, prioritize that
+            return number_match.group(0)
+        
+        return normalized
+    
+    def _structure_react_response(self, response):
+        """
+        Structure a response to follow the ReAct format if it doesn't already.
+        
+        Args:
+            response (str): The model's response
+            
+        Returns:
+            str: A structured response following ReAct format
+        """
+        # Start with thinking step
+        structured_response = "THINK: Let me think through this problem step by step.\n"
+        
+        # Extract what seems to be the reasoning part
+        lines = response.strip().split('\n')
+        reasoning_lines = []
+        conclusion_lines = []
+        
+        # Separate the response into reasoning and conclusion
+        in_conclusion = False
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+                
+            if any(keyword in line.lower() for keyword in ["therefore", "thus", "so the answer is", "the answer is", "finally"]):
+                in_conclusion = True
+                
+            if in_conclusion:
+                conclusion_lines.append(line)
+            else:
+                reasoning_lines.append(line)
+        
+        # Add reasoning to structured response
+        if reasoning_lines:
+            structured_response += "\n".join(reasoning_lines) + "\n\n"
+        
+        # Add action step
+        structured_response += "ACTION: I need to calculate the answer based on my reasoning.\n"
+        
+        # Add observation step (renamed from RESULT to OBSERVATION)
+        structured_response += "OBSERVATION: After calculating, I can see the result.\n\n"
+        
+        # Add final reasoning and answer
+        structured_response += "THINK: Based on my calculations and observations, I can determine the answer.\n"
+        if conclusion_lines:
+            structured_response += "\n".join(conclusion_lines)
+        else:
+            structured_response += "The answer is: " + response.split(".")[-1].strip()
+            
+        return structured_response
+    
+    def evaluate_all_questions(self, questions, model_names=None, prompt_types=None, max_questions=None, example_selection="default", custom_examples=None, examples_file=None):
+        """
+        Evaluate all questions with multiple models and prompt types.
         
         Args:
             questions (list): List of questions to evaluate
-            model_names (list, optional): List of model names to evaluate (default: all)
-            prompt_types (list, optional): List of prompt types to use (default: all)
-            max_questions (int, optional): Maximum number of questions to evaluate
+            model_names (list): List of model names to use
+            prompt_types (list): List of prompt types to use
+            max_questions (int): Maximum number of questions to evaluate
+            example_selection (str): Method to select examples for few-shot prompts
+            custom_examples (list): List of custom examples for few-shot prompts
+            examples_file (str): Path to JSON file containing examples for few-shot prompts
             
         Returns:
-            pd.DataFrame: Results dataframe
+            pandas.DataFrame: Evaluation results
         """
-        if max_questions and max_questions < len(questions):
-            questions = questions[:max_questions]
-            
-        if not model_names:
+        if model_names is None:
             model_names = list(self.models.keys())
             
-        if not prompt_types:
+        if prompt_types is None:
             prompt_types = list(self.prompt_types.keys())
+            
+        if max_questions is not None and max_questions > 0:
+            questions = questions[:max_questions]
+            
+        results = []
+        total_tasks = len(questions) * len(model_names) * len(prompt_types)
+        completed_tasks = 0
         
-        print(f"🔍 Evaluating {len(questions)} questions with {len(model_names)} models and {len(prompt_types)} prompt types")
+        print(f"🚀 Starting evaluation of {len(questions)} questions with {len(model_names)} models and {len(prompt_types)} prompt types...")
         
-        for q_id, question in enumerate(tqdm(questions, desc="Questions")):
-            for model_name in model_names:
-                if model_name not in self.models:
-                    print(f"⚠️ Model {model_name} not found in available models")
-                    continue
+        for model_name in model_names:
+            print(f"📊 Evaluating model: {model_name}")
+            model_info = self.models[model_name]
+            
+            for prompt_type in prompt_types:
+                print(f"🔍 Using prompt type: {prompt_type}")
                 
-                model_info = self.models[model_name]
-                
-                for prompt_type in prompt_types:
-                    print(f"\n📝 Evaluating Question {q_id+1} with {model_name} using {prompt_type} prompt")
+                for i, question in enumerate(questions):
+                    print(f"❓ Question {i+1}/{len(questions)}: {question[:50]}...")
                     
-                    # Check GPU memory before inference
-                    if torch.cuda.is_available():
-                        check_gpu_memory()
-                    
-                    # Evaluate question
-                    result = self.evaluate_single_question(question, model_info, prompt_type)
-                    
-                    # Add question ID to result
-                    result["question_id"] = q_id
-                    
-                    # Append to results
-                    for key, value in result.items():
-                        if key in self.results:
-                            self.results[key].append(value)
-                    
-                    # Clear memory after each evaluation
-                    clear_memory()
+                    try:
+                        # Pass the flexible few-shot parameters to evaluate_single_question
+                        result = self.evaluate_single_question(
+                            question, 
+                            model_info, 
+                            prompt_type=prompt_type,
+                            example_selection=example_selection,
+                            custom_examples=custom_examples,
+                            examples_file=examples_file
+                        )
+                        results.append(result)
+                        
+                        # Progress indicator
+                        completed_tasks += 1
+                        progress = completed_tasks / total_tasks * 100
+                        print(f"✅ Completed task {completed_tasks}/{total_tasks} ({progress:.1f}% complete)")
+                        
+                    except Exception as e:
+                        print(f"❌ Error evaluating question: {str(e)}")
+                        error_result = {
+                            "model_name": model_name,
+                            "prompt_type": prompt_type,
+                            "question": question,
+                            "answer": f"ERROR: {str(e)}",
+                            "token_count": 0,
+                            "elapsed_time": 0,
+                            "tokens_per_second": 0,
+                            "response_length": 0,
+                            "example_selection": example_selection if prompt_type.startswith("few_shot") else None
+                        }
+                        results.append(error_result)
         
-        # Convert results to dataframe
-        results_df = pd.DataFrame(self.results)
+        # Convert results to DataFrame
+        results_df = pd.DataFrame(results)
         
-        # Save results
-        timestamp = time.strftime("%Y%m%d_%H%M%S")
-        results_path = os.path.join(self.results_dir, f"evaluation_results_{timestamp}.csv")
-        results_df.to_csv(results_path, index=False)
-        print(f"✅ Results saved to {results_path}")
+        print(f"✨ Evaluation complete! Generated {len(results)} results.")
         
         return results_df
     

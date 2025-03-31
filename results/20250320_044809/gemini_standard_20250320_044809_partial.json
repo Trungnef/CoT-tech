@@ -1,0 +1,49 @@
+{
+    "gemini_standard": [
+        {
+            "question": "Có 50 quả cam ngon,\nChia đều cho 8 người em.\nMỗi người được mấy quả?\nCòn dư mấy quả cam?",
+            "answer": "**1. Phân tích bài toán:**\n\nBài toán yêu cầu chúng ta thực hiện phép chia để tìm số quả cam mỗi người nhận được và số quả cam còn dư.  Ta cần chia 50 quả cam cho 8 người.\n\n**2. Thực hiện phép chia:**\n\nTa thực hiện phép chia 50 cho 8:\n\n50 ÷ 8 = 6 (dư 2)\n\n**3. Giải thích kết quả:**\n\n* **Thương (6):**  Số 6 là số quả cam mỗi người nhận được.  Tức là mỗi người em được 6 quả cam.\n* **Số dư (2):** Số 2 là số quả cam còn dư sau khi chia đều cho 8 người.  Có 2 quả cam không thể chia đều.\n\n**4. Kết luận:**\n\nMỗi người được 6 quả cam và còn dư 2 quả cam.\n\n\n**Lời giải hoàn chỉnh:**\n\nCó 50 quả cam ngon, chia đều cho 8 người em.\n\nTa thực hiện phép chia: 50 ÷ 8 = 6 (dư 2)\n\nVậy mỗi người được 6 quả cam và còn dư 2 quả cam.",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 4.512273788452148,
+            "token_count": 38,
+            "response_length": 168
+        },
+        {
+            "question": "Cho hai phân số 8/11 và 5/14. Tìm tổng và tích của hai phân số này.",
+            "answer": "**1. Tìm tổng của hai phân số:**\n\n* **Bước 1: Tìm mẫu số chung:**  Để cộng hai phân số, ta cần tìm mẫu số chung của hai phân số đó.  Mẫu số chung nhỏ nhất của 11 và 14 là 154 (11 x 14 = 154).\n\n* **Bước 2: Quy đồng mẫu số:**  Ta quy đồng mẫu số của hai phân số:\n\n    * 8/11 = (8 x 14) / (11 x 14) = 112/154\n    * 5/14 = (5 x 11) / (14 x 11) = 55/154\n\n* **Bước 3: Cộng hai phân số:** Sau khi quy đồng, ta cộng tử số và giữ nguyên mẫu số:\n\n    * 112/154 + 55/154 = (112 + 55) / 154 = 167/154\n\n* **Kết luận:** Tổng của hai phân số 8/11 và 5/14 là 167/154.  Đây là phân số tối giản vì 167 và 154 không có ước số chung lớn hơn 1.\n\n\n**2. Tìm tích của hai phân số:**\n\n* **Bước 1: Nhân tử số với nhau:** Nhân tử số của phân số thứ nhất với tử số của phân số thứ hai: 8 x 5 = 40\n\n* **Bước 2: Nhân mẫu số với nhau:** Nhân mẫu số của phân số thứ nhất với mẫu số của phân số thứ hai: 11 x 14 = 154\n\n* **Bước 3: Viết kết quả:**  Kết quả là phân số có tử số là tích của các tử số và mẫu số là tích của các mẫu số: 40/154\n\n* **Bước 4: Rút gọn phân số (nếu cần):**  Ta có thể rút gọn phân số 40/154 bằng cách chia cả tử và mẫu cho ước số chung lớn nhất của chúng, trong trường hợp này là 2:\n\n    * 40/154 = (40 ÷ 2) / (154 ÷ 2) = 20/77\n\n* **Kết luận:** Tích của hai phân số 8/11 và 5/14 là 20/77. Đây là phân số tối giản.\n\n\n**Tóm tắt kết quả:**\n\n* **Tổng:** 167/154\n* **Tích:** 20/77",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 4.512273788452148,
+            "token_count": 33,
+            "response_length": 323
+        },
+        {
+            "question": "Một người nông dân có 29 con vật gồm gà và thỏ. Đếm tổng số chân thì thấy có 98 cái chân. Hỏi người nông dân có bao nhiêu con gà và bao nhiêu con thỏ?",
+            "answer": "**1. Phân tích bài toán:**\n\nBài toán cho ta hai thông tin chính:\n\n* Tổng số con vật: 29 con (gà + thỏ)\n* Tổng số chân: 98 chân\n\nMỗi con gà có 2 chân, mỗi con thỏ có 4 chân.  Ta cần tìm số lượng gà và thỏ dựa trên hai thông tin này.\n\n**2. Lập phương trình:**\n\nGọi:\n\n* x là số con gà\n* y là số con thỏ\n\nTa có hệ phương trình sau:\n\n* x + y = 29  (Tổng số con vật)\n* 2x + 4y = 98 (Tổng số chân)\n\n**3. Giải hệ phương trình:**\n\nPhương pháp giải hệ phương trình có nhiều cách, ta sẽ dùng phương pháp thế:\n\n* Từ phương trình thứ nhất, ta có: x = 29 - y\n\n* Thế x = 29 - y vào phương trình thứ hai:\n\n   2(29 - y) + 4y = 98\n\n   58 - 2y + 4y = 98\n\n   2y = 98 - 58\n\n   2y = 40\n\n   y = 20\n\n* Thế y = 20 vào phương trình x = 29 - y:\n\n   x = 29 - 20\n\n   x = 9\n\n**4. Kết luận:**\n\nVậy người nông dân có 9 con gà và 20 con thỏ.\n\n**5. Kiểm tra kết quả:**\n\n* Tổng số con vật: 9 + 20 = 29 (đúng)\n* Tổng số chân: (9 * 2) + (20 * 4) = 18 + 80 = 98 (đúng)\n\nKết quả chính xác.\n\n\n**Tóm tắt lời giải:**\n\nNgười nông dân có 9 con gà và 20 con thỏ.",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 4.512273788452148,
+            "token_count": 53,
+            "response_length": 256
+        },
+        {
+            "question": "Giải thích tại sao khi chia một số cho 3, nếu tổng các chữ số của số đó chia hết cho 3 thì số đó cũng chia hết cho 3?",
+            "answer": "**1. Giới thiệu:**\n\nBài toán dựa trên tính chất chia hết của hệ thập phân.  Chúng ta sẽ chứng minh rằng nếu tổng các chữ số của một số chia hết cho 3 thì số đó cũng chia hết cho 3.\n\n**2. Phân tích:**\n\nMọi số nguyên dương N đều có thể biểu diễn dưới dạng tổng các lũy thừa của 10 nhân với các chữ số của nó.  Ví dụ, số 1234 có thể viết là:\n\nN = 1 × 10³ + 2 × 10² + 3 × 10¹ + 4 × 10⁰\n\nTổng quát hơn, cho số N có n chữ số a₁, a₂, ..., aₙ (aᵢ là chữ số từ 0 đến 9), ta có:\n\nN = a₁ × 10ⁿ⁻¹ + a₂ × 10ⁿ⁻² + ... + aₙ₋₁ × 10¹ + aₙ × 10⁰\n\n**3. Chứng minh:**\n\nĐể chứng minh N chia hết cho 3 nếu tổng các chữ số của nó chia hết cho 3, ta cần chứng minh rằng:\n\nNếu (a₁ + a₂ + ... + aₙ) chia hết cho 3 thì N chia hết cho 3.\n\nTa biết rằng 10 ≡ 1 (mod 3).  Điều này có nghĩa là 10 chia cho 3 dư 1.  Do đó:\n\n* 10¹ ≡ 1 (mod 3)\n* 10² ≡ 1² ≡ 1 (mod 3)\n* 10³ ≡ 1³ ≡ 1 (mod 3)\n* ...\n* 10ᵏ ≡ 1ᵏ ≡ 1 (mod 3)  với mọi số nguyên dương k.\n\nThay vào biểu thức của N, ta có:\n\nN ≡ a₁ × 1 + a₂ × 1 + ... + aₙ₋₁ × 1 + aₙ × 1 (mod 3)\nN ≡ a₁ + a₂ + ... + aₙ (mod 3)\n\nĐiều này cho thấy N chia cho 3 có cùng số dư với tổng các chữ số của nó (a₁ + a₂ + ... + aₙ).\n\nVì vậy, nếu tổng các chữ số (a₁ + a₂ + ... + aₙ) chia hết cho 3 (tức là có số dư là 0 khi chia cho 3), thì N cũng chia hết cho 3 (cũng có số dư là 0 khi chia cho 3).\n\n**4. Kết luận:**\n\nChúng ta đã chứng minh được rằng nếu tổng các chữ số của một số chia hết cho 3, thì số đó cũng chia hết cho 3.  Điều này dựa trên tính chất đồng dư của lũy thừa của 10 modulo 3.  Tương tự, ta cũng có thể chứng minh tính chất chia hết cho 9.",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 4.512273788452148,
+            "token_count": 47,
+            "response_length": 412
+        },
+        {
+            "question": "Một hồ bơi có 2859 m³ nước. Có 3 ống nước chảy vào với lưu lượng 88 m³/giờ và 2 ống thoát với lưu lượng 35 m³/giờ. Hỏi sau bao lâu hồ sẽ đầy?",
+            "answer": "**1. Xác định lượng nước chảy vào và chảy ra mỗi giờ:**\n\n* **Lượng nước chảy vào:** Có 3 ống nước chảy vào, mỗi ống có lưu lượng 88 m³/giờ, tổng lượng nước chảy vào mỗi giờ là 3 x 88 m³/giờ = 264 m³/giờ.\n* **Lượng nước chảy ra:** Có 2 ống nước chảy ra, mỗi ống có lưu lượng 35 m³/giờ, tổng lượng nước chảy ra mỗi giờ là 2 x 35 m³/giờ = 70 m³/giờ.\n\n**2. Xác định lượng nước tăng lên trong hồ mỗi giờ:**\n\nLượng nước tăng lên trong hồ mỗi giờ là hiệu giữa lượng nước chảy vào và lượng nước chảy ra: 264 m³/giờ - 70 m³/giờ = 194 m³/giờ.\n\n**3. Tính thời gian để hồ đầy:**\n\nĐể hồ đầy, cần thêm 2859 m³ nước.  Vì mỗi giờ lượng nước tăng lên là 194 m³, thời gian cần thiết để hồ đầy là:\n\n2859 m³ / 194 m³/giờ = 14.74 giờ\n\n**4. Chuyển đổi thời gian sang giờ và phút (tùy chọn):**\n\n* Phần nguyên của kết quả (14) là số giờ.\n* Phần thập phân (0.74) cần được chuyển đổi sang phút: 0.74 giờ x 60 phút/giờ ≈ 44.4 phút.\n\nVậy, thời gian cần thiết để hồ đầy là xấp xỉ 14 giờ và 44 phút.\n\n\n**Kết luận:**\n\nSau khoảng 14 giờ 44 phút, hồ bơi sẽ đầy nước.  Lưu ý rằng đây là kết quả xấp xỉ do ta làm tròn phần phút.  Kết quả chính xác hơn là 14.74 giờ.",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 4.512273788452148,
+            "token_count": 51,
+            "response_length": 250
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "questions_json": "db/questions/problems.json",
+    "models": [
+        "llama",
+        "qwen",
+        "gemini"
+    ],
+    "prompt_types": [
+        "standard",
+        "cot",
+        "hybrid_cot"
+    ],
+    "batch_size": 10,
+    "max_questions": 20,
+    "results_dir": "results",
+    "use_4bit": true,
+    "max_workers": 3,
+    "resume": false,
+    "results_file": null
+}

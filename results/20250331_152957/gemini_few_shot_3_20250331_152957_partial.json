@@ -1,0 +1,54 @@
+{
+    "gemini_few_shot_3": [
+        {
+            "question": "Cho tam giác có ba cạnh lần lượt là 12cm, 12cm và 9cm. Tính diện tích tam giác.",
+            "response": "Bài toán này có thể giải bằng công thức Heron để tính diện tích tam giác khi biết độ dài ba cạnh.\n\n**1. Tính nửa chu vi (s):**\n\n* Chu vi (P) = 12cm + 12cm + 9cm = 33cm\n* Nửa chu vi (s) = P/2 = 33cm / 2 = 16.5cm\n\n**2. Áp dụng công thức Heron:**\n\nCông thức Heron:  Diện tích (A) = √[s(s-a)(s-b)(s-c)]\n\nTrong đó:\n* s là nửa chu vi\n* a, b, c là độ dài ba cạnh của tam giác\n\nThay các giá trị vào công thức:\n\n* A = √[16.5(16.5 - 12)(16.5 - 12)(16.5 - 9)]\n* A = √[16.5 × 4.5 × 4.5 × 7.5]\n* A = √[2477.8125]\n* A ≈ 50 cm²\n\n**Vậy diện tích của tam giác là xấp xỉ 50 cm²**",
+            "model": "gemini",
+            "prompt_type": "few_shot_3",
+            "elapsed_time": 4.351032781600952,
+            "token_count": 370,
+            "response_length": 134,
+            "timestamp": "20250331_153109"
+        },
+        {
+            "question": "Hòa tan 380g muối vào 1567ml nước được dung dịch 19.52%. Hỏi phải thêm bao nhiêu gam muối nữa để được dung dịch 24.52%?",
+            "response": "Lời giải:\n\nGọi khối lượng muối ban đầu là m1 = 380g.\nThể tích nước ban đầu là V1 = 1567 ml ≈ 1567 g (vì khối lượng riêng của nước gần bằng 1 g/ml).\nNồng độ dung dịch ban đầu là C1 = 19.52% = 0.1952.\n\nKhối lượng dung dịch ban đầu là:  M1 = m1 + V1 = 380g + 1567g = 1947g\n\nKhối lượng muối trong dung dịch ban đầu là: m_muối1 = m1 = 380g\n\nKhối lượng nước trong dung dịch ban đầu là: m_nước1 = V1 = 1567g\n\nGiả sử cần thêm x gam muối để đạt nồng độ 24.52% = 0.2452.\n\nKhối lượng muối sau khi thêm là: m2 = m1 + x = 380 + x (g)\nKhối lượng dung dịch sau khi thêm là: M2 = M1 + x = 1947 + x (g)\n\nNồng độ dung dịch sau khi thêm muối là:\nC2 = m2 / M2 = (380 + x) / (1947 + x) = 0.2452\n\nGiải phương trình trên để tìm x:\n0.2452 * (1947 + x) = 380 + x\n476.6364 + 0.2452x = 380 + x\n476.6364 - 380 = x - 0.2452x\n96.6364 = 0.7548x\nx = 96.6364 / 0.7548 \nx ≈ 128.01 g\n\nVậy cần thêm khoảng 128.01 gam muối nữa.",
+            "model": "gemini",
+            "prompt_type": "few_shot_3",
+            "elapsed_time": 4.351032781600952,
+            "token_count": 376,
+            "response_length": 216,
+            "timestamp": "20250331_153109"
+        },
+        {
+            "question": "Cho hình vuông có cạnh 12cm. Tính chu vi, diện tích và độ dài đường chéo của hình vuông.",
+            "response": "**1. Chu vi:**\n\n* Công thức tính chu vi hình vuông: Chu vi = 4 * cạnh\n* Thay cạnh = 12cm vào công thức: Chu vi = 4 * 12cm = 48cm\n\n**2. Diện tích:**\n\n* Công thức tính diện tích hình vuông: Diện tích = cạnh * cạnh\n* Thay cạnh = 12cm vào công thức: Diện tích = 12cm * 12cm = 144 cm²\n\n**3. Độ dài đường chéo:**\n\n* Định lý Pitago áp dụng cho tam giác vuông tạo bởi hai cạnh và đường chéo của hình vuông:  đường chéo² = cạnh² + cạnh² = 2 * cạnh²\n* Thay cạnh = 12cm vào công thức: đường chéo² = 2 * (12cm)² = 288 cm²\n* Đường chéo = √288 cm² ≈ 16.97 cm\n\n\n**Kết luận:**\n\nHình vuông có cạnh 12cm có:\n\n* Chu vi: 48cm\n* Diện tích: 144 cm²\n* Độ dài đường chéo: xấp xỉ 16.97 cm",
+            "model": "gemini",
+            "prompt_type": "few_shot_3",
+            "elapsed_time": 4.351032781600952,
+            "token_count": 371,
+            "response_length": 154,
+            "timestamp": "20250331_153109"
+        },
+        {
+            "question": "Kết quả của phép tính 30 + 4 × 7 là bao nhiêu?\nA. 63\nB. 58\nC. 55\nD. 840",
+            "response": "Theo quy tắc thứ tự thực hiện phép tính (nhân chia trước, cộng trừ sau), ta thực hiện phép nhân trước:\n\n4 × 7 = 28\n\nSau đó, ta thực hiện phép cộng:\n\n30 + 28 = 58\n\nVậy kết quả của phép tính 30 + 4 × 7 là 58.\n\n**Đáp án B**",
+            "model": "gemini",
+            "prompt_type": "few_shot_3",
+            "elapsed_time": 4.351032781600952,
+            "token_count": 373,
+            "response_length": 54,
+            "timestamp": "20250331_153109"
+        },
+        {
+            "question": "Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+            "response": "Lời giải:\n\nGọi x là số năm nữa thì tuổi cha gấp 3 lần tuổi con.\n\nSau x năm nữa:\n\n* Tuổi cha là 31 + x\n* Tuổi con là 10 + x\n\nTheo đề bài, sau x năm nữa tuổi cha gấp 3 lần tuổi con, ta có phương trình:\n\n31 + x = 3(10 + x)\n\nGiải phương trình:\n\n31 + x = 30 + 3x\n31 - 30 = 3x - x\n1 = 2x\nx = 1/2\n\nVì số năm phải là số nguyên, nên ta xem xét lại bài toán.  Phương trình trên cho kết quả là 0.5 năm, không hợp lý trong ngữ cảnh này.  Điều này có nghĩa là tuổi cha không bao giờ chính xác gấp 3 lần tuổi con.\n\nTuy nhiên, ta có thể tìm số năm gần nhất để tuổi cha xấp xỉ gấp 3 lần tuổi con.\n\nNếu x = 0 (hiện tại): 31/10 = 3.1\nNếu x = 1: (31+1)/(10+1) = 32/11 ≈ 2.9\nNếu x = 2: (31+2)/(10+2) = 33/12 ≈ 2.75\nNếu x = 3: (31+3)/(10+3) = 34/13 ≈ 2.6\n\nTa thấy rằng, càng nhiều năm trôi qua, tỉ lệ tuổi cha/tuổi con càng nhỏ hơn 3.  Không có một số năm nguyên nào làm cho tuổi cha gấp đúng 3 lần tuổi con.",
+            "model": "gemini",
+            "prompt_type": "few_shot_3",
+            "elapsed_time": 4.351032781600952,
+            "token_count": 378,
+            "response_length": 219,
+            "timestamp": "20250331_153109"
+        }
+    ]
+}

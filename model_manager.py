@@ -40,7 +40,7 @@ llama_model_path = os.getenv("LLAMA_MODEL_PATH")
 llama_tokenizer_path = os.getenv("LLAMA_TOKENIZER_PATH")
 
 # GPU configuration from environment variables
-MAX_GPU_MEMORY = float(os.getenv("MAX_GPU_MEMORY_GB", 47.5))
+MAX_GPU_MEMORY = float(os.getenv("MAX_GPU_MEMORY_GB", 140))
 SYSTEM_RESERVE = float(os.getenv("SYSTEM_RESERVE_MEMORY_GB", 2.5))
 CPU_OFFLOAD = float(os.getenv("CPU_OFFLOAD_GB", 24))
 
@@ -304,118 +304,174 @@ def load_gemini_model(model_name="gemini-1.5-flash"):
         return None
 
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=2, min=4, max=60))
-def generate_text_with_model(prompt, model_type, max_tokens=1024, temperature=0.7):
+def generate_text_with_model(model_name, prompt, max_tokens=1024, temperature=0.7):
     """
-    Generate text using specified model type with improved performance monitoring.
+    Generate text using specified model with improved performance monitoring.
     
     Args:
+        model_name: Type of model to use ('llama', 'qwen', 'gemini')
         prompt: Input prompt text
-        model_type: Type of model to use ('llama', 'qwen', 'gemini')
-        max_tokens: Maximum number of tokens to generate
+        max_tokens: Maximum tokens to generate
         temperature: Sampling temperature
         
     Returns:
-        str: Generated text
+        str: Generated text and performance statistics
     """
+    # Manage model cache to prevent OOM errors
+    manage_model_cache(max_models=2)
+    
+    # Check input validity
+    if not prompt or len(prompt.strip()) == 0:
+        return "[Error: Empty prompt]"
+    
+    model_name_lower = model_name.lower()
+    
+    # Validate model name
+    valid_models = ["llama", "qwen", "gemini"]
+    if model_name_lower not in valid_models:
+        return f"[Error: Unsupported model '{model_name}'. Valid options are: {valid_models}]"
+    
+    # Record start time
+    start_time = time.time()
+    
     try:
-        # Get model with optimized caching
-        tokenizer, model = get_thread_local_model(model_type)
-        
-        # Check if model failed to load
-        if model is None:
-            return f"[Error: Could not load {model_type} model. Please check GPU memory and model paths.]"
-        
-        # Optimize memory before generation
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            gc.collect()
-        
-        # Generate text with optimized settings
-        if model_type in ["llama", "qwen"]:
-            # Fix pad_token if needed
-            if tokenizer.pad_token is None or tokenizer.pad_token == tokenizer.eos_token:
-                # Set a different pad token if it's the same as eos_token
-                tokenizer.pad_token = "[PAD]"
-                # Make sure the pad_token_id is different from eos_token_id
-                if tokenizer.pad_token_id == tokenizer.eos_token_id:
-                    # Add the pad token to the vocabulary if needed
-                    if "[PAD]" not in tokenizer.get_vocab():
-                        tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-                        # Resize model embeddings to match new vocabulary size
-                        model.resize_token_embeddings(len(tokenizer))
+        if model_name_lower in ["llama", "qwen"]:
+            # Get model path from environment variables
+            if model_name_lower == "llama":
+                model_path = os.getenv("LLAMA_MODEL_PATH")
+                tokenizer_path = os.getenv("LLAMA_TOKENIZER_PATH")
+            else:  # qwen
+                model_path = os.getenv("QWEN_MODEL_PATH")
+                tokenizer_path = os.getenv("QWEN_TOKENIZER_PATH")
             
-            # Tokenize with explicit attention mask
-            encoding = tokenizer(
-                prompt, 
-                return_tensors="pt", 
-                padding=True, 
-                truncation=True,
-                return_attention_mask=True  # Explicitly request attention mask
-            )
+            # Check if paths are valid
+            if not model_path or not tokenizer_path:
+                return f"[Error: Path not found for {model_name} model in .env]"
             
-            # Move all tensors to correct device
-            inputs = {k: v.to(model.device) for k, v in encoding.items()}
+            # Use cache or load model
+            cache_key = f"{model_name_lower}_{model_path}"
             
-            # Ensure attention_mask is properly set
-            if 'attention_mask' not in inputs:
-                # Create attention mask manually if needed
-                inputs['attention_mask'] = torch.ones_like(inputs['input_ids'])
+            if cache_key in _MODEL_CACHE and cache_key in _TOKENIZER_CACHE:
+                tokenizer = _TOKENIZER_CACHE[cache_key]
+                model = _MODEL_CACHE[cache_key]
+                _LAST_USED[cache_key] = time.time()
+                print(f"👍 Using {model_name} model from cache")
+            else:
+                tokenizer, model = load_model_optimized(model_path, tokenizer_path, model_name_lower)
             
-            # Debug info
-            print(f"Input shape: {inputs['input_ids'].shape}, Attention mask shape: {inputs['attention_mask'].shape}")
+            # Check if model loaded successfully
+            if model is None:
+                return f"[Error: Failed to load {model_name} model]"
             
-            # Generate with optimized settings and explicit attention mask
-            with torch.no_grad():
-                outputs = model.generate(
-                    **inputs,
-                    max_new_tokens=max_tokens,
-                    temperature=temperature,
-                    do_sample=True,
-                    pad_token_id=tokenizer.pad_token_id,
-                    eos_token_id=tokenizer.eos_token_id,
-                    use_cache=True,  # Enable KV cache
-                    num_beams=1,     # Disable beam search for speed
-                    early_stopping=True
+            # Generate text with improved error handling
+            try:
+                # Calculate input length for statistics
+                input_ids = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
+                input_length = input_ids.size(1)
+                
+                # Generate with proper error handling and use the specified max_tokens
+                with torch.inference_mode():
+                    outputs = model.generate(
+                        input_ids,
+                        max_new_tokens=max_tokens,  # Use the parameter value passed in
+                        temperature=temperature,
+                        top_p=0.95,
+                        do_sample=True,
+                        pad_token_id=tokenizer.eos_token_id
+                    )
+                
+                # Decode only the new tokens
+                full_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
+                prompt_decoded = tokenizer.decode(input_ids[0], skip_special_tokens=True)
+                
+                # Get only the generated part by removing the prompt
+                if full_output.startswith(prompt_decoded):
+                    response = full_output[len(prompt_decoded):]
+                else:
+                    response = full_output
+                
+                # Measure performance
+                end_time = time.time()
+                output_length = len(response.split())
+                monitor_generation_stats(model_name, start_time, end_time, input_length, output_length)
+                
+                return response.strip()
+                
+            except RuntimeError as e:
+                if "out of memory" in str(e).lower():
+                    print(f"❌ GPU OUT OF MEMORY: {e}")
+                    # Attempt to recover by clearing memory
+                    clear_memory()
+                    return f"[Error: GPU out of memory when generating with {model_name}. Try a smaller max_tokens value.]"
+                else:
+                    print(f"❌ Runtime error: {e}")
+                    return f"[Error generating with {model_name}: {str(e)}]"
+                    
+            except Exception as e:
+                print(f"❌ Generation error: {e}")
+                return f"[Error generating with {model_name}: {str(e)}]"
+                
+        elif model_name_lower == "gemini":
+            # Gemini API-based generation
+            try:
+                # Get API key from environment variables
+                api_key = os.getenv("GEMINI_API_KEY")
+                
+                if not api_key:
+                    return "[Error: GEMINI_API_KEY not found in environment variables]"
+                
+                # Ensure API is configured
+                genai.configure(api_key=api_key)
+                
+                # Use gemini-1.5-flash by default for better performance/cost ratio
+                model = genai.GenerativeModel('gemini-1.5-flash')
+                
+                # Calculate input length for statistics
+                input_length = len(prompt.split())
+                
+                # Generate content with proper error handling and use the specified max_tokens
+                response = model.generate_content(
+                    prompt,
+                    generation_config={
+                        "temperature": temperature,
+                        "max_output_tokens": max_tokens,  # Use the parameter value passed in
+                        "top_p": 0.95
+                    }
                 )
-            
-            # Decode output properly
-            # First get the length of the input
-            input_length = inputs['input_ids'].size(1)
-            # Then decode only the new tokens (skip the prompt)
-            generated_text = tokenizer.decode(outputs[0][input_length:], skip_special_tokens=True)
-            
-            # If the generated text is empty or too short, return the full output as fallback
-            if not generated_text or len(generated_text.strip()) < 10:
-                generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-                # Remove the prompt part if it exists in the output
-                prompt_decoded = tokenizer.decode(inputs['input_ids'][0], skip_special_tokens=True)
-                if generated_text.startswith(prompt_decoded):
-                    generated_text = generated_text[len(prompt_decoded):]
-            
-            response = generated_text
-            
-        elif model_type == "gemini":
-            # Generate with Gemini API
-            response = model.generate_content(
-                prompt,
-                generation_config={
-                    "max_output_tokens": max_tokens,
-                    "temperature": temperature
-                }
-            ).text
-        
-        # Clear memory after generation
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            gc.collect()
-        
-        return response.strip()
-        
+                
+                # Ensure response is valid
+                if hasattr(response, 'text') and response.text:
+                    result = response.text
+                elif hasattr(response, 'parts'):
+                    # Fallback for some API versions
+                    result = ''.join(part.text for part in response.parts)
+                else:
+                    return "[Error: Gemini API returned an empty response]"
+                
+                # Measure performance
+                end_time = time.time()
+                output_length = len(result.split())
+                monitor_generation_stats("gemini", start_time, end_time, input_length, output_length)
+                
+                return result.strip()
+                
+            except Exception as e:
+                print(f"❌ Gemini API error: {e}")
+                
+                # Specific error handling for common Gemini API issues
+                error_str = str(e).lower()
+                if any(term in error_str for term in ["quota", "rate limit", "429"]):
+                    return "[Error: Gemini API quota exceeded or rate limited. Please try again later.]"
+                elif any(term in error_str for term in ["500", "503", "internal"]):
+                    return "[Error: Gemini API server error. Please try again later.]"
+                else:
+                    return f"[Error with Gemini API: {str(e)}]"
+    
     except Exception as e:
-        print(f"❌ Error generating text: {e}")
+        print(f"❌ Unexpected error: {e}")
         import traceback
         traceback.print_exc()
-        return f"[Error: Could not generate response: {str(e)}]"
+        return f"[Error: {str(e)}]"
 
 def parallel_generate(prompts, model_type, max_workers=3):
     """
@@ -840,174 +896,4 @@ def monitor_generation_stats(model_name, start_time, end_time, input_length, out
     print(f"  - Output length: {output_length} tokens")
     print(f"  - Speed: {tokens_per_second:.2f} tokens/second")
     
-    return stats
-
-# Cải tiến hàm generate_text_with_model
-def generate_text_with_model(model_name, prompt, max_tokens=1024, temperature=0.7):
-    """
-    Generate text using specified model with improved performance monitoring.
-    
-    Args:
-        model_name: Type of model to use ('llama', 'qwen', 'gemini')
-        prompt: Input prompt text
-        max_tokens: Maximum tokens to generate
-        temperature: Sampling temperature
-        
-    Returns:
-        str: Generated text and performance statistics
-    """
-    # Manage model cache to prevent OOM errors
-    manage_model_cache(max_models=2)
-    
-    # Check input validity
-    if not prompt or len(prompt.strip()) == 0:
-        return "[Error: Empty prompt]"
-    
-    model_name_lower = model_name.lower()
-    
-    # Validate model name
-    valid_models = ["llama", "qwen", "gemini"]
-    if model_name_lower not in valid_models:
-        return f"[Error: Unsupported model '{model_name}'. Valid options are: {valid_models}]"
-    
-    # Record start time
-    start_time = time.time()
-    
-    try:
-        if model_name_lower in ["llama", "qwen"]:
-            # Get model path from environment variables
-            if model_name_lower == "llama":
-                model_path = os.getenv("LLAMA_MODEL_PATH")
-                tokenizer_path = os.getenv("LLAMA_TOKENIZER_PATH")
-            else:  # qwen
-                model_path = os.getenv("QWEN_MODEL_PATH")
-                tokenizer_path = os.getenv("QWEN_TOKENIZER_PATH")
-            
-            # Check if paths are valid
-            if not model_path or not tokenizer_path:
-                return f"[Error: Path not found for {model_name} model in .env]"
-            
-            # Use cache or load model
-            cache_key = f"{model_name_lower}_{model_path}"
-            
-            if cache_key in _MODEL_CACHE and cache_key in _TOKENIZER_CACHE:
-                tokenizer = _TOKENIZER_CACHE[cache_key]
-                model = _MODEL_CACHE[cache_key]
-                _LAST_USED[cache_key] = time.time()
-                print(f"👍 Using {model_name} model from cache")
-            else:
-                tokenizer, model = load_model_optimized(model_path, tokenizer_path, model_name_lower)
-            
-            # Check if model loaded successfully
-            if model is None:
-                return f"[Error: Failed to load {model_name} model]"
-            
-            # Generate text with improved error handling
-            try:
-                # Calculate input length for statistics
-                input_ids = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
-                input_length = input_ids.size(1)
-                
-                # Generate with proper error handling
-                with torch.inference_mode():
-                    outputs = model.generate(
-                        input_ids,
-                        max_new_tokens=max_tokens,
-                        temperature=temperature,
-                        top_p=0.95,
-                        do_sample=True,
-                        pad_token_id=tokenizer.eos_token_id
-                    )
-                
-                # Decode only the new tokens
-                full_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
-                prompt_decoded = tokenizer.decode(input_ids[0], skip_special_tokens=True)
-                
-                # Get only the generated part by removing the prompt
-                if full_output.startswith(prompt_decoded):
-                    response = full_output[len(prompt_decoded):]
-                else:
-                    response = full_output
-                
-                # Measure performance
-                end_time = time.time()
-                output_length = len(response.split())
-                monitor_generation_stats(model_name, start_time, end_time, input_length, output_length)
-                
-                return response.strip()
-                
-            except RuntimeError as e:
-                if "out of memory" in str(e).lower():
-                    print(f"❌ GPU OUT OF MEMORY: {e}")
-                    # Attempt to recover by clearing memory
-                    clear_memory()
-                    return f"[Error: GPU out of memory when generating with {model_name}. Try a smaller max_tokens value.]"
-                else:
-                    print(f"❌ Runtime error: {e}")
-                    return f"[Error generating with {model_name}: {str(e)}]"
-                    
-            except Exception as e:
-                print(f"❌ Generation error: {e}")
-                return f"[Error generating with {model_name}: {str(e)}]"
-                
-        elif model_name_lower == "gemini":
-            # Gemini API-based generation
-            try:
-                # Get API key from environment variables
-                api_key = os.getenv("GEMINI_API_KEY")
-                
-                if not api_key:
-                    return "[Error: GEMINI_API_KEY not found in environment variables]"
-                
-                # Ensure API is configured
-                genai.configure(api_key=api_key)
-                
-                # Use gemini-1.5-flash by default for better performance/cost ratio
-                model = genai.GenerativeModel('gemini-1.5-flash')
-                
-                # Calculate input length for statistics
-                input_length = len(prompt.split())
-                
-                # Generate content with proper error handling
-                response = model.generate_content(
-                    prompt,
-                    generation_config={
-                        "temperature": temperature,
-                        "max_output_tokens": max_tokens,
-                        "top_p": 0.95
-                    }
-                )
-                
-                # Ensure response is valid
-                if hasattr(response, 'text') and response.text:
-                    result = response.text
-                elif hasattr(response, 'parts'):
-                    # Fallback for some API versions
-                    result = ''.join(part.text for part in response.parts)
-                else:
-                    return "[Error: Gemini API returned an empty response]"
-                
-                # Measure performance
-                end_time = time.time()
-                output_length = len(result.split())
-                monitor_generation_stats("gemini", start_time, end_time, input_length, output_length)
-                
-                return result.strip()
-                
-            except Exception as e:
-                print(f"❌ Gemini API error: {e}")
-                
-                # Specific error handling for common Gemini API issues
-                error_str = str(e).lower()
-                if any(term in error_str for term in ["quota", "rate limit", "429"]):
-                    return "[Error: Gemini API quota exceeded or rate limited. Please try again later.]"
-                elif any(term in error_str for term in ["500", "503", "internal"]):
-                    return "[Error: Gemini API server error. Please try again later.]"
-                else:
-                    return f"[Error with Gemini API: {str(e)}]"
-    
-    except Exception as e:
-        print(f"❌ Unexpected error: {e}")
-        import traceback
-        traceback.print_exc()
-        return f"[Error: {str(e)}]" 
+    return stats 

@@ -1,0 +1,24 @@
+{
+    "gemini_standard": [
+        {
+            "question": "Có 181 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+            "response": "**1. Phân tích bài toán:**\n\nBài toán cho biết tổng số kẹo là 181 viên và mối quan hệ giữa số kẹo của người thứ nhất, thứ hai và thứ ba. Ta cần tìm số kẹo mỗi người nhận được.  Vì số kẹo là số nguyên, nên ta cần tìm cách biểu diễn số kẹo của mỗi người theo số kẹo của người thứ nhất, sau đó giải phương trình để tìm số kẹo của mỗi người.\n\n**2. Lập phương trình:**\n\n* Gọi x là số kẹo người thứ nhất nhận được.\n* Người thứ hai nhận được gấp 3 lần người thứ nhất, tức là 3x viên kẹo.\n* Người thứ ba nhận được gấp 3 lần người thứ hai, tức là 3 * (3x) = 9x viên kẹo.\n* Ta chưa biết số kẹo của người thứ tư và thứ năm.  Gọi y là số kẹo người thứ tư nhận được và z là số kẹo người thứ năm nhận được.\n\nTổng số kẹo là 181, nên ta có phương trình:\n\nx + 3x + 9x + y + z = 181\n\nRút gọn: 13x + y + z = 181\n\n**3. Giải phương trình:**\n\nPhương trình trên có 3 ẩn (x, y, z),  và chỉ có 1 phương trình.  Điều này có nghĩa là có vô số nghiệm.  Tuy nhiên, bài toán ngầm hiểu rằng số kẹo chia cho mỗi người phải là số nguyên dương và hợp lý.  Ta cần tìm một cách phân phối số kẹo sao cho thỏa mãn điều kiện này.\n\nĐể đơn giản hóa, ta giả sử số kẹo của người thứ tư và thứ năm bằng nhau, tức là y = z.  Phương trình trở thành:\n\n13x + 2y = 181\n\nGiờ ta cần tìm các giá trị nguyên dương của x và y thỏa mãn phương trình này.  Ta có thể thử các giá trị của x:\n\n* Nếu x = 1, 13(1) + 2y = 181 => 2y = 168 => y = 84.  Đây là một nghiệm hợp lệ.\n* Nếu x = 2, 13(2) + 2y = 181 => 2y = 155 (không chia hết cho 2, không hợp lệ).\n* Nếu x = 10, 13(10) + 2y = 181 => 2y = 51 (không chia hết cho 2, không hợp lệ).\n* Nếu x > 13, thì 13x > 181,  không thể tìm được y dương.\n\n\n**4. Kết luận:**\n\nVới x = 1, y = 84, ta có:\n\n* Người thứ nhất: 1 viên kẹo\n* Người thứ hai: 3 viên kẹo\n* Người thứ ba: 9 viên kẹo\n* Người thứ tư: 84 viên kẹo\n* Người thứ năm: 84 viên kẹo\n\nTổng: 1 + 3 + 9 + 84 + 84 = 181 viên kẹo.\n\n**Lưu ý:**  Vì bài toán không cung cấp đủ thông tin để xác định số kẹo của người thứ tư và thứ năm một cách chính xác, nên giải pháp trên dựa trên giả định số kẹo của hai người này bằng nhau.  Có thể có các cách phân phối khác nếu có thêm thông tin hoặc điều kiện khác.",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 4.689165949821472,
+            "token_count": 53,
+            "response_length": 521,
+            "timestamp": "20250331_155805"
+        },
+        {
+            "question": "Một cửa hàng bán sách với giá 5093đ một cái. Nếu mua 24 cái, sau đó được giảm 26%, hỏi phải trả bao nhiêu tiền?",
+            "response": "**1. Tính tổng giá tiền ban đầu:**\n\n* Giá tiền một quyển sách: 5093 đồng\n* Số lượng sách mua: 24 quyển\n* Tổng giá tiền ban đầu (trước khi giảm giá): 5093 đồng/quyển * 24 quyển = 122232 đồng\n\n**2. Tính mức giảm giá:**\n\n* Mức giảm giá: 26%\n* Số tiền giảm giá: 122232 đồng * 26% = 31780,00 đồng (làm tròn đến đơn vị đồng)\n\n**3. Tính giá tiền sau khi giảm giá:**\n\n* Giá tiền ban đầu: 122232 đồng\n* Số tiền giảm giá: 31780 đồng\n* Giá tiền phải trả sau khi giảm giá: 122232 đồng - 31780 đồng = 90452 đồng\n\n**Kết luận:**\n\nPhải trả 90452 đồng sau khi mua 24 quyển sách và được giảm giá 26%.",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 4.689165949821472,
+            "token_count": 42,
+            "response_length": 124,
+            "timestamp": "20250331_155805"
+        }
+    ]
+}

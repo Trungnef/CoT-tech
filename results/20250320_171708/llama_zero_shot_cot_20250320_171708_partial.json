@@ -1,0 +1,50 @@
+{
+    "llama_standard": [
+        {
+            "question": "Một cửa hàng bán thước với giá 6309đ một quyển. Nếu mua 43 quyển, sau đó được giảm 21%, hỏi phải trả bao nhiêu tiền?",
+            "response": "1. Tìm số tiền phải trả trước khi giảm giá:\n\nSố tiền phải trả trước khi giảm giá = số quyển thước x giá một quyển\n\n= 43 x 6309\n\n= 271 187 (đồng)\n\n2. Tìm số tiền được giảm:\n\nSố tiền được giảm = 21% số tiền phải trả trước khi giảm giá\n\n= 21% x 271 187\n\n= (21/100) x 271 187\n\n= 56 899 (đồng)\n\n3. Tìm số tiền phải trả sau khi giảm giá:\n\nSố tiền phải trả sau khi giảm giá = số tiền phải trả trước khi giảm giá - số tiền được giảm\n\n= 271 187 - 56 899\n\n= 214 288 (đồng)\n\nVậy số tiền phải trả sau khi giảm giá là 214 288 đồng.",
+            "model": "llama",
+            "prompt_type": "standard",
+            "elapsed_time": 24.585808038711548,
+            "token_count": 42,
+            "response_length": 123,
+            "timestamp": "20250320_173834"
+        }
+    ],
+    "llama_cot": [
+        {
+            "question": "Một cửa hàng bán thước với giá 6309đ một quyển. Nếu mua 43 quyển, sau đó được giảm 21%, hỏi phải trả bao nhiêu tiền?",
+            "response": "Tôi cần tìm hiểu giá của một quyển thước.\n3) Sau đó, tôi sẽ tính toán tổng chi phí cho số lượng quyển thước cần mua.\n4) Cuối cùng, tôi sẽ thực hiện việc giảm giá để tìm ra số tiền cần trả sau khi giảm giá.\n\nGiải:\nBước 1: Xác định giá của một quyển thước.\nGiá của một quyển thước là 6309đ.\n\nBước 2: Tính toán tổng chi phí cho số lượng quyển thước cần mua.\nSố lượng quyển thước cần mua là 43.\nTổng chi phí = Số lượng quyển thước * Giá một quyển thước = 43 * 6309 = 271287đ.\n\nBước 3: Tính toán số tiền giảm giá.\nSố tiền giảm giá = 21% * Tổng chi phí = 0.21 * 271287 = 56980.47đ.\n\nBước 4: Tính toán số tiền cần trả sau khi giảm giá.\nSố tiền cần trả = Tổng chi phí - Số tiền giảm giá = 271287 - 56980.47 = 214306.53đ.\n\nKết luận: Số tiền cần trả sau khi giảm giá là 214306.53đ. \n\nVậy đáp án là 214306.53.",
+            "model": "llama",
+            "prompt_type": "cot",
+            "elapsed_time": 33.14124512672424,
+            "token_count": 93,
+            "response_length": 177,
+            "timestamp": "20250320_173907"
+        }
+    ],
+    "llama_hybrid_cot": [
+        {
+            "question": "Một cửa hàng bán thước với giá 6309đ một quyển. Nếu mua 43 quyển, sau đó được giảm 21%, hỏi phải trả bao nhiêu tiền?",
+            "response": "Tôi sẽ giải bài toán bằng cách chia nhỏ nó thành các bước đơn giản hơn. \n\nBước 1: Tính toán giá ban đầu của 43 quyển thước.\n\nGiá của một quyển thước là 6309đ, vì vậy giá của 43 quyển sẽ là:\n\nGiá ban đầu = 6309 * 43 = 271287 đồng\n\nBước 2: Tính toán mức giảm giá.\n\nMức giảm giá là 21%, vì vậy số tiền giảm sẽ là:\n\nSố tiền giảm = 271287 * 21/100 = 56980,07 đồng\n\nBước 3: Tính toán giá cuối cùng sau khi giảm.\n\nGiá cuối cùng = Giá ban đầu - Số tiền giảm\n= 271287 - 56980,07\n= 214306,93 đồng\n\nVậy, giá cuối cùng sau khi giảm là 214306,93 đồng. \n\nTôi hy vọng lời giải này chính xác và hữu ích! \n\nCâu trả lời cuối cùng là 214307 đồng.",
+            "model": "llama",
+            "prompt_type": "hybrid_cot",
+            "elapsed_time": 24.450622081756592,
+            "token_count": 151,
+            "response_length": 138,
+            "timestamp": "20250320_173932"
+        }
+    ],
+    "llama_zero_shot_cot": [
+        {
+            "question": "Một cửa hàng bán thước với giá 6309đ một quyển. Nếu mua 43 quyển, sau đó được giảm 21%, hỏi phải trả bao nhiêu tiền?",
+            "response": "Bước 1: Tính giá gốc của 43 quyển vở: 43 * 6309 = 271287đ\nBước 2: Tính số tiền được giảm: 271287 * 21/100 = 56980.47đ\nBước 3: Tính số tiền phải trả: 271287 - 56980.47 = 214306.53đ\n\nVậy phải trả 214306.53đ. \n\nĐáp án cần tìm là 214306.53. \n\nPhép tính cần thực hiện để tìm ra đáp án là: \n\nGiá của 43 quyển vở là 43 * 6309 = 271287 (đồng)\n\nSố tiền được giảm là 271287 * 21/100 = 56980.47 (đồng)\n\nSố tiền phải trả là 271287 - 56980.47 = 214306.53 (đồng) \n\nVậy đáp án là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nGiá của 43 quyển vở là 271287 (đồng)\n\nSố tiền được giảm là 56980.47 (đồng)\n\nSố tiền phải trả là 214306.53 (đồng) \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cần tìm là 214306.53. \n\nĐáp án cuối cùng là 214306.53. \n\nVậy đáp án cuối cùng là 214306.53. \n\nĐáp án cuối cùng là 214306.53.",
+            "model": "llama",
+            "prompt_type": "zero_shot_cot",
+            "elapsed_time": 113.39551615715027,
+            "token_count": 31,
+            "response_length": 490,
+            "timestamp": "20250320_174125"
+        }
+    ]
+}

@@ -1,0 +1,933 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Comprehensive LLM Evaluation Report</title>
+            <style>
+                body { 
+                    font-family: 'Segoe UI', Arial, sans-serif; 
+                    margin: 0;
+                    padding: 0;
+                    color: #333;
+                    background-color: #f9f9f9;
+                }
+                .container { 
+                    max-width: 1200px; 
+                    margin: 0 auto; 
+                    padding: 20px;
+                }
+                header {
+                    background-color: #2c3e50;
+                    color: white;
+                    padding: 20px 0;
+                    text-align: center;
+                    margin-bottom: 30px;
+                }
+                h1, h2, h3, h4 { 
+                    color: #2c3e50; 
+                    margin-top: 30px;
+                }
+                header h1 {
+                    color: white;
+                    margin: 0;
+                }
+                .section {
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    padding: 25px;
+                    margin-bottom: 30px;
+                }
+                .plot-container { 
+                    margin: 20px 0; 
+                    text-align: center;
+                }
+                .plot-container img {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 5px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                .grid-2 {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    grid-gap: 20px;
+                }
+                @media (max-width: 768px) {
+                    .grid-2 {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                table { 
+                    border-collapse: collapse; 
+                    width: 100%; 
+                    margin: 20px 0; 
+                    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+                }
+                th, td { 
+                    border: 1px solid #ddd; 
+                    padding: 12px; 
+                    text-align: left; 
+                }
+                th { 
+                    background-color: #34495e; 
+                    color: white;
+                }
+                tr:nth-child(even) { 
+                    background-color: #f2f2f2; 
+                }
+                tr:hover {
+                    background-color: #e9e9e9;
+                }
+                .metrics { 
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                    grid-gap: 20px;
+                    margin: 30px 0;
+                }
+                .metric-card { 
+                    border: 1px solid #ddd; 
+                    border-radius: 8px;
+                    padding: 20px; 
+                    text-align: center;
+                    background-color: white;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    transition: transform 0.2s ease;
+                }
+                .metric-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+                .metric-card h3 { 
+                    margin-top: 0;
+                    color: #34495e;
+                    font-size: 16px;
+                }
+                .metric-card p { 
+                    font-size: 28px;
+                    font-weight: bold;
+                    margin: 10px 0 0 0;
+                    color: #3498db;
+                }
+                .best {
+                    background-color: #dff0d8;
+                    border-color: #d6e9c6;
+                }
+                .best h3 {
+                    color: #3c763d;
+                }
+                .best p {
+                    color: #2ecc71;
+                }
+                .summary-box {
+                    background-color: #f8f9fa;
+                    border-left: 4px solid #3498db;
+                    padding: 15px;
+                    margin: 20px 0;
+                    border-radius: 0 5px 5px 0;
+                }
+                .findings {
+                    margin: 30px 0;
+                }
+                .finding-item {
+                    margin-bottom: 15px;
+                    padding-bottom: 15px;
+                    border-bottom: 1px solid #eee;
+                }
+                .chart-title {
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    color: #2c3e50;
+                }
+                .chart-description {
+                    color: #7f8c8d;
+                    margin-bottom: 20px;
+                }
+                footer {
+                    background-color: #2c3e50;
+                    color: white;
+                    text-align: center;
+                    padding: 20px 0;
+                    margin-top: 50px;
+                }
+            
+        .model-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .model-card h3 {
+            color: #2c3e50;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .metric-item {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .metric-label {
+            display: block;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        
+        .metric-value {
+            display: block;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .prompt-efficiency-chart {
+            margin-top: 15px;
+        }
+        
+        .prompt-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .prompt-bar-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .prompt-label {
+            width: 120px;
+            text-align: right;
+            padding-right: 10px;
+            font-size: 0.9em;
+        }
+        
+        .prompt-bar {
+            background-color: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            text-align: right;
+            min-width: 40px;
+        }
+        
+        .stability-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .stability-table th,
+        .stability-table td {
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .stability-table th {
+            background-color: #34495e;
+            color: white;
+        }
+        
+        .model-metrics {
+            margin-top: 25px;
+        }
+        
+        .analysis-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .analysis-summary h3 {
+            color: #2c3e50;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .analysis-summary ul {
+            padding-left: 20px;
+        }
+        
+        .analysis-summary li {
+            margin-bottom: 10px;
+        }
+        
+        .analysis-summary strong {
+            color: #3498db;
+        }
+        
+</style>
+        </head>
+        <body>
+            <header>
+                <h1>Comprehensive LLM Evaluation Report</h1>
+                <p>Generated on: 2025-03-20 05:27:54</p>
+            </header>
+            
+            <div class="container">
+                <div class="section">
+                    <h2>Executive Summary</h2>
+                    <div class="summary-box">
+                        <p>This report presents a comprehensive evaluation of 3 language models 
+                        (gemini, llama, qwen) across 1 different prompt types 
+                        (standard). A total of 15 queries were processed
+                        to evaluate the performance of these models.</p>
+                        
+                        <p><strong>Key Findings:</strong></p>
+                        <ul>
+                            <li><strong>gemini</strong> demonstrated the fastest average response time.</li>
+                            <li><strong>gemini</strong> showed the lowest error rate.</li>
+                            <li><strong>qwen</strong> generated the most detailed responses (longest average length).</li>
+                            <li>The <strong>standard</strong> prompt type generally produced the best results across models.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="metrics">
+                        <div class="metric-card">
+                            <h3>Models Evaluated</h3>
+                            <p>3</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Prompt Types</h3>
+                            <p>1</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Total Queries</h3>
+                            <p>15</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Overall Error Rate</h3>
+                            <p>0.00%</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Avg Response Time</h3>
+                            <p>44.63s</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Avg Response Length</h3>
+                            <p>1464</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>Model Comparison</h2>
+                    <table>
+                        <tr>
+                            <th>Model</th>
+                            <th>Avg. Response Time</th>
+                            <th>Error Rate</th>
+                            <th>Avg. Response Length</th>
+                            <th>Tokens Per Second</th>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>gemini</strong></td>
+                            <td>4.51s</td>
+                            <td>0.00%</td>
+                            <td>1156</td>
+                            <td>256.28</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>llama</strong></td>
+                            <td>24.81s</td>
+                            <td>0.00%</td>
+                            <td>625</td>
+                            <td>25.20</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>qwen</strong></td>
+                            <td>104.58s</td>
+                            <td>0.00%</td>
+                            <td>2610</td>
+                            <td>24.96</td>
+                        </tr>
+                        
+                    </table>
+                    
+                    <h3>Prompt Type Performance</h3>
+                    <table>
+                        <tr>
+                            <th>Prompt Type</th>
+                            <th>Avg. Response Time</th>
+                            <th>Error Rate</th>
+                            <th>Avg. Response Length</th>
+                            <th>Tokens Per Second</th>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>standard</strong></td>
+                            <td>44.63s</td>
+                            <td>0.00%</td>
+                            <td>1464</td>
+                            <td>102.15</td>
+                        </tr>
+                        
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h2>Performance Visualizations</h2>
+                    
+                    <div class="grid-2">
+                        <div class="plot-container">
+                            <div class="chart-title">Response Time by Model and Prompt Type</div>
+                            <div class="chart-description">This boxplot shows the distribution of response times across different models and prompt types.</div>
+                            <img src="plots/response_time_distribution.png" alt="Response Time Distribution">
+                        </div>
+                        
+                        <div class="plot-container">
+                            <div class="chart-title">Error Rate Heatmap</div>
+                            <div class="chart-description">The heatmap displays error rates (%) for each combination of model and prompt type.</div>
+                            <img src="plots/error_rate_heatmap.png" alt="Error Rate Heatmap">
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="plot-container">
+                            <div class="chart-title">Response Length Distribution</div>
+                            <div class="chart-description">This boxplot compares the response length distribution across models and prompt types.</div>
+                            <img src="plots/response_length_distribution.png" alt="Response Length Distribution">
+                        </div>
+                        
+                        <div class="plot-container">
+                            <div class="chart-title">Response Time vs Response Length</div>
+                            <div class="chart-description">This scatter plot shows the relationship between response length and processing time.</div>
+                            <img src="plots/response_time_vs_length.png" alt="Response Time vs Length Scatter Plot">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>Advanced Analysis</h2>
+                    
+                    <div class="grid-2">
+                        <div class="plot-container">
+                            <div class="chart-title">Processing Speed Comparison</div>
+                            <div class="chart-description">Bar chart comparing tokens processed per second for each model and prompt type.</div>
+                            <img src="plots/tokens_per_second.png" alt="Tokens Per Second">
+                        </div>
+                        
+                        <div class="plot-container">
+                            <div class="chart-title">Response Time Distributions (Violin Plot)</div>
+                            <div class="chart-description">This violin plot shows the density distribution of response times.</div>
+                            <img src="plots/response_time_violin.png" alt="Response Time Violin Plot">
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="plot-container">
+                            <div class="chart-title">Model Performance Radar Chart</div>
+                            <div class="chart-description">This radar chart provides a multi-dimensional comparison of model performance across key metrics.</div>
+                            <img src="plots/model_performance_radar.png" alt="Model Performance Radar Chart">
+                        </div>
+                        
+                        <div class="plot-container">
+                            <div class="chart-title">Response Time Trends Across Prompt Types</div>
+                            <div class="chart-description">Line chart showing how response times vary across different prompt types for each model.</div>
+                            <img src="plots/response_time_trend.png" alt="Response Time Trend">
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="plot-container">
+                            <div class="chart-title">Response Length Heatmap</div>
+                            <div class="chart-description">Heatmap showing the average response length for each model and prompt type combination.</div>
+                            <img src="plots/response_length_heatmap.png" alt="Response Length Heatmap">
+                        </div>
+                        
+                        <div class="plot-container">
+                            <div class="chart-title">Confusion Matrix Example</div>
+                            <div class="chart-description">Confusion matrix representing the error performance for one of the models.</div>
+                            <img src="plots/confusion_matrix_gemini.png" alt="Confusion Matrix">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>Key Findings & Insights</h2>
+                    
+                    <div class="findings">
+                        <div class="finding-item">
+                            <h3>Model Performance Comparison</h3>
+                            <p>Based on the evaluation results, we observe that <strong>gemini</strong> 
+                            demonstrates the lowest error rate of all models tested. This suggests it has the most robust
+                            understanding and processing capabilities for the given task types.</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <h3>Prompt Engineering Impact</h3>
+                            <p>The <strong>standard</strong> prompt strategy consistently yielded the best 
+                            results across models, suggesting that this approach to query formulation is most effective for 
+                            extracting optimal performance from these LLMs.</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <h3>Efficiency vs. Quality Tradeoff</h3>
+                            <p>We observe an interesting relationship between response time and response quality. While 
+                            <strong>gemini</strong> delivers the fastest responses, it doesn't necessarily 
+                            provide the most accurate or detailed answers. This highlights the classic tradeoff between 
+                            computational efficiency and response quality.</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <h3>Response Length Analysis</h3>
+                            <p><strong>qwen</strong> consistently generates the longest responses, 
+                            which often correlate with more detailed and comprehensive answers. However, verbose responses 
+                            don't always indicate higher quality, as they may contain redundant information.</p>
+                        </div>
+                        
+                        <div class="finding-item">
+                            <h3>Error Patterns</h3>
+                            <p>The visualization of error rates reveals that certain prompt and model combinations produce 
+                            significantly higher error rates. This suggests that not all models handle all prompt types 
+                            equally well, and careful matching between model capabilities and prompt design is essential for 
+                            optimal results.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>Detailed Results</h2>
+                    <p>Below is a sample of the detailed results from the evaluation. The full dataset is available in the 
+                    <code>processed_results.csv</code> file in the results directory.</p>
+                    
+                    <table>
+                        <tr>
+                            <th>Model</th>
+                            <th>Prompt Type</th>
+                            <th>Question</th>
+                            <th>Response</th>
+                            <th>Time (s)</th>
+                            <th>Status</th>
+                        </tr>
+                        
+                        <tr>
+                            <td>gemini</td>
+                            <td>standard</td>
+                            <td>Có 50 quả cam ngon,
+Chia đều cho 8 người em.
+Mỗi người được mấy quả?
+Còn dư mấy quả cam?...</td>
+                            <td>**1. Phân tích bài toán:**
+
+Bài toán yêu cầu chúng ta thực hiện phép chia để tìm số quả cam mỗi người nhận được và số quả cam còn dư.  Ta cần chia 50 ...</td>
+                            <td>4.51</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>gemini</td>
+                            <td>standard</td>
+                            <td>Cho hai phân số 8/11 và 5/14. Tìm tổng và tích của hai phân số này....</td>
+                            <td>**1. Tìm tổng của hai phân số:**
+
+* **Bước 1: Tìm mẫu số chung:**  Để cộng hai phân số, ta cần tìm mẫu số chung của hai phân số đó.  Mẫu số chung nhỏ ...</td>
+                            <td>4.51</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>gemini</td>
+                            <td>standard</td>
+                            <td>Một người nông dân có 29 con vật gồm gà và thỏ. Đếm tổng số chân thì thấy có 98 cái chân. Hỏi người ...</td>
+                            <td>**1. Phân tích bài toán:**
+
+Bài toán cho ta hai thông tin chính:
+
+* Tổng số con vật: 29 con (gà + thỏ)
+* Tổng số chân: 98 chân
+
+Mỗi con gà có 2 chân, ...</td>
+                            <td>4.51</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>gemini</td>
+                            <td>standard</td>
+                            <td>Giải thích tại sao khi chia một số cho 3, nếu tổng các chữ số của số đó chia hết cho 3 thì số đó cũn...</td>
+                            <td>**1. Giới thiệu:**
+
+Bài toán dựa trên tính chất chia hết của hệ thập phân.  Chúng ta sẽ chứng minh rằng nếu tổng các chữ số của một số chia hết cho 3 ...</td>
+                            <td>4.51</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>gemini</td>
+                            <td>standard</td>
+                            <td>Một hồ bơi có 2859 m³ nước. Có 3 ống nước chảy vào với lưu lượng 88 m³/giờ và 2 ống thoát với lưu lư...</td>
+                            <td>**1. Xác định lượng nước chảy vào và chảy ra mỗi giờ:**
+
+* **Lượng nước chảy vào:** Có 3 ống nước chảy vào, mỗi ống có lưu lượng 88 m³/giờ, tổng lượng...</td>
+                            <td>4.51</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>llama</td>
+                            <td>standard</td>
+                            <td>Có 50 quả cam ngon,
+Chia đều cho 8 người em.
+Mỗi người được mấy quả?
+Còn dư mấy quả cam?...</td>
+                            <td>Ta cần tính số quả cam mỗi người em được nhận và số quả cam dư ra sau khi chia đều cho 8 người em. 
+
+Vì 50 chia cho 8 là 6 dư 2 nên:
+
+Mỗi người em đượ...</td>
+                            <td>24.81</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>llama</td>
+                            <td>standard</td>
+                            <td>Cho hai phân số 8/11 và 5/14. Tìm tổng và tích của hai phân số này....</td>
+                            <td>Để tìm tổng và tích của hai phân số, ta thực hiện các bước sau:
+
+- Tìm tổng của hai phân số:
+
+Tổng của hai phân số 8/11 và 5/14 là:
+
+(8/11) + (5/14)
+
+...</td>
+                            <td>24.81</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>llama</td>
+                            <td>standard</td>
+                            <td>Một người nông dân có 29 con vật gồm gà và thỏ. Đếm tổng số chân thì thấy có 98 cái chân. Hỏi người ...</td>
+                            <td>1. Lập hệ phương trình
+
+Nếu người nông dân có x con gà và y con thỏ thì
+
+Số con vật: x + y = 29 (1)
+
+Tổng số chân: 2x + 4y = 98 (2)
+
+2. Giải hệ phương...</td>
+                            <td>24.81</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>llama</td>
+                            <td>standard</td>
+                            <td>Giải thích tại sao khi chia một số cho 3, nếu tổng các chữ số của số đó chia hết cho 3 thì số đó cũn...</td>
+                            <td>Để chứng minh rằng khi chia một số cho 3, nếu tổng các chữ số của số đó chia hết cho 3 thì số đó cũng chia hết cho 3, ta có thể thực hiện theo các bướ...</td>
+                            <td>24.81</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>llama</td>
+                            <td>standard</td>
+                            <td>Một hồ bơi có 2859 m³ nước. Có 3 ống nước chảy vào với lưu lượng 88 m³/giờ và 2 ống thoát với lưu lư...</td>
+                            <td>3 ống nước chảy vào hồ với lưu lượng 88 m³/giờ nên tổng lưu lượng nước chảy vào hồ là: 
+
+3. 88 = 264 (m³/giờ)
+
+2 ống thoát nước với lưu lượng 35 m³/gi...</td>
+                            <td>24.81</td>
+                            <td>Success</td>
+                        </tr>
+                        
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h2>Recommendations</h2>
+                    
+                    <div class="finding-item">
+                        <h3>Model Selection</h3>
+                        <p>Based on the performance evaluation, <strong>gemini</strong> is recommended for 
+                        applications where accuracy is the highest priority, while <strong>gemini</strong> is 
+                        better suited for applications requiring quick response times.</p>
+                    </div>
+                    
+                    <div class="finding-item">
+                        <h3>Prompt Engineering</h3>
+                        <p>For optimal results, we recommend using the <strong>standard</strong> prompt type 
+                        when working with these models, as it consistently yielded the best performance across all models tested.</p>
+                    </div>
+                    
+                    <div class="finding-item">
+                        <h3>Future Work</h3>
+                        <p>Further evaluation could explore:
+                        <ul>
+                            <li>More domain-specific tasks to test specialized knowledge</li>
+                            <li>Performance under different computational constraints</li>
+                            <li>Evaluation of additional prompt types and hybrid approaches</li>
+                            <li>Testing with a larger and more diverse set of questions</li>
+                        </ul>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+        <div class="section">
+            <h2>Detailed Model Performance Analysis</h2>
+            
+            <div class="model-metrics">
+                
+                <div class="model-card">
+                    <h3>gemini Performance Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Quality-Speed Index:</span>
+                            <span class="metric-value">0.947</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Cost Efficiency:</span>
+                            <span class="metric-value">0.209</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Time Consistency:</span>
+                            <span class="metric-value">100.0%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Useful Content Ratio:</span>
+                            <span class="metric-value">1.00</span>
+                        </div>
+                    </div>
+                    
+                    <h4>Prompt Efficiency</h4>
+                    <div class="prompt-efficiency-chart">
+                        <div class="prompt-bars">
+                            
+                            <div class="prompt-bar-container">
+                                <div class="prompt-label">standard</div>
+                                <div class="prompt-bar" style="width: 94.32000000000001%;">0.94</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <h3>llama Performance Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Quality-Speed Index:</span>
+                            <span class="metric-value">0.628</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Cost Efficiency:</span>
+                            <span class="metric-value">0.023</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Time Consistency:</span>
+                            <span class="metric-value">100.0%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Useful Content Ratio:</span>
+                            <span class="metric-value">1.00</span>
+                        </div>
+                    </div>
+                    
+                    <h4>Prompt Efficiency</h4>
+                    <div class="prompt-efficiency-chart">
+                        <div class="prompt-bars">
+                            
+                            <div class="prompt-bar-container">
+                                <div class="prompt-label">standard</div>
+                                <div class="prompt-bar" style="width: 57.08%;">0.57</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <h3>qwen Performance Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Quality-Speed Index:</span>
+                            <span class="metric-value">0.700</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Cost Efficiency:</span>
+                            <span class="metric-value">0.010</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Time Consistency:</span>
+                            <span class="metric-value">100.0%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Useful Content Ratio:</span>
+                            <span class="metric-value">1.00</span>
+                        </div>
+                    </div>
+                    
+                    <h4>Prompt Efficiency</h4>
+                    <div class="prompt-efficiency-chart">
+                        <div class="prompt-bars">
+                            
+                            <div class="prompt-bar-container">
+                                <div class="prompt-label">standard</div>
+                                <div class="prompt-bar" style="width: 100.0%;">1.00</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <h3>Performance Stability Analysis</h3>
+            <p>The coefficient of variation (CV) measures the relative variability in response times, with lower values indicating more consistent performance:</p>
+            
+            <div class="stability-table">
+                <table>
+                    <tr>
+                        <th>Model</th>
+                        <th>Avg. Response Time (s)</th>
+                        <th>Std. Deviation (s)</th>
+                        <th>Coefficient of Variation</th>
+                        <th>Stability Rating</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>gemini</td>
+                        <td>4.51</td>
+                        <td>0.00</td>
+                        <td>0.00</td>
+                        <td>High</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>llama</td>
+                        <td>24.81</td>
+                        <td>0.00</td>
+                        <td>0.00</td>
+                        <td>High</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>qwen</td>
+                        <td>104.58</td>
+                        <td>0.00</td>
+                        <td>0.00</td>
+                        <td>High</td>
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+            
+        <div class="section">
+            <h2>Prompt Type Effectiveness Analysis</h2>
+            
+            <div class="grid-2">
+                <div class="plot-container">
+                    <div class="chart-title">Reasoning Quality: CoT vs Hybrid-CoT</div>
+                    <div class="chart-description">Comparison of reasoning quality between Chain of Thought and Hybrid Chain of Thought prompts.</div>
+                    <img src="plots/reasoning_quality_comparison.png" alt="Reasoning Quality Comparison">
+                </div>
+                
+                <div class="plot-container">
+                    <div class="chart-title">Reasoning Consistency: CoT vs Hybrid-CoT</div>
+                    <div class="chart-description">Comparison of reasoning consistency between Chain of Thought and Hybrid Chain of Thought prompts.</div>
+                    <img src="plots/reasoning_consistency_comparison.png" alt="Reasoning Consistency Comparison">
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="plot-container">
+                    <div class="chart-title">Reasoning Efficiency</div>
+                    <div class="chart-description">Evaluation of how efficient each model is in its reasoning process.</div>
+                    <img src="plots/reasoning_efficiency_comparison.png" alt="Reasoning Efficiency Comparison">
+                </div>
+                
+                <div class="plot-container">
+                    <div class="chart-title">Reasoning Error Analysis</div>
+                    <div class="chart-description">Breakdown of calculation and logic errors in reasoning steps.</div>
+                    <img src="plots/reasoning_error_analysis.png" alt="Reasoning Error Analysis">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="plot-container">
+                    <div class="chart-title">Number of Reasoning Steps</div>
+                    <div class="chart-description">Distribution of reasoning steps used by different models and prompt types.</div>
+                    <img src="plots/reasoning_steps_distribution.png" alt="Number of Reasoning Steps">
+                </div>
+                
+                <div class="plot-container">
+                    <div class="chart-title">Performance by Question Type</div>
+                    <div class="chart-description">How different prompt types perform across various question types.</div>
+                    <img src="plots/performance_by_question_type.png" alt="Performance by Question Type">
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="plot-container">
+                    <div class="chart-title">Performance by Question Difficulty</div>
+                    <div class="chart-description">Comparison of prompt type effectiveness across different difficulty levels.</div>
+                    <img src="plots/performance_by_difficulty.png" alt="Performance by Difficulty">
+                </div>
+                
+                <div class="plot-container">
+                    <div class="chart-title">Performance by Subject Area</div>
+                    <div class="chart-description">Heatmap showing how different models and prompt types perform across subject areas.</div>
+                    <img src="plots/performance_by_subject.png" alt="Performance by Subject">
+                </div>
+            </div>
+            
+            <div class="grid-1">
+                <div class="plot-container">
+                    <div class="chart-title">Prompt Effectiveness by Question Difficulty</div>
+                    <div class="chart-description">Bar chart comparing how effective each prompt type is for different question difficulties.</div>
+                    <img src="plots/prompt_effectiveness_by_difficulty.png" alt="Prompt Effectiveness by Difficulty">
+                </div>
+            </div>
+            
+            <div class="analysis-summary">
+                <h3>Key Findings</h3>
+                <ul>
+                    <li><strong>Standard Prompts:</strong> Generally perform well on straightforward, well-defined problems with clear answers.</li>
+                    <li><strong>Chain of Thought (CoT):</strong> Excel in problems requiring step-by-step reasoning, especially in mathematical and logical domains.</li>
+                    <li><strong>Hybrid-CoT:</strong> Balance between detailed reasoning and concise answers, performing well across diverse question types.</li>
+                    <li><strong>Reasoning Efficiency:</strong> Hybrid-CoT typically shows better efficiency (quality vs length ratio) compared to standard CoT.</li>
+                    <li><strong>Error Analysis:</strong> Calculation errors and logical inconsistencies occur more frequently in complex multi-step problems.</li>
+                </ul>
+                
+                <p>The analysis shows that different prompt types have distinct strengths depending on the question type, difficulty, and subject area. 
+                For critical reasoning tasks, CoT and Hybrid-CoT significantly outperform standard prompts, while for simpler tasks, 
+                the overhead of reasoning steps may not provide substantial benefits. The enhanced evaluation metrics now provide deeper insight
+                into how models construct their reasoning chains and where specific types of errors occur.</p>
+            </div>
+        </div>
+        
+            <footer>
+                <p>This report was automatically generated as part of the LLM Evaluation Framework</p>
+                <p>&copy; 2025 - All rights reserved</p>
+            </footer>
+        </body>
+        </html>
+        

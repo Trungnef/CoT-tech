@@ -38,7 +38,6 @@ ENV/
 # Project specific
 cache/
 offload/
-results/
 db/questions/
 *.log
 model_cache/

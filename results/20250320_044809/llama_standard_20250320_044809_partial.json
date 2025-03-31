@@ -1,0 +1,49 @@
+{
+    "llama_standard": [
+        {
+            "question": "Có 50 quả cam ngon,\nChia đều cho 8 người em.\nMỗi người được mấy quả?\nCòn dư mấy quả cam?",
+            "answer": "Ta cần tính số quả cam mỗi người em được nhận và số quả cam dư ra sau khi chia đều cho 8 người em. \n\nVì 50 chia cho 8 là 6 dư 2 nên:\n\nMỗi người em được: 6 quả cam\n\nSố quả cam dư ra sau khi chia: 2 quả cam\n\nVậy mỗi người em được 6 quả cam, và còn dư 2 quả cam. \n\nĐáp số: Mỗi người em được 6 quả cam. Số quả cam dư ra là: 2 quả cam.",
+            "model": "llama",
+            "prompt_type": "standard",
+            "elapsed_time": 24.807087850570678,
+            "token_count": 38,
+            "response_length": 85
+        },
+        {
+            "question": "Cho hai phân số 8/11 và 5/14. Tìm tổng và tích của hai phân số này.",
+            "answer": "Để tìm tổng và tích của hai phân số, ta thực hiện các bước sau:\n\n- Tìm tổng của hai phân số:\n\nTổng của hai phân số 8/11 và 5/14 là:\n\n(8/11) + (5/14)\n\nĐể cộng hai phân số, ta tìm một mẫu số chung. Mẫu số chung của 11 và 14 là 154. Do đó:\n\n(8/11) = (8 * 14)/(11 * 14) = 112/154\n\n(5/14) = (5 * 11)/(14 * 11) = 55/154\n\nVậy:\n\n(8/11) + (5/14) = 112/154 + 55/154 = (112 + 55)/154 = 167/154\n\n- Tìm tích của hai phân số:\n\nTích của hai phân số 8/11 và 5/14 là:\n\n(8/11) * (5/14)\n\nĐể nhân hai phân số, ta nhân tử số với nhau và mẫu số với nhau:\n\n(8/11) * (5/14) = (8 * 5)/(11 * 14) = 40/154\n\nVậy:\n\nTổng của hai phân số 8/11 và 5/14 là 167/154.\n\nTích của hai phân số 8/11 và 5/14 là 40/154. \n\nĐáp số: Tổng: 167/154; Tích: 40/154.",
+            "model": "llama",
+            "prompt_type": "standard",
+            "elapsed_time": 24.807087850570678,
+            "token_count": 33,
+            "response_length": 161
+        },
+        {
+            "question": "Một người nông dân có 29 con vật gồm gà và thỏ. Đếm tổng số chân thì thấy có 98 cái chân. Hỏi người nông dân có bao nhiêu con gà và bao nhiêu con thỏ?",
+            "answer": "1. Lập hệ phương trình\n\nNếu người nông dân có x con gà và y con thỏ thì\n\nSố con vật: x + y = 29 (1)\n\nTổng số chân: 2x + 4y = 98 (2)\n\n2. Giải hệ phương trình\n\nThay x = 29 – y vào (2) ta có:\n\n2(29 – y) + 4y = 98\n\n58 – 2y + 4y = 98\n\n2y = 98 – 58\n\n2y = 40\n\ny = 20\n\nThay y = 20 vào (1) ta có:\n\nx + 20 = 29\n\nx = 29 – 20\n\nx = 9\n\nVậy người nông dân có 9 con gà và 20 con thỏ. \n\nĐáp số: 9 con gà và 20 con thỏ.",
+            "model": "llama",
+            "prompt_type": "standard",
+            "elapsed_time": 24.807087850570678,
+            "token_count": 53,
+            "response_length": 118
+        },
+        {
+            "question": "Giải thích tại sao khi chia một số cho 3, nếu tổng các chữ số của số đó chia hết cho 3 thì số đó cũng chia hết cho 3?",
+            "answer": "Để chứng minh rằng khi chia một số cho 3, nếu tổng các chữ số của số đó chia hết cho 3 thì số đó cũng chia hết cho 3, ta có thể thực hiện theo các bước sau:\n\nBước 1:  Hiểu quy tắc chia hết cho 3\nMột số chia hết cho 3 nếu tổng các chữ số của nó chia hết cho 3. Điều này có nghĩa là nếu ta có một số bất kỳ, và khi cộng tất cả các chữ số của số đó lại với nhau, kết quả nhận được chia hết cho 3, thì chính số đó cũng chia hết cho 3.\n\nBước 2:  Sử dụng ví dụ cụ thể để minh họa\nVí dụ, số 123 có tổng các chữ số là 1 + 2 + 3 = 6, và 6 chia hết cho 3. Do đó, số 123 cũng chia hết cho 3.\n\nBước 3:  Tổng quát hóa cho tất cả các số\nBất kỳ số nào cũng có thể được biểu diễn dưới dạng: abcd... = a * 10^(n-1) + b * 10^(n-2) + c * 10^(n-3) +... (với a, b, c,... là các chữ số và n là số chữ số).\n\nKhi chia số này cho 3, ta có thể sử dụng tính chất rằng 10^n chia hết cho 3 khi và chỉ khi n chia hết cho 3 (theo quy tắc chia hết cho 3). Do đó, nếu tổng các chữ số (a + b + c +...) chia hết cho 3, thì cả số abcd... cũng chia hết cho 3.\n\nKết luận:  Qua các bước trên, ta đã chứng minh được rằng nếu tổng các chữ số của một số chia hết cho 3, thì số đó cũng chia hết cho 3. Điều này giúp ta dễ dàng kiểm tra tính chia hết cho 3 của một số mà không cần phải thực hiện phép chia trực tiếp.",
+            "model": "llama",
+            "prompt_type": "standard",
+            "elapsed_time": 24.807087850570678,
+            "token_count": 47,
+            "response_length": 320
+        },
+        {
+            "question": "Một hồ bơi có 2859 m³ nước. Có 3 ống nước chảy vào với lưu lượng 88 m³/giờ và 2 ống thoát với lưu lượng 35 m³/giờ. Hỏi sau bao lâu hồ sẽ đầy?",
+            "answer": "3 ống nước chảy vào hồ với lưu lượng 88 m³/giờ nên tổng lưu lượng nước chảy vào hồ là: \n\n3. 88 = 264 (m³/giờ)\n\n2 ống thoát nước với lưu lượng 35 m³/giờ nên tổng lưu lượng nước thoát ra là: \n\n2. 35 = 70 (m³/giờ)\n\nLưu lượng nước thực tế chảy vào hồ sẽ là:\n\n264 – 70 = 194 (m³/giờ)\n\nThời gian để hồ đầy nước là:\n\n2859 : 194 = 14,73 (giờ)\n\nVậy sau khoảng 14 giờ 44 phút hồ sẽ đầy nước. \n\nĐáp số: 14 giờ 44 phút.",
+            "model": "llama",
+            "prompt_type": "standard",
+            "elapsed_time": 24.807087850570678,
+            "token_count": 51,
+            "response_length": 93
+        }
+    ]
+}

@@ -1,228 +1,217 @@
 # LLM Evaluation Framework
 
-## Overview
+Một framework toàn diện để đánh giá và so sánh hiệu suất của các mô hình ngôn ngữ lớn (LLM) trên các bài toán cổ điển.
 
-This project is a comprehensive evaluation framework for large language models (LLMs), designed to compare the performance of different models (Llama, Qwen, Gemini) across various prompt engineering strategies. The framework processes questions through multiple models and prompt types, generating detailed performance metrics and visualizations that highlight differences in accuracy, response time, response quality, and error rates.
+## Tính năng
 
-Key features:
-- Multi-model evaluation with standardized metrics
-- Support for various prompt engineering strategies
-- Parallel processing for efficient evaluation
-- Comprehensive reporting with interactive visualizations
-- Advanced performance metrics and quality assessments
-- Memory-optimized loading for large models
+- Hỗ trợ nhiều mô hình: Llama, Qwen, Gemini và dễ dàng mở rộng cho các mô hình khác
+- Đánh giá với nhiều loại prompt khác nhau: standard, chain-of-thought, hybrid-cot, zero-shot-cot
+- Đánh giá tuần tự hoặc song song sử dụng nhiều GPU
+- Phân tích và đánh giá chi tiết với các chỉ số về độ chính xác, chất lượng suy luận, độ tự tin
+- Tạo báo cáo HTML tương tác với biểu đồ và trực quan hóa so sánh
+- Tối ưu hóa sử dụng GPU với cơ chế phân phối và lưu trữ bộ nhớ
 
-## System Requirements
+## Cấu trúc thư mục
 
-### Hardware
-- CUDA-compatible GPU(s) with at least 16GB VRAM (24GB+ recommended)
-- Minimum 16GB system RAM (32GB+ recommended)
-- 100GB+ storage space for models and evaluation results
-
-### Software
-- Python 3.9+
-- PyTorch 2.0+
-- CUDA Toolkit 11.7+
-- Required libraries:
-  - transformers
-  - accelerate
-  - bitsandbytes
-  - pandas
-  - numpy
-  - matplotlib
-  - seaborn
-  - plotly
-  - tqdm
-  - psutil
-  - rich
-  - tenacity
-  - python-dotenv
-
-## GPU Configuration
-
-The framework is designed to work with various GPU configurations:
-
-### Single GPU Setup
-- Automatically optimizes memory usage
-- Supports 4-bit quantization to fit larger models on smaller GPUs
-- Manages CPU offloading for memory-intensive operations
-
-### Multi-GPU Setup
-- Automatically distributes model layers across available GPUs
-- Creates optimal device maps based on available memory
-- Balances memory usage across GPUs (uses approximately 85% of each GPU)
-- Supports CPU offloading for additional memory requirements
-
-### Optimal Configuration
-For best results:
-- Use 2+ GPUs with 24GB+ VRAM each
-- Configure environment variables:
-  - `MAX_GPU_MEMORY_GB`: Maximum GPU memory to use per GPU
-  - `SYSTEM_RESERVE_MEMORY_GB`: Memory to reserve for system operations
-  - `CPU_OFFLOAD_GB`: Amount of CPU memory for model offloading
-
-## Parallel Processing Methods
-
-The framework leverages several parallel processing techniques:
-
-1. **Concurrent Model Evaluation**: Evaluates different models concurrently using separate threads
-2. **Batch Processing**: Processes questions in configurable batch sizes
-3. **ThreadPoolExecutor**: Uses thread pools for parallel generation of responses
-4. **Multi-GPU Parallelism**: Distributes model computation across available GPUs
-5. **Caching Mechanisms**: Implements model caching to avoid redundant loading
-
-Note: API models (like Gemini) are processed sequentially to avoid rate limiting issues.
-
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Trungnef/CoT-tech.git
-   cd llm-evaluation-framework
-   ```
-
-2. Install required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Create a `.env` file in the root directory with the following variables:
-   ```
-   QWEN_MODEL_PATH=/path/to/qwen/model
-   QWEN_TOKENIZER_PATH=/path/to/qwen/tokenizer
-   LLAMA_MODEL_PATH=/path/to/llama/model
-   LLAMA_TOKENIZER_PATH=/path/to/llama/tokenizer
-   GEMINI_API_KEY=your_gemini_api_key
-   OPENAI_API_KEY=your_openai_api_key
-   
-   MAX_GPU_MEMORY_GB=47.5
-   SYSTEM_RESERVE_MEMORY_GB=2.5
-   CPU_OFFLOAD_GB=24
-   ```
-
-4. Create necessary directories:
-   ```bash
-   mkdir -p db/questions results model_cache offload
-   ```
-
-## Project Structure
 ```
-llm-evaluation-framework/
-├── evaluate_models.py # Main script for model evaluation
-├── model_manager.py # Module for loading and managing models
-├── model_evaluator.py # Evaluation logic and metrics
-├── prompts.py # Prompt engineering strategies
-├── .env # Environment variables
-├── requirements.txt # Required packages
-├── db/ # Database of questions
-│ └── questions/
-│ └── problems.json # Input questions for evaluation
-├── results/ # Evaluation results
-│ └── YYYYMMDD_HHMMSS/ # Results organized by timestamp
-│ ├── plots/ # Generated visualizations
-│ ├── processed_results.csv
-│ ├── model_statistics.csv
-│ ├── prompt_statistics.csv
-│ ├── combined_statistics.csv
-│ └── comprehensive_evaluation_report.html
-├── model_cache/ # Cache for loaded models
-└── offload/ # Directory for model offloading
+├── evaluate.py               # Entry point script
+├── src/                      # Thư mục mã nguồn chính
+│   ├── core/                 # Chức năng cốt lõi
+│   │   ├── main.py           # Điểm vào chính của ứng dụng
+│   │   └── __init__.py
+│   ├── evaluators/           # Các lớp đánh giá mô hình
+│   │   ├── evaluator.py      # Lớp đánh giá tuần tự
+│   │   ├── parallel_evaluator.py # Lớp đánh giá song song
+│   │   ├── metrics.py        # Các hàm tính toán chỉ số đánh giá
+│   │   └── __init__.py
+│   ├── models/               # Quản lý mô hình
+│   │   ├── model_loader.py   # Tải và tối ưu mô hình
+│   │   ├── model_generator.py # Tạo text từ mô hình
+│   │   └── __init__.py
+│   ├── prompts/              # Các mẫu prompt khác nhau
+│   │   ├── base_prompts.py   # Các prompt cơ bản
+│   │   ├── advanced_prompts.py # Các prompt nâng cao
+│   │   └── __init__.py
+│   ├── utils/                # Tiện ích
+│   │   ├── logging_utils.py  # Ghi log và hiển thị trạng thái
+│   │   ├── file_utils.py     # Thao tác file
+│   │   └── __init__.py
+│   ├── visualization/        # Trực quan hóa
+│   │   ├── report_generator.py # Tạo báo cáo HTML
+│   │   └── __init__.py
+│   └── __init__.py
+├── results/                  # Kết quả đánh giá
+├── model_cache/              # Cache của mô hình
+├── sample_questions.json     # Dữ liệu câu hỏi mẫu
+└── requirements.txt          # Các phụ thuộc
 ```
 
-## Usage
+## Cài đặt
 
-### Basic Usage
-
-Run the evaluation with default settings:
+1. Clone repository:
 
 ```bash
-python evaluate_models.py
+git clone https://github.com/username/llm-evaluation.git
+cd llm-evaluation
 ```
 
-### Advanced Usage
-
-Customize the evaluation with command-line arguments:
+2. Cài đặt các phụ thuộc:
 
 ```bash
-python evaluate_models.py \
-  --questions_json db/questions/custom_problems.json \
-  --models llama qwen gemini \
-  --prompt_types standard cot hybrid_cot zero_shot_cot \
-  --batch_size 10 \
-  --max_questions 100 \
-  --results_dir custom_results \
-  --use_4bit \
-  --max_workers 3
+pip install -r requirements.txt
 ```
 
-### Important Parameters
+3. Thiết lập biến môi trường trong file `.env`:
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--questions_json` | Path to JSON file with questions | `db/questions/problems.json` |
-| `--models` | Models to evaluate | `llama qwen gemini` |
-| `--prompt_types` | Prompt types to evaluate | `standard cot hybrid_cot zero_shot_cot` |
-| `--batch_size` | Questions to process in parallel | `10` |
-| `--max_questions` | Maximum questions to evaluate | `None` (all questions) |
-| `--results_dir` | Directory to save results | `results` |
-| `--use_4bit` | Use 4-bit quantization | `True` |
-| `--max_workers` | Maximum parallel workers | `3` |
-| `--resume` | Resume from existing results | `False` |
-| `--results_file` | Path to results file to resume from | `None` |
+```
+LLAMA_MODEL_PATH=/path/to/llama/model
+LLAMA_TOKENIZER_PATH=/path/to/llama/tokenizer
 
-## Running Tests
+QWEN_MODEL_PATH=/path/to/qwen/model
+QWEN_TOKENIZER_PATH=/path/to/qwen/tokenizer
 
-To run a quick test with a small subset of questions:
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+## Sử dụng
+
+### Đánh giá tuần tự
+
+Đánh giá tuần tự với một GPU:
 
 ```bash
-python evaluate_models.py --max_questions 5 --models llama --prompt_types standard
+python evaluate.py --models llama gemini --prompt_types standard cot hybrid_cot --batch_size 5 --max_questions 100
 ```
 
-For a more comprehensive test:
+### Đánh giá song song
+
+Đánh giá song song với nhiều GPU:
 
 ```bash
-python evaluate_models.py --models llama qwen gemini --prompt_types standard cot --max_questions 20
+python evaluate.py --parallel --gpu_ids "0,1,2" --gpu_allocation "llama:0" "llama:1" "qwen:2" --models llama qwen gemini --prompt_types standard cot hybrid_cot zero_shot_cot --batch_size 5 --max_questions 100
 ```
 
-## Visualizations and Results
+### Các tùy chọn khác
 
-The framework generates a comprehensive HTML report with numerous visualizations for in-depth analysis:
+- `--questions_file`: Đường dẫn đến file JSON chứa câu hỏi (mặc định: sample_questions.json)
+- `--max_questions`: Số lượng câu hỏi tối đa để đánh giá (mặc định: tất cả)
+- `--models`: Danh sách mô hình để đánh giá, có thể chọn từ [llama, qwen, gemini]
+- `--prompt_types`: Các loại prompt, có thể chọn từ [standard, cot, hybrid_cot, zero_shot_cot]
+- `--parallel`: Chạy đánh giá song song
+- `--gpu_ids`: Danh sách các ID GPU, phân tách bằng dấu phẩy
+- `--gpu_allocation`: Phân phối GPU cho từng mô hình, vd: "llama:0" "qwen:1"
+- `--batch_size`: Kích thước batch cho xử lý câu hỏi
+- `--output_dir`: Thư mục để lưu kết quả
+- `--verbose`: Bật output chi tiết
 
-### Core Visualizations
-- Response time distributions by model and prompt type
-- Error rate heatmaps
-- Response length comparisons
-- Processing speed comparisons
-- Response time vs. length scatter plots
+## Xem báo cáo
 
-### Advanced Visualizations
-- 3D surface plots for model performance
-- Interactive sunburst charts for error distribution
-- Parallel categories plots for variable relationships
-- Time series with confidence intervals
-- Quality metrics radar charts
-- Stacked area charts for response type distribution
+Sau khi đánh giá hoàn tất, một báo cáo HTML sẽ được tạo trong thư mục kết quả. Báo cáo này chứa:
 
-### Performance Metrics
-- Response quality scores
-- Complexity metrics
-- Coherence assessments
-- Efficiency scores
-- Quality-speed indices
-- Cost-efficiency comparisons
-- Time consistency measurements
-- Useful content ratios
+- Tổng quan về cấu hình đánh giá
+- Thống kê tổng hợp
+- So sánh hiệu suất giữa các mô hình
+- So sánh hiệu suất giữa các loại prompt
+- Trực quan hóa tương tác (biểu đồ radar, heatmap, bubble chart)
 
-The report is fully interactive, with tooltips, filters, and drill-down capabilities for deeper analysis.
+Mở file `evaluation_report.html` trong thư mục kết quả để xem báo cáo.
 
-## Example Report
+## Mở rộng
 
-After running an evaluation, access the comprehensive report at:
+### Thêm mô hình mới
 
-results/[timestamp]/comprehensive_evaluation_report_[timestamp].html
+1. Bổ sung hỗ trợ cho mô hình mới trong `src/models/model_loader.py`
+2. Thêm logic để tải và cấu hình mô hình
+3. Cập nhật câu lệnh trợ giúp trong `src/core/main.py` để thêm mô hình mới vào lựa chọn
 
-This report contains all visualizations, metrics, and analyses in an easy-to-navigate interface.
+### Thêm loại prompt mới
 
----
+1. Tạo hàm prompt mới trong `src/prompts/base_prompts.py` hoặc `src/prompts/advanced_prompts.py`
+2. Đăng ký prompt trong `src/prompts/__init__.py`
+3. Cập nhật lớp `ModelEvaluator` để hỗ trợ loại prompt mới
 
-For issues, feature requests, or contributions, please open an issue or pull request in the repository.
+## Đóng góp
+
+Đóng góp luôn được chào đón! Vui lòng tạo issue hoặc pull request để cải thiện dự án.
+
+# Hệ thống đánh giá toàn diện cho Prompt Engineering
+
+Hệ thống đánh giá này giúp so sánh hiệu suất của các loại prompt khác nhau (zero-shot, few-shot, Chain of Thought, self-consistency, ReAct) trên các model ngôn ngữ lớn.
+
+## Sử dụng cơ bản
+
+```bash
+# Đánh giá toàn diện cho các prompts
+python evaluate_models.py --comprehensive_prompt_eval --ground_truth data/ground_truth.json
+
+# Tùy chọn về model và prompt type
+python evaluate_models.py --comprehensive_prompt_eval --models llama qwen gemini --prompt_types zero_shot few_shot_3 cot react
+
+# Đánh giá với custom examples cho few-shot
+python evaluate_models.py --comprehensive_prompt_eval --examples_file data/custom_examples.json
+```
+
+## Tham số command line
+
+| Tham số | Mô tả |
+|---------|-------|
+| `--comprehensive_prompt_eval` | Chạy đánh giá toàn diện cho các prompt với báo cáo chi tiết |
+| `--models` | Danh sách các model muốn đánh giá (mặc định: llama, qwen, gemini) |
+| `--prompt_types` | Danh sách các loại prompt muốn đánh giá |
+| `--ground_truth` | Đường dẫn đến file JSON chứa câu trả lời chính xác |
+| `--questions_json` | Đường dẫn đến file JSON chứa câu hỏi (mặc định: db/questions/problems.json) |
+| `--results_dir` | Thư mục lưu kết quả (mặc định: results) |
+| `--max_questions` | Số lượng câu hỏi tối đa cần đánh giá |
+
+## Đánh giá Few-shot với các examples tùy chỉnh
+
+Để sử dụng custom examples cho few-shot, tạo file JSON với cấu trúc:
+
+```json
+{
+  "math": [
+    {
+      "problem": "Tính diện tích hình tròn có bán kính 5cm.",
+      "solution": "Diện tích = π × r² = π × 5² = 25π ≈ 78.54 cm²",
+      "reasoning": "Diện tích hình tròn được tính bằng công thức π × r² với r là bán kính. Thay r = 5cm, ta có diện tích = π × 5² = 25π ≈ 78.54 cm²."
+    },
+    // Thêm các examples khác
+  ],
+  "general": [
+    // Examples cho các câu hỏi tổng quát
+  ]
+}
+```
+
+Sau đó chỉ định file này khi chạy đánh giá:
+
+```bash
+python evaluate_models.py --comprehensive_prompt_eval --examples_file path/to/examples.json
+```
+
+## Cấu trúc báo cáo đánh giá
+
+Báo cáo đánh giá toàn diện bao gồm:
+
+1. **Đánh giá độ chính xác (Accuracy)**: So sánh câu trả lời với ground truth
+2. **Đánh giá chất lượng suy luận (Reasoning)**: Phân tích quá trình suy luận
+3. **Phân tích tính nhất quán (Consistency)**: Đánh giá độ ổn định của câu trả lời
+4. **Đánh giá hiệu suất (Performance)**: Thời gian phản hồi, độ dài câu trả lời
+5. **Xếp hạng tổng hợp (Overall ranking)**: Xếp hạng các prompt dựa trên kết hợp các tiêu chí
+
+## Các biểu đồ được tạo ra
+
+- **Bar chart độ chính xác theo prompt type**
+- **Bar chart chất lượng suy luận theo prompt type**
+- **Heatmap độ chính xác theo model và prompt type**
+- **Scatter plot so sánh độ chính xác và chất lượng suy luận**
+- **Biểu đồ xếp hạng tổng hợp các prompt**
+- **Radar chart cho top prompt types**
+
+## Mở rộng
+
+Bạn có thể mở rộng hệ thống bằng cách:
+
+1. Thêm model mới trong `model_config` trong file `evaluate_models.py`
+2. Thêm kiểu prompt mới trong module `prompts.py`
+3. Tùy chỉnh trọng số đánh giá trong `metrics_weights` 

@@ -1,0 +1,24 @@
+{
+    "llama_standard": [
+        {
+            "question": "Có 181 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+            "response": "181 viên kẹo chia cho 5 người thì mỗi người được số viên kẹo là:\n\n181 : 5 = 36 (dư 1)\n\nDo đó mỗi người được 36 viên kẹo và còn dư 1 viên.\n\nVậy người thứ nhất được 36 viên kẹo.\n\nNgười thứ hai được gấp 3 lần người thứ nhất nên được:\n\n36 x 3 = 108 viên kẹo.\n\nNgười thứ ba được gấp 3 lần người thứ hai nên được:\n\n108 x 3 = 324 viên kẹo.\n\nTuy nhiên, ta thấy tổng số viên kẹo của người thứ nhất, thứ hai và thứ ba (36 + 108 + 324 = 468 viên kẹo) đã vượt quá tổng số viên kẹo có (181 viên). Do đó, việc chia kẹo như trên là không thể.\n\nVậy, mỗi người được bao nhiêu viên kẹo thì tổng số viên kẹo của 5 người không vượt quá 181 viên?\n\nGọi x là số viên kẹo mà người thứ nhất được.\n\nDo đó, người thứ hai được 3x viên kẹo.\n\nNgười thứ ba được 3 x 3x = 9x viên kẹo.\n\nNgười thứ tư được 3 x 9x = 27x viên kẹo.\n\nNgười thứ năm được 3 x 27x = 81x viên kẹo.\n\nTổng số viên kẹo của 5 người là: x + 3x + 9x + 27x + 81x = 121x viên kẹo.\n\nVì tổng số viên kẹo của 5 người không vượt quá 181 viên kẹo nên ta có:\n\n121x ≤ 181\n\nx ≤ 181 : 121\n\nx ≤ 1,5\n\nMà x là số nguyên nên x ≤ 1.\n\nVậy x = 1 (số viên kẹo mà người thứ nhất được).\n\nDo đó, người thứ hai được 3x = 3 x 1 = 3 viên kẹo.\n\nNgười thứ ba được 9x = 9 x 1 = 9 viên kẹo.\n\nNgười thứ tư được 27x = 27 x 1 = 27 viên kẹo.\n\nNgười thứ năm được 81x = 81 x 1 = 81 viên kẹo.\n\nTổng số viên kẹo của 5",
+            "model": "llama",
+            "prompt_type": "standard",
+            "elapsed_time": 112.37166428565979,
+            "token_count": 53,
+            "response_length": 331,
+            "timestamp": "20250331_161522"
+        },
+        {
+            "question": "Một cửa hàng bán sách với giá 5093đ một cái. Nếu mua 24 cái, sau đó được giảm 26%, hỏi phải trả bao nhiêu tiền?",
+            "response": "assistant\n\nĐể giải quyết bài toán này, ta thực hiện theo các bước sau:\n\nBước 1: Tính tổng số tiền phải trả khi mua 24 cái sách trước khi giảm giá.\n\nSố tiền phải trả = Số lượng sách × Giá một cái\n= 24 × 5093\n= 122,232 đồng\n\nBước 2: Tính số tiền giảm giá.\n\nSố tiền giảm giá = Tổng số tiền phải trả × Tỷ lệ giảm giá\n= 122,232 × 26%\n= 122,232 × 0.26\n= 31,78032 đồng\n\nBước 3: Tính số tiền phải trả sau khi giảm giá.\n\nSố tiền phải trả sau giảm giá = Tổng số tiền phải trả - Số tiền giảm giá\n= 122,232 - 31,78032\n= 90,45168 đồng\n\nVậy sau khi giảm giá, số tiền phải trả là 90,45168 đồng, tức là khoảng 90,452 đồng (làm tròn đến đơn vị đồng gần nhất).\n\nĐáp số: Phải trả 90.452 đồng",
+            "model": "llama",
+            "prompt_type": "standard",
+            "elapsed_time": 112.37166428565979,
+            "token_count": 42,
+            "response_length": 150,
+            "timestamp": "20250331_161522"
+        }
+    ]
+}

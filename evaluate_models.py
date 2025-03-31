@@ -2,10 +2,11 @@
 Main script to evaluate different LLMs on classical problems from PDF document.
 """
 
+import portalocker
 import os
 import argparse
 import torch
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed, ProcessPoolExecutor
 from tqdm import tqdm
 import json
 import time
@@ -29,6 +30,40 @@ import plotly.graph_objects as go
 import re
 import io
 import base64
+import multiprocessing
+import gc
+import threading
+from multiprocessing import Process, Manager
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+
+# Model-specific configuration for max tokens
+MODEL_MAX_TOKENS = {
+    "llama": 512,  # Llama models can generate longer outputs
+    "qwen": 512,   # Qwen models have lower context length than Llama
+    "gemini": 1024, # Gemini has high token limit
+    "default": 1024 # Default value for unspecified models
+}
+
+# Function to get max tokens for a specific model
+def get_max_tokens(model_name):
+    """
+    Get appropriate max_tokens value for a specific model.
+    
+    Args:
+        model_name (str): Name of the model
+        
+    Returns:
+        int: Maximum tokens to generate
+    """
+    model_key = model_name.lower()
+    
+    # Extract base model name if version is specified (e.g., llama3-8b -> llama)
+    for base_model in MODEL_MAX_TOKENS.keys():
+        if base_model in model_key and base_model != "default":
+            return MODEL_MAX_TOKENS[base_model]
+    
+    # Return default if no specific configuration
+    return MODEL_MAX_TOKENS["default"]
 
 from model_manager import (
     load_model_optimized,
@@ -47,9 +82,21 @@ from prompts import (
     chain_of_thought_prompt,
     hybrid_cot_prompt,
     zero_shot_cot_prompt,
-    tree_of_thought_prompt
+    tree_of_thought_prompt,
+    zero_shot_prompt,
+    few_shot_3_prompt,
+    few_shot_5_prompt,
+    few_shot_7_prompt,
+    cot_self_consistency_3_prompt,
+    cot_self_consistency_5_prompt,
+    cot_self_consistency_7_prompt,
+    react_prompt
 )
 from model_evaluator import ModelEvaluator
+
+# Global model cache
+_LOADED_MODELS = {}
+_MODEL_LOADING_LOCKS = {}
 
 # Thêm hàm đánh giá mức độ tự tin (confidence) trong câu trả lời
 def evaluate_answer_confidence(response):
@@ -310,8 +357,13 @@ def setup_argparse():
         "--prompt_types",
         type=str,
         nargs="+",
-        default=["standard", "cot", "hybrid_cot", "zero_shot_cot"],
-        choices=["standard", "cot", "hybrid_cot", "zero_shot_cot"],
+        default=["standard", "zero_shot", "cot", "hybrid_cot", "zero_shot_cot"],
+        choices=[
+            "standard", "zero_shot", "cot", "hybrid_cot", "zero_shot_cot",
+            "few_shot_3", "few_shot_5", "few_shot_7",
+            "cot_self_consistency_3", "cot_self_consistency_5", "cot_self_consistency_7",
+            "react"
+        ],
         help="Prompt types to evaluate"
     )
     
@@ -361,6 +413,27 @@ def setup_argparse():
         "--results_file",
         type=str,
         help="Path to a results file to resume from"
+    )
+    
+    parser.add_argument(
+        "--parallel",
+        action="store_true",
+        default=False,
+        help="Run models in parallel using multiple GPUs"
+    )
+    
+    parser.add_argument(
+        "--gpu_ids",
+        type=str,
+        default="0,1,2",
+        help="Comma-separated list of GPU IDs to use for parallel evaluation"
+    )
+    
+    parser.add_argument(
+        "--gpu_allocation",
+        type=str,
+        default="llama:0,qwen:1,gemini:2",
+        help="Model to GPU allocation, format: model1:gpu_id1,model2:gpu_id2,..."
     )
     
     return parser
@@ -485,67 +558,152 @@ def load_existing_results(output_dir, timestamp=None):
         return {}
 
 def generate_report_and_visualizations(results_file, output_dir):
-    """Generate comprehensive reports and visualizations from evaluation results."""
+    """
+    Generate a comprehensive report and visualizations from evaluation results.
+    
+    Args:
+        results_file (str): Path to the JSON file containing evaluation results
+        output_dir (str): Directory to save the report and visualizations
+    """
     try:
-        # Create output directory for visualizations
+        # Create directories for plots and reports
         plots_dir = os.path.join(output_dir, "plots")
         os.makedirs(plots_dir, exist_ok=True)
+        
+        reports_dir = os.path.join(output_dir, "reports")
+        os.makedirs(reports_dir, exist_ok=True)
         
         # Load results
         with open(results_file, 'r', encoding='utf-8') as f:
             results = json.load(f)
+            
+        if not results:
+            print_status("error", "No results found in the results file", "red")
+            return
+            
+        # Process all results and convert to DataFrame
+        all_results = []
         
-        # Process results into a DataFrame for easier analysis
-        processed_results = []
-        for model_prompt_key, model_results in results.items():
-            model_name, prompt_type = model_prompt_key.split('_', 1)
-            for result in model_results:
-                response_length = len(result["response"])
-                elapsed_time = max(0.1, result["elapsed_time"])
-                has_error = "[Error:" in result["response"]
-                
-                # Tính toán các chỉ số chất lượng
-                tokens_per_second = response_length / elapsed_time
-                
-                # Điểm chất lượng phản hồi (cao nếu không có lỗi và đủ dài)
-                response_quality_score = 0.0 if has_error else min(1.0, response_length / 1000)
-                
-                # Điểm phức tạp (dựa trên độ dài và từ ngữ)
-                complexity_words = len(set(result["response"].split()))
-                complexity_score = min(1.0, complexity_words / 200)
-                
-                # Điểm mạch lạc (giá trị mẫu, sẽ được cải thiện trong tương lai)
-                # Ở đây ta sử dụng một phương pháp đơn giản: tỷ lệ giữa chiều dài câu trung bình / độ dài câu tối đa
-                sentences = [s for s in result["response"].split('.') if len(s) > 3]
-                avg_sentence_length = sum(len(s) for s in sentences) / max(1, len(sentences))
-                max_sentence_length = max([len(s) for s in sentences]) if sentences else 1
-                coherence_score = min(1.0, avg_sentence_length / max(1, max_sentence_length))
-                
-                # Điểm hiệu quả (dựa trên tốc độ và không có lỗi)
-                efficiency_score = tokens_per_second / 100 if not has_error else 0.0
-                efficiency_score = min(1.0, efficiency_score)
-                
-                processed_result = {
-                    "model_name": model_name,
-                    "prompt_type": prompt_type,
-                    "question": result["question"],
-                    "response": result["response"],
-                    "elapsed_time": elapsed_time,
-                    "timestamp": result["timestamp"],
-                    "has_error": has_error,
-                    "response_length": response_length,
-                    # Thêm các metrics chất lượng
-                    "tokens_per_second": tokens_per_second,
-                    "response_quality_score": response_quality_score,
-                    "complexity_score": complexity_score,
-                    "coherence_score": coherence_score,
-                    "efficiency_score": efficiency_score,
-                    # Thêm chỉ số chất lượng tổng hợp
-                    "quality_index": (response_quality_score + complexity_score + coherence_score + efficiency_score) / 4
-                }
-                processed_results.append(processed_result)
+        # Keep track of failed responses for Gemini API
+        failed_responses = 0
         
-        results_df = pd.DataFrame(processed_results)
+        # Process each model and prompt type
+        for key, value in results.items():
+            if not isinstance(value, list):
+                print_status("warning", f"Skipping non-list results for {key}", "yellow")
+                continue
+                
+            # Extract model name and prompt type from key
+            parts = key.split('_')
+            if len(parts) >= 2:
+                model_name = parts[0]
+                prompt_type = '_'.join(parts[1:])
+            else:
+                model_name = key
+                prompt_type = "unknown"
+            
+            # Process each result
+            for result in value:
+                # Skip None or empty results
+                if not result:
+                    continue
+                    
+                # Ensure result is a dictionary
+                if not isinstance(result, dict):
+                    continue
+                
+                # Handle missing fields (especially for API errors)
+                if "response" not in result and "answer" in result:
+                    result["response"] = result["answer"]
+                    
+                # Skip results with error responses
+                if "response" in result and result["response"].startswith("[Error:"):
+                    failed_responses += 1
+                    continue
+                
+                # Ensure all required fields are present
+                if "question" not in result or "response" not in result:
+                    continue
+                
+                # Ensure model_name is present
+                if "model" not in result:
+                    result["model"] = model_name
+                    
+                # Calculate derived metrics
+                # Ensure response is a string
+                response = result.get("response", "")
+                if not isinstance(response, str):
+                    response = str(response)
+                    result["response"] = response
+                
+                # Calculate response length
+                if "response_length" not in result:
+                    result["response_length"] = len(response.split())
+                    
+                # Calculate elapsed time if missing
+                if "elapsed_time" not in result:
+                    result["elapsed_time"] = 0
+                
+                # Add model and prompt information
+                result["model_name"] = model_name
+                result["prompt_type"] = prompt_type
+                
+                # Evaluate correctness and reasoning
+                question = result["question"]
+                
+                # Kiểm tra kiểu dữ liệu của question
+                if isinstance(question, dict):
+                    expected_solution = question.get("expected_solution", "")
+                    subject_type = question.get("subject", "")
+                else:
+                    # Nếu question là chuỗi, sử dụng chuỗi rỗng làm expected_solution
+                    expected_solution = ""
+                    subject_type = ""
+                
+                try:
+                    # Try to evaluate additional metrics
+                    correctness_score = evaluate_answer_correctness(question, response, expected_solution)
+                    reasoning_score, reasoning_steps = evaluate_reasoning_quality(response, expected_solution)
+                    
+                    # Confidence score
+                    confidence_score = evaluate_answer_confidence(response)
+                    
+                    # Subject-specific evaluation
+                    subject_score = evaluate_by_subject_criteria(question, response, subject_type)
+                    
+                    # Bias correction
+                    bias_correction = calculate_bias_correction(prompt_type, correctness_score, reasoning_score, result["response_length"])
+                    
+                    # Add to result
+                    result["correctness_score"] = correctness_score
+                    result["reasoning_score"] = reasoning_score
+                    result["num_reasoning_steps"] = reasoning_steps
+                    result["confidence_score"] = confidence_score
+                    result["subject_score"] = subject_score
+                    result["bias_correction"] = bias_correction
+                    
+                except Exception as e:
+                    # If evaluation fails, assign default scores
+                    result["correctness_score"] = 0
+                    result["reasoning_score"] = 0
+                    result["num_reasoning_steps"] = 0
+                    result["confidence_score"] = 0
+                    result["subject_score"] = 0
+                    result["bias_correction"] = 0
+                
+                # Add to all results
+                all_results.append(result)
+        
+        # Check if we have enough valid results to generate a report
+        if not all_results:
+            print_status("error", "No valid results after filtering out errors", "red")
+            return
+            
+        if failed_responses > 0:
+            print_status("warning", f"Skipped {failed_responses} failed responses (likely API errors)", "yellow")
+        
+        # Convert to DataFrame for analysis
+        results_df = pd.DataFrame(all_results)
         
         # Load questions data để so sánh câu trả lời với đáp án đúng
         print_status("info", "Loading expected answers from questions data...", "blue")
@@ -572,6 +730,16 @@ def generate_report_and_visualizations(results_file, output_dir):
             
             # Tạo hàm đánh giá chất lượng suy luận (đặc biệt cho CoT và Hybrid-CoT)
             def evaluate_reasoning_quality(response, expected_solution):
+                """
+                Evaluate the quality of reasoning in a response.
+    
+    Args:
+                    response (str): The model's response
+                    expected_solution (str): The expected solution
+                    
+                Returns:
+                    tuple: (reasoning_score, consistency_score, calculation_errors, num_steps, complexity_score)
+                """
                 # Phát hiện các bước suy luận
                 reasoning_patterns = r'(?:Bước \d+:|Đầu tiên|Tiếp theo|Sau đó|Cuối cùng|Ta có|Áp dụng|Từ đó|Xét|Do đó|Vậy nên|Vì vậy|Khi đó|Theo|Nhận thấy|Giả sử|Suy ra)'
                 reasoning_steps = re.findall(f'{reasoning_patterns}.*?(?={reasoning_patterns}|$)', response, re.DOTALL)
@@ -607,23 +775,22 @@ def generate_report_and_visualizations(results_file, output_dir):
                 # Kiểm tra tính nhất quán giữa các bước suy luận
                 consistency_score = 0.8  # Giá trị mặc định
                 if len(reasoning_steps) > 1:
-                    # Sửa lỗi 'NoneType' object is not iterable
                     # Kiểm tra xem bước đầu tiên có kết thúc bằng số không
                     match_end = re.search(r'\d+\s*$', reasoning_steps[0])
-                    prev_ends_with_number = match_end is not None
+                    prev_ends_with_number = bool(match_end) if match_end is not None else False
                     
                     consistency_count = 0
                     for i in range(1, len(reasoning_steps)):
                         # Kiểm tra xem bước hiện tại có bắt đầu bằng số không
                         match_start = re.search(r'^\s*\d+', reasoning_steps[i])
-                        current_starts_with_number = match_start is not None
+                        current_starts_with_number = bool(match_start) if match_start is not None else False
                         
                         if (prev_ends_with_number and current_starts_with_number) or (not prev_ends_with_number and not current_starts_with_number):
                             consistency_count += 1
                         
                         # Cập nhật cho bước tiếp theo
                         match_end = re.search(r'\d+\s*$', reasoning_steps[i])
-                        prev_ends_with_number = match_end is not None
+                        prev_ends_with_number = bool(match_end) if match_end is not None else False
                     
                     consistency_score = consistency_count / max(1, len(reasoning_steps) - 1)
                 
@@ -718,6 +885,20 @@ def generate_report_and_visualizations(results_file, output_dir):
             
             # Tạo hàm đánh giá tùy theo loại prompt
             def evaluate_answer_by_prompt_type(question, response, expected_solution, prompt_type):
+                """
+                Evaluate an answer based on the prompt type used.
+                
+                Args:
+                    question (str): The question being answered
+                    response (str): The model's response
+                    expected_solution (str): The expected answer
+                    prompt_type (str): The type of prompt used (standard, cot, hybrid_cot)
+                    
+                Returns:
+                    tuple: (final_score_adjusted, result_type, reasoning_score, consistency_score, 
+                           efficiency_score, reasoning_report, complexity_score, confidence_score, 
+                           subject_type, subject_score)
+                """
                 # Phát hiện kết quả và đánh giá độ chính xác
                 correctness_score, result_type = evaluate_answer_correctness(question, response, expected_solution)
                 
@@ -1164,6 +1345,42 @@ def generate_report_and_visualizations(results_file, output_dir):
         
         # Calculate additional evaluation metrics
         print_status("info", "Calculating evaluation metrics...", "blue")
+        
+        # Thêm các cột cần thiết nếu chúng chưa tồn tại trong DataFrame
+        if 'has_error' not in results_df.columns:
+            # Tạo cột has_error dựa trên kết quả
+            results_df['has_error'] = results_df['response'].str.contains(r"\[Error:", na=False)
+        
+        if 'tokens_per_second' not in results_df.columns:
+            # Tính tokens_per_second dựa trên elapsed_time và response_length
+            results_df['tokens_per_second'] = results_df.apply(
+                lambda row: row['response_length'] / max(0.1, row['elapsed_time']) if row['elapsed_time'] > 0 else 0, 
+                axis=1
+            )
+        
+        if 'response_quality_score' not in results_df.columns:
+            # Tạo chỉ số chất lượng phản hồi đơn giản dựa trên các chỉ số đã có
+            if 'correctness_score' in results_df.columns:
+                results_df['response_quality_score'] = results_df['correctness_score']
+            else:
+                results_df['response_quality_score'] = 0.5  # Giá trị mặc định
+        
+        if 'quality_index' not in results_df.columns:
+            # Tạo chỉ số chất lượng tổng hợp
+            if 'correctness_score' in results_df.columns and 'consistency_score' in results_df.columns:
+                results_df['quality_index'] = (
+                    results_df['correctness_score'] * 0.6 + 
+                    results_df['consistency_score'] * 0.4
+                )
+            else:
+                results_df['quality_index'] = results_df['response_quality_score']
+                
+        if 'coherence_score' not in results_df.columns:
+            # Tạo chỉ số mạch lạc từ các chỉ số khác
+            if 'consistency_score' in results_df.columns:
+                results_df['coherence_score'] = results_df['consistency_score']
+            else:
+                results_df['coherence_score'] = 0.5  # Giá trị mặc định
         
         # Generate basic statistics by model and prompt type
         model_stats = results_df.groupby('model_name').agg({
@@ -1922,39 +2139,49 @@ def generate_report_and_visualizations(results_file, output_dir):
         plt.close()
 
         # 15. Quality Metrics Radar Chart
-        quality_metrics = ['response_quality_score', 'complexity_score', 'coherence_score', 
-                         'efficiency_score', 'tokens_per_second']
+        # Định nghĩa các metrics tiềm năng
+        potential_metrics = ['response_quality_score', 'complexity_score', 'coherence_score', 
+                          'efficiency_score', 'tokens_per_second']
         
-        # Prepare data for radar chart
-        model_quality_data = {}
-        for model in results_df['model_name'].unique():
-            model_data = results_df[results_df['model_name'] == model]
-            scores = []
-            for metric in quality_metrics:
-                # Normalize scores between 0 and 1
-                score = (model_data[metric].mean() - results_df[metric].min()) / \
-                       (results_df[metric].max() - results_df[metric].min())
-                scores.append(score)
-            model_quality_data[model] = scores
+        # Lọc ra các metrics thực sự tồn tại trong DataFrame
+        quality_metrics = [metric for metric in potential_metrics if metric in results_df.columns]
+        
+        if len(quality_metrics) > 2:  # Cần ít nhất 3 metrics để tạo radar chart có ý nghĩa
+            # Prepare data for radar chart
+            model_quality_data = {}
+            for model in results_df['model_name'].unique():
+                model_data = results_df[results_df['model_name'] == model]
+                scores = []
+                for metric in quality_metrics:
+                    # Normalize scores between 0 and 1
+                    metric_min = results_df[metric].min()
+                    metric_max = results_df[metric].max()
+                    # Tránh chia cho 0 nếu min = max
+                    if metric_max > metric_min:
+                        score = (model_data[metric].mean() - metric_min) / (metric_max - metric_min)
+                    else:
+                        score = 0.5  # Giá trị mặc định nếu không thể chuẩn hóa
+                    scores.append(score)
+                model_quality_data[model] = scores
 
-        # Create radar chart
-        fig = plt.figure(figsize=(10, 10))
-        ax = fig.add_subplot(111, polar=True)
-        angles = np.linspace(0, 2*np.pi, len(quality_metrics), endpoint=False)
-        angles = np.concatenate((angles, [angles[0]]))  # Complete the circle
+            # Create radar chart
+            fig = plt.figure(figsize=(10, 10))
+            ax = fig.add_subplot(111, polar=True)
+            angles = np.linspace(0, 2*np.pi, len(quality_metrics), endpoint=False)
+            angles = np.concatenate((angles, [angles[0]]))  # Complete the circle
 
-        for i, (model, scores) in enumerate(model_quality_data.items()):
-            scores = np.concatenate((scores, [scores[0]]))  # Close the loop
-            ax.plot(angles, scores, 'o-', linewidth=2, label=model)
-            ax.fill(angles, scores, alpha=0.25)
+            for i, (model, scores) in enumerate(model_quality_data.items()):
+                scores = np.concatenate((scores, [scores[0]]))  # Close the loop
+                ax.plot(angles, scores, 'o-', linewidth=2, label=model)
+                ax.fill(angles, scores, alpha=0.25)
 
-        ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(quality_metrics)
-        plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
-        plt.title('Quality Metrics Comparison')
-        plt.tight_layout()
-        plt.savefig(os.path.join(plots_dir, 'quality_radar.png'), dpi=300)
-        plt.close()
+            ax.set_xticks(angles[:-1])
+            ax.set_xticklabels(quality_metrics)
+            plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+            plt.title('Quality Metrics Comparison')
+            plt.tight_layout()
+            plt.savefig(os.path.join(plots_dir, 'quality_radar.png'), dpi=300)
+            plt.close()
 
         # 16. Stacked Area Chart for Response Types
         plt.figure(figsize=(12, 6))
@@ -2024,18 +2251,29 @@ def generate_report_and_visualizations(results_file, output_dir):
         )
 
         # Add new metrics to the statistics section
-        stats.update({
+        stats_update = {
             "quality_metrics": {
-                "avg_quality_score": results_df['response_quality_score'].mean(),
-                "avg_complexity": results_df['complexity_score'].mean(),
-                "avg_coherence": results_df['coherence_score'].mean(),
-                "quality_consistency": results_df['response_quality_score'].std(),
-            },
-            "performance_stability": {
-                model: results_df[results_df['model_name'] == model]['elapsed_time'].std()
-                for model in results_df['model_name'].unique()
+                "avg_quality_score": results_df['response_quality_score'].mean()
             }
-        })
+        }
+        
+        # Thêm các chỉ số vào stats nếu chúng tồn tại trong DataFrame
+        if 'complexity_score' in results_df.columns:
+            stats_update["quality_metrics"]["avg_complexity"] = results_df['complexity_score'].mean()
+            
+        if 'coherence_score' in results_df.columns:
+            stats_update["quality_metrics"]["avg_coherence"] = results_df['coherence_score'].mean()
+            
+        if 'response_quality_score' in results_df.columns:
+            stats_update["quality_metrics"]["quality_consistency"] = results_df['response_quality_score'].std()
+            
+        # Thêm chỉ số về độ ổn định của hiệu suất
+        stats_update["performance_stability"] = {
+            model: results_df[results_df['model_name'] == model]['elapsed_time'].std()
+            for model in results_df['model_name'].unique()
+        }
+        
+        stats.update(stats_update)
         
         # Tính thêm các chỉ số mới nâng cao
         for model in results_df['model_name'].unique():
@@ -2114,24 +2352,28 @@ def generate_report_and_visualizations(results_file, output_dir):
         plt.close()
         
         # 18. Thêm Heatmap so sánh nhiều chỉ số
-        metrics_to_compare = ['response_quality_score', 'complexity_score', 'coherence_score', 'efficiency_score', 'quality_index']
+        potential_metrics = ['response_quality_score', 'complexity_score', 'coherence_score', 'efficiency_score', 'quality_index']
         
-        # Calculate average of each metric for each model
-        heatmap_data = results_df.groupby('model_name')[metrics_to_compare].mean()
+        # Lọc các metrics thực sự có trong DataFrame
+        metrics_to_compare = [metric for metric in potential_metrics if metric in results_df.columns]
         
-        # Create heatmap
-        plt.figure(figsize=(12, 8))
-        sns.heatmap(
-            heatmap_data, 
-            annot=True, 
-            cmap='viridis', 
-            linewidths=0.5, 
-            fmt='.3f'
-        )
-        plt.title('Multi-Metric Comparison Across Models', fontsize=16)
-        plt.tight_layout()
-        plt.savefig(os.path.join(plots_dir, 'multi_metric_heatmap.png'), dpi=300)
-        plt.close()
+        if len(metrics_to_compare) > 0:
+            # Calculate average of each metric for each model
+            heatmap_data = results_df.groupby('model_name')[metrics_to_compare].mean()
+            
+            # Create heatmap
+            plt.figure(figsize=(12, 8))
+            sns.heatmap(
+                heatmap_data, 
+                annot=True, 
+                cmap='viridis', 
+                linewidths=0.5, 
+                fmt='.3f'
+            )
+            plt.title('Multi-Metric Comparison Across Models', fontsize=16)
+            plt.tight_layout()
+            plt.savefig(os.path.join(plots_dir, 'multi_metric_heatmap.png'), dpi=300)
+            plt.close()
         
         # 19. Thêm Horizon Plot cho biến động thời gian qua các mô hình
         from matplotlib.colors import ListedColormap
@@ -2853,6 +3095,587 @@ def generate_report_and_visualizations(results_file, output_dir):
         import traceback
         traceback.print_exc()
 
+# Define a new function to parse GPU allocations from command-line arguments
+def parse_gpu_allocation(gpu_allocation_str, models, default_gpu_ids):
+    """
+    Parse GPU allocation string and create a mapping of model to GPU IDs.
+    
+    Format: "model1:gpu_id1,model2:gpu_id2,..."
+    If a model is not specified, it will be assigned a default GPU ID.
+    
+    Args:
+        gpu_allocation_str (str): GPU allocation string
+        models (list): List of models to allocate
+        default_gpu_ids (list): List of default GPU IDs
+        
+    Returns:
+        dict: Mapping of model to GPU IDs
+    """
+    # Create default mapping: each model gets one GPU from default_gpu_ids
+    allocation = {}
+    api_based_models = ["gemini"] # Models that don't need GPU resources
+    
+    # If no allocation string is provided, create a balanced allocation
+    if not gpu_allocation_str:
+        available_gpus = default_gpu_ids.copy()
+        
+        # First allocate for models that need GPU resources
+        for model in models:
+            if model not in api_based_models:
+                if available_gpus:
+                    allocation[model] = [available_gpus.pop(0)]
+                else:
+                    # If we run out of GPUs, reuse the first one
+                    allocation[model] = [default_gpu_ids[0]]
+        
+        # For API-based models, they don't need GPU
+        for model in models:
+            if model in api_based_models:
+                allocation[model] = []
+        
+        return allocation
+    
+    # Parse allocation string
+    pairs = gpu_allocation_str.split(',')
+    for pair in pairs:
+        if ':' not in pair:
+            continue
+            
+        model, gpu_id = pair.split(':')
+        model = model.strip()
+        gpu_id = int(gpu_id.strip())
+        
+        # Skip invalid models
+        if model not in models:
+            print_status("warning", f"Ignoring allocation for unknown model '{model}'", "yellow")
+            continue
+            
+        # Initialize if needed
+        if model not in allocation:
+            allocation[model] = []
+            
+        # Add GPU ID
+        allocation[model].append(gpu_id)
+    
+    # Check if any models are missing and assign default GPUs
+    for model in models:
+        if model not in allocation:
+            # For API-based models, they don't need GPU
+            if model in api_based_models:
+                allocation[model] = []
+            else:
+                # Just use the first default GPU if none specified
+                allocation[model] = [default_gpu_ids[0]]
+                print_status("info", f"Model '{model}' not in allocation string, using default GPU {default_gpu_ids[0]}", "blue")
+    
+    return allocation
+
+# Add the parallel model evaluation functions
+def evaluate_models_in_parallel(questions, models, prompt_types, gpu_allocation, output_dir, timestamp, batch_size=10, use_4bit=True):
+    """
+    Evaluate multiple models in parallel using a more efficient approach.
+    Uses model caching to avoid reloading models, and separate processes/threads
+    for processing different parts of the evaluation.
+    
+    Args:
+        questions (list): List of questions to evaluate
+        models (list): List of models to evaluate
+        prompt_types (list): List of prompt types to evaluate
+        gpu_allocation (dict): Dictionary mapping model names to list of GPU IDs
+        output_dir (str): Directory to save results
+        timestamp (str): Timestamp for result files
+        batch_size (int): Number of questions to process in each batch
+        use_4bit (bool): Whether to use 4-bit quantization
+        
+    Returns:
+        tuple: (results, results_file)
+    """
+    print_status("info", "Starting efficient parallel evaluation with GPU distribution", "blue")
+    
+    # Create a manager for shared results
+    with Manager() as manager:
+        # Create a shared dictionary to store results
+        shared_results = manager.dict()
+        # Create a lock for thread-safe operations
+        lock = manager.Lock()
+        
+        # First, handle any API-based models (e.g., Gemini) in separate threads
+        api_threads = []
+        gpu_processes = []
+        processes = []  # List to store all processes and threads
+        
+        # Stage 1: Start API-based models in threads
+        for model_name in models:
+            # Get GPU allocation for this model
+            model_gpu_ids = gpu_allocation.get(model_name, [])
+            
+            # If the model is API-based, run it in a separate thread
+            if model_name == "gemini" or not model_gpu_ids:
+                print_status("info", f"Starting {model_name} in thread (API-based model)", "blue")
+                
+                # Create thread for API model
+                api_thread = threading.Thread(
+                    target=evaluate_single_model_process,
+                    args=(
+                        questions,
+                        model_name,
+                        prompt_types,
+                        -1,  # No GPU needed for API
+                        batch_size,
+                        use_4bit,
+                        shared_results,
+                        output_dir,
+                        timestamp
+                    )
+                )
+                api_thread.daemon = True
+                api_thread.start()
+                processes.append(api_thread)
+                continue
+            
+            # For GPU-based models, create a process for each GPU assigned to the model
+            for gpu_id in model_gpu_ids:
+                print_status("info", f"Starting {model_name} on GPU {gpu_id}", "blue")
+                
+                # Create process for this model on this GPU
+                p = Process(
+                    target=evaluate_single_model_process,
+                    args=(
+                        questions,
+                        model_name,
+                        prompt_types,
+                        gpu_id,
+                        batch_size,
+                        use_4bit,
+                        shared_results,
+                        output_dir,
+                        timestamp
+                    )
+                )
+                p.start()
+                processes.append(p)
+        
+        # Wait for all processes to complete
+        for p in processes:
+            if isinstance(p, Process):
+                p.join()
+            else:
+                p.join()  # For threads
+        
+        # Get final results from shared dictionary
+        results = dict(shared_results)
+        
+        # Save final results
+        results_file = os.path.join(output_dir, f"results_{timestamp}.json")
+        with open(results_file, 'w', encoding='utf-8') as f:
+            json.dump(results, f, indent=4, ensure_ascii=False)
+        
+        print_status("success", "Parallel evaluation complete", "green")
+        
+        return results, results_file
+
+def evaluate_single_model_process(questions, model_name, prompt_types, gpu_id, batch_size, use_4bit, shared_results, output_dir, timestamp):
+    """
+    Process function for evaluating a single model on a specific GPU.
+    
+    Args:
+        questions (list): List of questions to evaluate
+        model_name (str): Name of the model to evaluate
+        prompt_types (list): List of prompt types to evaluate
+        gpu_id (int): GPU ID to use (-1 for API models)
+        batch_size (int): Number of questions to process in each batch
+        use_4bit (bool): Whether to use 4-bit quantization
+        shared_results (dict): Shared dictionary to store results
+        output_dir (str): Directory to save results
+        timestamp (str): Timestamp for result files
+    """
+    try:
+        # Configure environment for GPU usage if not an API model
+        if gpu_id >= 0:
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
+        
+        # Set up prompt functions mapping
+        prompt_mapping = {
+            "standard": standard_prompt,
+            "zero_shot": zero_shot_prompt,
+            "cot": chain_of_thought_prompt,
+            "hybrid_cot": hybrid_cot_prompt,
+            "zero_shot_cot": zero_shot_cot_prompt,
+            "few_shot_3": few_shot_3_prompt,
+            "few_shot_5": few_shot_5_prompt,
+            "few_shot_7": few_shot_7_prompt,
+            "cot_self_consistency_3": cot_self_consistency_3_prompt,
+            "cot_self_consistency_5": cot_self_consistency_5_prompt,
+            "cot_self_consistency_7": cot_self_consistency_7_prompt,
+            "react": react_prompt
+        }
+        
+        # Pre-load model if it's not an API model (to avoid loading it for each prompt type)
+        tokenizer = None
+        model = None
+        if model_name != "gemini":
+            try:
+                tokenizer, model = get_or_load_model(model_name, gpu_id, use_4bit)
+                if model is None:
+                    print_status("error", f"Failed to load {model_name} model. Skipping.", "red")
+                    return
+            except Exception as model_e:
+                print_status("error", f"Error with model loading: {str(model_e)}", "red")
+                return
+        
+        # Process each prompt type for this model
+        for prompt_type in prompt_types:
+            model_prompt_key = f"{model_name}_{prompt_type}"
+            prompt_fn = prompt_mapping[prompt_type]
+            
+            print_status("processing", f"Processing {model_name} with {prompt_type} prompt on GPU {gpu_id}", "blue")
+            
+            # Initialize storage for this model and prompt type
+            if model_prompt_key not in shared_results:
+                shared_results[model_prompt_key] = []
+            
+            # Process in batches
+            num_batches = (len(questions) + batch_size - 1) // batch_size
+            
+            for batch_idx in range(num_batches):
+                start_idx = batch_idx * batch_size
+                end_idx = min((batch_idx + 1) * batch_size, len(questions))
+                batch_questions = questions[start_idx:end_idx]
+                
+                print_status("processing", f"Processing batch {batch_idx+1}/{num_batches} for {model_name} with {prompt_type}", "blue")
+                
+                try:
+                    # Generate prompts for questions
+                    prompts = [prompt_fn(q, "classical_problem") for q in batch_questions]
+                    
+                    batch_start_time = time.time()
+                    
+                    # Use common function to generate responses
+                    responses = generate_batch_responses(
+                        model_name, 
+                        prompts, 
+                        tokenizer=tokenizer, 
+                        model=model, 
+                        gpu_id=gpu_id
+                    )
+                    
+                    # Calculate batch metrics
+                    batch_end_time = time.time()
+                    batch_duration = batch_end_time - batch_start_time
+                    
+                    # Format results for the batch
+                    results_for_batch = []
+                    for i, (question, response) in enumerate(zip(batch_questions, responses)):
+                        result = {
+                            "question": question,
+                            "response": response,
+                            "model": model_name,
+                            "prompt_type": prompt_type,
+                            "elapsed_time": batch_duration / len(batch_questions),
+                            "token_count": len(prompt_fn(question, "classical_problem").split()),
+                            "response_length": len(response.split()),
+                            "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S")
+                        }
+                        results_for_batch.append(result)
+                    
+                    # Update shared results and save partial results
+                    with portalocker.Lock(f"lock_{model_prompt_key}.lock", timeout=10):
+                        shared_results[model_prompt_key].extend(results_for_batch)
+                        
+                    # Save partial results to file for backup
+                    partial_results_file = os.path.join(output_dir, f"{model_name}_{prompt_type}_{timestamp}_partial.json")
+                    with open(partial_results_file, 'w', encoding='utf-8') as f:
+                        json.dump({model_prompt_key: shared_results[model_prompt_key]}, f, indent=4, ensure_ascii=False)
+                    
+                    # Print progress and stats
+                    print_status("success", f"Completed batch {batch_idx+1}/{num_batches} for {model_name} with {prompt_type}", "green")
+                    avg_time = batch_duration / len(batch_questions)
+                    avg_tokens = sum(len(r.split()) for r in responses) / len(responses)
+                    tokens_per_sec = avg_tokens / max(0.1, avg_time)
+                    print_status("info", f"Stats: {avg_time:.2f}s/question, {avg_tokens:.1f} tokens, {tokens_per_sec:.1f} tokens/sec", "blue")
+                    
+                except Exception as e:
+                    print_status("error", f"Error processing batch {batch_idx+1} for {model_name} with {prompt_type}: {str(e)}", "red")
+            
+            print_status("success", f"Completed all batches for {model_name} with {prompt_type}", "green")
+            
+    except Exception as e:
+        print_status("error", f"Error in process for {model_name} on GPU {gpu_id}: {str(e)}", "red")
+        import traceback
+        traceback.print_exc()
+
+def get_or_load_model(model_name, gpu_id, use_4bit=True):
+    """
+    Get a cached model instance or load it if not available.
+    Uses a locking mechanism to prevent multiple threads from loading the same model.
+    
+    Args:
+        model_name (str): Name of the model to load
+        gpu_id (int): GPU ID to load the model on
+        use_4bit (bool): Whether to use 4-bit quantization
+        
+    Returns:
+        tuple: (tokenizer, model)
+    """
+    global _LOADED_MODELS, _MODEL_LOADING_LOCKS
+    
+    # Create a unique key for this model and GPU combination
+    model_key = f"{model_name}_{gpu_id}"
+    
+    # Initialize lock if not exists
+    if model_key not in _MODEL_LOADING_LOCKS:
+        _MODEL_LOADING_LOCKS[model_key] = threading.Lock()
+    
+    # Check if model is already loaded
+    with _MODEL_LOADING_LOCKS[model_key]:
+        if model_key in _LOADED_MODELS and _LOADED_MODELS[model_key]["model"] is not None:
+            print_status("info", f"Using cached {model_name} model on GPU {gpu_id}", "blue")
+            return _LOADED_MODELS[model_key]["tokenizer"], _LOADED_MODELS[model_key]["model"]
+        
+        # Model is not loaded, load it now
+        try:
+            print_status("loading", f"Loading {model_name} model on GPU {gpu_id} with maximum memory", "blue")
+            
+            # Map model name to paths
+            if model_name == "llama":
+                model_path = os.getenv("LLAMA_MODEL_PATH", "meta-llama/Meta-Llama-3-70B-Instruct")
+                tokenizer_path = os.getenv("LLAMA_TOKENIZER_PATH", model_path)
+            elif model_name == "qwen":
+                model_path = os.getenv("QWEN_MODEL_PATH", "Qwen/Qwen2-72B-Instruct")
+                tokenizer_path = os.getenv("QWEN_TOKENIZER_PATH", model_path)
+            else:
+                print_status("error", f"Unsupported model: {model_name}", "red")
+                return None, None
+            
+            # Set the environment to use only the specified GPU
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
+            
+            # Configure tokenizer
+            tokenizer = AutoTokenizer.from_pretrained(
+                tokenizer_path,
+                trust_remote_code=True
+            )
+            
+            # Set padding token if not exists
+            if tokenizer.pad_token is None:
+                if tokenizer.eos_token is not None:
+                    tokenizer.pad_token = tokenizer.eos_token
+                else:
+                    tokenizer.pad_token = tokenizer.unk_token
+            
+            # Configure quantization for 4-bit if requested
+            if use_4bit:
+                bnb_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_compute_dtype=torch.bfloat16,
+                    bnb_4bit_use_double_quant=True,
+                    bnb_4bit_quant_type="nf4",
+                )
+            else:
+                bnb_config = None
+            
+            # Load model with maximum memory utilization
+            model = AutoModelForCausalLM.from_pretrained(
+                model_path,
+                device_map="auto",  # Let the library decide the optimal device map
+                torch_dtype=torch.bfloat16,
+                quantization_config=bnb_config if use_4bit else None,
+                trust_remote_code=True,
+                # Remove max_memory limit to use all available GPU memory
+                max_memory=None,
+            )
+            
+            # Set generation hyperparameters
+            model.generation_config.temperature = 0.7
+            model.generation_config.do_sample = True
+            model.generation_config.top_p = 0.95
+            model.generation_config.top_k = 40
+            model.generation_config.num_beams = 1  # Greedy decoding with temperature
+            model.generation_config.max_new_tokens = 1024
+            model.generation_config.use_cache = True  # Use KV cache for faster generation
+            
+            # Cache the loaded model
+            _LOADED_MODELS[model_key] = {
+                "tokenizer": tokenizer,
+                "model": model,
+                "last_used": time.time()
+            }
+            
+            print_status("success", f"Successfully loaded {model_name} on GPU {gpu_id} with maximum memory", "green")
+            return tokenizer, model
+            
+        except Exception as e:
+            print_status("error", f"Failed to load {model_name} on GPU {gpu_id}: {str(e)}", "red")
+            import traceback
+            traceback.print_exc()
+            return None, None
+
+def evaluate_sequentially_optimized(questions, models, prompt_types, gpu_ids, output_dir, timestamp, batch_size=10, use_4bit=True):
+    """
+    Optimized sequential evaluation that uses all available GPUs efficiently.
+    Models are loaded once and reused across prompt types.
+    
+    Args:
+        questions (list): List of questions to evaluate
+        models (list): List of models to evaluate
+        prompt_types (list): List of prompt types to evaluate
+        gpu_ids (list): List of GPU IDs to use
+        output_dir (str): Directory to save results
+        timestamp (str): Timestamp for result files
+        batch_size (int): Number of questions to process in each batch
+        use_4bit (bool): Whether to use 4-bit quantization
+        
+    Returns:
+        tuple: (results, results_file)
+    """
+    print_header("Optimized Sequential Evaluation Mode")
+    print_status("info", f"Using GPUs: {gpu_ids}", "blue")
+    
+    # Create prompt mapping
+    prompt_mapping = {
+        "standard": standard_prompt,
+        "zero_shot": zero_shot_prompt,
+        "cot": chain_of_thought_prompt,
+        "hybrid_cot": hybrid_cot_prompt,
+        "zero_shot_cot": zero_shot_cot_prompt,
+        "few_shot_3": few_shot_3_prompt,
+        "few_shot_5": few_shot_5_prompt,
+        "few_shot_7": few_shot_7_prompt,
+        "cot_self_consistency_3": cot_self_consistency_3_prompt,
+        "cot_self_consistency_5": cot_self_consistency_5_prompt,
+        "cot_self_consistency_7": cot_self_consistency_7_prompt,
+        "react": react_prompt
+    }
+    
+    # Initialize results dictionary
+    results = {}
+    
+    # Assign GPU to each model (round-robin allocation for non-API models)
+    model_gpu_mapping = {}
+    available_gpus = gpu_ids.copy()
+    
+    for model_name in models:
+        if model_name == "gemini":  # API model doesn't need GPU
+            model_gpu_mapping[model_name] = -1
+        else:
+            # Assign next available GPU (round-robin)
+            if available_gpus:
+                gpu_id = available_gpus.pop(0)
+                model_gpu_mapping[model_name] = gpu_id
+            else:
+                # If no more GPUs, reuse from the beginning
+                model_gpu_mapping[model_name] = gpu_ids[0]
+                available_gpus = gpu_ids.copy()[1:]  # Reset, but skip the one we just used
+    
+    print_status("info", f"Model to GPU mapping: {model_gpu_mapping}", "blue")
+    
+    # Process questions in batches
+    num_batches = (len(questions) + batch_size - 1) // batch_size
+    
+    # Process each model first (load once, use for all prompt types)
+    for model_name in models:
+        print_header(f"Processing Model: {model_name}")
+        
+        # Get assigned GPU for this model
+        gpu_id = model_gpu_mapping[model_name]
+        
+        # Preload model if it's not API-based
+        model = None
+        tokenizer = None
+        if model_name != "gemini":
+            tokenizer, model = get_or_load_model(model_name, gpu_id, use_4bit)
+            if model is None:
+                print_status("error", f"Could not load {model_name}, skipping", "red")
+                continue
+        
+        # Process each prompt type for this model
+        for prompt_type in prompt_types:
+            model_prompt_key = f"{model_name}_{prompt_type}"
+            print_status("processing", f"Processing {model_name} with {prompt_type} prompt", "blue")
+            
+            # Skip if already processed
+            if model_prompt_key in results and len(results[model_prompt_key]) >= len(questions):
+                print_status("info", f"Skipping {model_name} with {prompt_type} prompt (already processed)", "blue")
+                continue
+            
+            prompt_fn = prompt_mapping[prompt_type]
+            all_batch_results = []
+            
+            # Process each batch
+            for batch_idx in range(num_batches):
+                print_status("info", f"Processing batch {batch_idx+1}/{num_batches}", "blue")
+                
+                # Get questions for this batch
+                start_idx = batch_idx * batch_size
+                end_idx = min((batch_idx + 1) * batch_size, len(questions))
+                batch_questions = questions[start_idx:end_idx]
+                
+                try:
+                    # Generate prompts for all questions
+                    prompts = [prompt_fn(q, "classical_problem") for q in batch_questions]
+                    
+                    # Record start time
+                    batch_start_time = time.time()
+                    
+                    # Use common function to generate responses
+                    responses = generate_batch_responses(
+                        model_name, 
+                        prompts, 
+                        tokenizer=tokenizer, 
+                        model=model, 
+                        gpu_id=gpu_id
+                    )
+                    
+                    # Calculate batch metrics
+                    batch_end_time = time.time()
+                    batch_duration = batch_end_time - batch_start_time
+                    
+                    # Format results for batch
+                    batch_results = []
+                    for i, (question, response) in enumerate(zip(batch_questions, responses)):
+                        result = {
+                            "question": question,
+                            "response": response,
+                            "model": model_name,
+                            "prompt_type": prompt_type,
+                            "elapsed_time": batch_duration / len(batch_questions),
+                            "token_count": len(prompt_fn(question, "classical_problem").split()),
+                            "response_length": len(response.split()),
+                            "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S")
+                        }
+                        batch_results.append(result)
+                    
+                    # Add to results
+                    all_batch_results.extend(batch_results)
+                    
+                    # Print stats
+                    print_status("info", f"Batch {batch_idx+1}/{num_batches} completed", "blue")
+                    avg_time = batch_duration / len(batch_questions)
+                    avg_tokens = sum(len(r.split()) for r in responses) / len(responses)
+                    tokens_per_sec = avg_tokens / max(0.1, avg_time)
+                    print_status("info", f"Average response time: {avg_time:.2f}s, {avg_tokens:.1f} tokens, {tokens_per_sec:.1f} tokens/sec", "green")
+                    
+                    # Save intermediate results
+                    if model_prompt_key not in results:
+                        results[model_prompt_key] = []
+                    results[model_prompt_key].extend(batch_results)
+                    
+                    # Save partial results
+                    partial_results_file = os.path.join(output_dir, f"{model_name}_{prompt_type}_{timestamp}_partial.json")
+                    with open(partial_results_file, 'w', encoding='utf-8') as f:
+                        json.dump({model_prompt_key: all_batch_results}, f, indent=4, ensure_ascii=False)
+                    
+                except Exception as e:
+                    print_status("error", f"Error processing batch: {str(e)}", "red")
+                    import traceback
+                    traceback.print_exc()
+                    continue
+            
+            # Save full results after each prompt type
+            results_file = save_results(results, output_dir, timestamp)
+            
+    return results, results_file
+
 def main():
     """Main function with improved display."""
     args = setup_argparse().parse_args()
@@ -2861,6 +3684,10 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_dir = os.path.join(args.results_dir, timestamp)
     os.makedirs(output_dir, exist_ok=True)
+    
+    # Create plots directory
+    plots_dir = os.path.join(output_dir, "plots")
+    os.makedirs(plots_dir, exist_ok=True)
     
     # Save arguments for reproducibility
     with open(os.path.join(output_dir, "config.json"), 'w') as f:
@@ -2878,6 +3705,10 @@ def main():
     print(f"Max workers: {args.max_workers}")
     print(f"Max questions: {args.max_questions}")
     print(f"Output directory: {output_dir}")
+    print(f"Parallel mode: {args.parallel}")
+    if args.parallel:
+        print(f"GPU IDs: {args.gpu_ids}")
+        print(f"GPU allocation: {args.gpu_allocation}")
     
     # Check GPU memory
     if torch.cuda.is_available():
@@ -2885,6 +3716,11 @@ def main():
         check_gpu_memory()
     else:
         print_status("warning", "⚠️ No GPU found", "yellow")
+    
+    # Check for API models and warn about quota
+    if "gemini" in models:
+        print_status("warning", "⚠️ Using Gemini API model. API rate limits apply.", "yellow")
+        print_status("info", "ℹ️ Rate limiting has been implemented to handle API quota issues.", "blue")
     
     print_header("Loading Questions")
     print_status("loading", "Loading questions...", "blue")
@@ -2918,99 +3754,90 @@ def main():
     
     results = existing_results
     
-    # Create prompt mapping
-    prompt_mapping = {
-        "standard": standard_prompt,
-        "cot": chain_of_thought_prompt,
-        "hybrid_cot": hybrid_cot_prompt,
-        "zero_shot_cot": zero_shot_cot_prompt
-    }
+    # Parse GPU IDs for both modes
+    gpu_ids = []
+    if args.gpu_ids:
+        gpu_ids = [int(x) for x in args.gpu_ids.split(',')]
+    elif torch.cuda.is_available():
+        # If no GPU IDs specified, use all available
+        gpu_ids = list(range(torch.cuda.device_count()))
     
-    # Process batches of questions
-    batch_size = args.batch_size
-    num_batches = (len(questions) + batch_size - 1) // batch_size
+    if not gpu_ids and any(model != "gemini" for model in models):
+        print_status("warning", "No GPU IDs specified and no GPUs detected. Non-API models will be slow.", "yellow")
+        gpu_ids = [0]  # Default to CPU mode with 0
     
-    for batch_idx in range(num_batches):
-        print_header(f"Processing Batch {batch_idx+1}/{num_batches}")
+    # If parallel mode is enabled, use parallel evaluation
+    if args.parallel:
+        print_header("Parallel Evaluation Mode")
         
-        # Get questions for this batch
-        start_idx = batch_idx * batch_size
-        end_idx = min((batch_idx + 1) * batch_size, len(questions))
-        batch_questions = questions[start_idx:end_idx]
+        # Parse GPU allocations
+        gpu_allocation = parse_gpu_allocation(args.gpu_allocation, models, gpu_ids)
+        
+        print_status("info", f"Using GPU allocation: {gpu_allocation}", "blue")
         
         try:
-            # Process each model and prompt type
-            for model_name in models:
-                # Check if the model is supported
-                if model_name not in ["llama", "qwen", "gemini"]:
-                    print_status("error", f"Model '{model_name}' is not supported. Skipping.", "red")
-                    continue
-                    
-                for prompt_type in prompt_types:
-                    # Skip if already processed
-                    model_prompt_key = f"{model_name}_{prompt_type}"
-                    if model_prompt_key in results and len(results[model_prompt_key]) >= end_idx:
-                        print_status("info", f"Skipping {model_name} with {prompt_type} prompt (already processed)", "blue")
-                        continue
-                    
-                    print_status("processing", f"Processing {model_name} with {prompt_type} prompt", "blue")
-                    
-                    try:
-                        # Process batch for this model and prompt type
-                        batch_results = process_batch(
-                            batch_questions, 
-                            model_name, 
-                            prompt_mapping[prompt_type], 
-                            prompt_type,
-                            max_workers=args.max_workers,
+            # Evaluate models in parallel
+            results, results_file = evaluate_models_in_parallel(
+                questions=questions,
+                models=models,
+                prompt_types=prompt_types,
+                gpu_allocation=gpu_allocation,
+                output_dir=output_dir,
+                timestamp=timestamp,
+                batch_size=args.batch_size,
                             use_4bit=args.use_4bit
                         )
-                        
-                        # Initialize model results if needed
-                        if model_prompt_key not in results:
-                            results[model_prompt_key] = []
-                        
-                        # Append results
-                        results[model_prompt_key].extend(batch_results)
-                        
-                        # Save temporary results after each model/prompt combination
-                        save_results(results, output_dir, timestamp)
-                        
-                        # Print statistics
-                        avg_time = sum(r['elapsed_time'] for r in batch_results) / len(batch_results)
-                        print_status("success", f"Average response time: {avg_time:.2f}s", "green")
-                    except Exception as e:
-                        print_status("error", f"Error processing {model_name} with {prompt_type}: {str(e)}", "red")
-                        print("Continuing with next model/prompt combination...")
-                        continue
-                    
-                    # Clear memory after processing each model
-                    clear_memory()
-            
-            # Save after each batch
-            save_results(results, output_dir, timestamp)
-            
         except Exception as e:
-            print_status("error", f"Error processing batch: {str(e)}", "red")
+            print_status("error", f"Error in parallel evaluation: {str(e)}", "red")
             import traceback
             traceback.print_exc()
-            # Save what we have so far
-            save_results(results, output_dir, timestamp)
-            
-            # Continue with the next batch instead of terminating
-            print_status("info", "Continuing with next batch...", "blue")
-            continue
+            # Fall back to sequential mode
+            print_status("warning", "Falling back to sequential evaluation", "yellow")
+            args.parallel = False
     
-    # Final save
-    results_file = save_results(results, output_dir, timestamp)
+    # Sequential evaluation (default or fallback)
+    if not args.parallel:
+        # Use the new optimized sequential evaluation
+        results, results_file = evaluate_sequentially_optimized(
+            questions=questions,
+            models=models,
+            prompt_types=prompt_types,
+            gpu_ids=gpu_ids,
+            output_dir=output_dir,
+            timestamp=timestamp,
+            batch_size=args.batch_size,
+            use_4bit=args.use_4bit
+        )
+    
+    # Check if any results were obtained
+    if not results:
+        print_status("error", "No evaluation results were collected. Unable to generate report.", "red")
+        return None, output_dir
+
+    # Count successful responses vs. errors for Gemini API
+    if "gemini" in models:
+        gemini_stats = {"total": 0, "success": 0, "errors": 0}
+        for model_prompt_key, results_list in results.items():
+            if model_prompt_key.startswith("gemini_"):
+                for result in results_list:
+                    gemini_stats["total"] += 1
+                    if result.get("response", "").startswith("[Error:"):
+                        gemini_stats["errors"] += 1
+                    else:
+                        gemini_stats["success"] += 1
+        
+        print_status("info", f"Gemini API stats: {gemini_stats['success']}/{gemini_stats['total']} successful responses ({gemini_stats['errors']} errors)", "blue")
+        if gemini_stats["errors"] > 0:
+            print_status("warning", f"⚠️ {gemini_stats['errors']} Gemini API calls failed (likely due to quota limits)", "yellow")
     
     # Generate report and visualizations
     print_header("Generating Report")
     print_status("info", "Creating report and visualizations...", "blue")
     
     try:
-        # Generate comprehensive reports and visualizations using our optimized approach
+        # Generate comprehensive reports and visualizations
         generate_report_and_visualizations(results_file, output_dir)
+        print_status("success", "Report and visualizations generated successfully", "green")
         
     except Exception as e:
         print_status("error", f"Error generating report: {str(e)}", "red")
@@ -3019,8 +3846,201 @@ def main():
     
     print_header("Evaluation Complete")
     print_status("success", f"Results saved to {results_file}", "green")
+    print_status("success", f"Report and visualizations saved in {output_dir}", "green")
     
     return results, output_dir
+
+def generate_gemini_response(prompt):
+    """
+    Generate a response from the Gemini API model.
+    
+    Args:
+        prompt (str): The prompt text to send to the Gemini API.
+        
+    Returns:
+        str: The generated response text.
+    """
+    try:
+        # Use the model_manager's function to generate text with Gemini
+        from model_manager import generate_text_with_model
+        # Get model-specific max tokens value
+        max_tokens = get_max_tokens("gemini")
+        response = generate_text_with_model("gemini", prompt, max_tokens=max_tokens)
+        return response
+    except Exception as e:
+        # Handle API errors
+        error_message = str(e)
+        print_status("error", f"Error with Gemini API: {error_message}", "red")
+        return f"[Error: {error_message}]"
+
+def generate_model_response(model_name, prompt, tokenizer=None, model=None, gpu_id=-1):
+    """
+    Common function to generate responses from language models,
+    reducing code duplication between evaluation functions.
+    
+    Args:
+        model_name (str): Name of the model
+        prompt (str): Prompt text to generate response for
+        tokenizer: Optional tokenizer instance (for non-API models)
+        model: Optional model instance (for non-API models)
+        gpu_id (int): GPU ID for the model (-1 for API models)
+        
+    Returns:
+        str: The generated response text
+    """
+    try:
+        # Get model-specific max token value
+        max_tokens = get_max_tokens(model_name)
+        
+        if model_name == "gemini":
+            # Handle Gemini API model
+            max_retries = 5
+            retry_count = 0
+            retry_delay = 2
+            
+            while retry_count < max_retries:
+                try:
+                    response = generate_text_with_model(model_name, prompt, max_tokens=max_tokens)
+                    return response
+                except Exception as e:
+                    error_message = str(e)
+                    # Check if rate limit error (429)
+                    if "429" in error_message:
+                        retry_count += 1
+                        if retry_count < max_retries:
+                            print_status("warning", f"Rate limit error (429) for Gemini. Retrying in {retry_delay}s ({retry_count}/{max_retries})", "yellow")
+                            time.sleep(retry_delay)
+                            # Exponential backoff
+                            retry_delay *= 2
+                        else:
+                            print_status("error", f"Max retries reached for Gemini API. Skipping prompt.", "red")
+                            return "[Error: API rate limit exceeded]"
+                    else:
+                        print_status("error", f"Error with Gemini API: {error_message}", "red")
+                        return f"[Error: {error_message}]"
+                    
+        else:
+            # Handle LLM models (Llama, Qwen, etc.)
+            if tokenizer is None or model is None:
+                # Load model if not provided
+                tokenizer, model = get_or_load_model(model_name, gpu_id, use_4bit=True)
+                
+                if model is None or tokenizer is None:
+                    return f"[Error: Failed to load {model_name} model]"
+                
+            # Use batched or single processing based on model capabilities
+            try:
+                inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+                with torch.no_grad():
+                    outputs = model.generate(
+                        **inputs,
+                        max_new_tokens=max_tokens,  # Use model-specific value
+                        temperature=0.7,
+                        do_sample=True,
+                        pad_token_id=tokenizer.pad_token_id,
+                        eos_token_id=tokenizer.eos_token_id,
+                        # Speed up generation
+                        num_beams=1,
+                        top_p=0.95,
+                        use_cache=True,
+                    )
+                
+                generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+                prompt_text = tokenizer.decode(inputs['input_ids'][0], skip_special_tokens=True)
+                
+                if generated_text.startswith(prompt_text):
+                    response = generated_text[len(prompt_text):].strip()
+                else:
+                    response = generated_text.strip()
+                    
+                return response
+                
+            except Exception as e:
+                print_status("error", f"Error generating response: {str(e)}", "red")
+                return f"[Error: {str(e)}]"
+            
+    except Exception as e:
+        print_status("error", f"Unexpected error in generate_model_response: {str(e)}", "red")
+        return f"[Error: {str(e)}]"
+
+def generate_batch_responses(model_name, prompts, tokenizer=None, model=None, gpu_id=-1):
+    """
+    Generate responses for a batch of prompts using the appropriate model.
+    
+    Args:
+        model_name (str): Name of the model
+        prompts (list): List of prompt texts
+        tokenizer: Optional tokenizer instance (for non-API models)
+        model: Optional model instance (for non-API models)
+        gpu_id (int): GPU ID for the model (-1 for API models)
+        
+    Returns:
+        list: List of generated response texts
+    """
+    # Get model-specific max token value
+    max_tokens = get_max_tokens(model_name)
+    
+    if model_name == "gemini":
+        # For API models, process one by one with rate limiting
+        responses = []
+        for prompt in prompts:
+            response = generate_model_response(model_name, prompt, tokenizer, model, gpu_id)
+            responses.append(response)
+            # Add delay between API calls
+            if len(responses) < len(prompts):
+                time.sleep(2)
+        return responses
+        
+    else:
+        # For local models, use batch processing when possible
+        if tokenizer is not None and model is not None and hasattr(model, "generate"):
+            try:
+                # Process in smaller sub-batches to avoid OOM
+                max_sub_batch = min(3, len(prompts))  
+                responses = []
+                
+                # Process each sub-batch
+                for i in range(0, len(prompts), max_sub_batch):
+                    sub_prompts = prompts[i:i+max_sub_batch]
+                    
+                    # Tokenize all prompts in the sub-batch
+                    tokenized_inputs = tokenizer(sub_prompts, padding=True, return_tensors="pt").to(model.device)
+                    
+                    # Generate text for all prompts at once
+                    with torch.no_grad():
+                        outputs = model.generate(
+                            **tokenized_inputs,
+                            max_new_tokens=max_tokens,  # Use model-specific value
+                            temperature=0.7,
+                            do_sample=True,
+                            pad_token_id=tokenizer.pad_token_id,
+                            eos_token_id=tokenizer.eos_token_id,
+                            # Speed up generation
+                            num_beams=1,
+                            top_p=0.95,
+                            use_cache=True,
+                        )
+                    
+                    # Process each output
+                    for j, (output, prompt) in enumerate(zip(outputs, sub_prompts)):
+                        # Extract only the generated part (remove the prompt)
+                        generated_text = tokenizer.decode(output, skip_special_tokens=True)
+                        
+                        if generated_text.startswith(prompt):
+                            response = generated_text[len(prompt):].strip()
+                        else:
+                            response = generated_text.strip()
+                            
+                        responses.append(response)
+                
+                return responses
+                
+            except Exception as batch_e:
+                print_status("error", f"Error in batch processing: {str(batch_e)}", "red")
+                # Fall back to one-by-one processing
+                
+        # Default to processing one by one
+        return [generate_model_response(model_name, prompt, tokenizer, model, gpu_id) for prompt in prompts]
 
 if __name__ == "__main__":
     try:
