@@ -1,0 +1,174 @@
+{
+  "report_info": {
+    "title": "Test Report",
+    "timestamp": "20250402_060053",
+    "language": "vietnamese"
+  },
+  "overall_metrics": {
+    "accuracy": 0.5,
+    "total_samples": 30,
+    "correct_count": 15,
+    "avg_latency": 3.1929863604871835
+  },
+  "models": {
+    "llama": {
+      "sample_count": 10,
+      "accuracy": 0.5,
+      "avg_latency": 3.148472622793652,
+      "avg_token_count": 127.4,
+      "avg_tokens_per_second": 16.471853183351453,
+      "reasoning_scores": {
+        "logical_flow": 2.7929639138830753,
+        "factual_accuracy": 3.7696292663035122,
+        "relevance": 2.755070795822875,
+        "avg_score": 2.9127363545612974
+      }
+    },
+    "gemini": {
+      "sample_count": 10,
+      "accuracy": 0.5,
+      "avg_latency": 3.23551962977461,
+      "avg_token_count": 118.9,
+      "avg_tokens_per_second": 14.19471104444851,
+      "reasoning_scores": {
+        "logical_flow": 3.053863480863244,
+        "factual_accuracy": 3.2934727442916127,
+        "relevance": 2.3601421074074103,
+        "avg_score": 3.3778680620896155
+      }
+    },
+    "groq": {
+      "sample_count": 10,
+      "accuracy": 0.5,
+      "avg_latency": 3.1949668288932886,
+      "avg_token_count": 112.3,
+      "avg_tokens_per_second": 13.766835519450002,
+      "reasoning_scores": {
+        "logical_flow": 2.2854812623699203,
+        "factual_accuracy": 2.649883264458942,
+        "relevance": 3.044714094680415,
+        "avg_score": 3.2120969413116205
+      }
+    }
+  },
+  "prompt_types": {
+    "zero_shot": {
+      "sample_count": 8,
+      "accuracy": 1.0,
+      "avg_latency": 3.4554350641215157
+    },
+    "few_shot_3": {
+      "sample_count": 8,
+      "accuracy": 0.0,
+      "avg_latency": 3.201873238511082
+    },
+    "cot": {
+      "sample_count": 7,
+      "accuracy": 1.0,
+      "avg_latency": 2.3687503320130006
+    },
+    "react": {
+      "sample_count": 7,
+      "accuracy": 0.0,
+      "avg_latency": 3.707124581351961
+    }
+  },
+  "model_prompt_combinations": [
+    {
+      "model": "gemini",
+      "prompt_type": "cot",
+      "accuracy": 1.0,
+      "sample_count": 2,
+      "avg_latency": 1.7818228570775514,
+      "avg_token_count": 95.0
+    },
+    {
+      "model": "gemini",
+      "prompt_type": "few_shot_3",
+      "accuracy": 0.0,
+      "sample_count": 3,
+      "avg_latency": 4.247048964135343,
+      "avg_token_count": 157.33333333333334
+    },
+    {
+      "model": "gemini",
+      "prompt_type": "react",
+      "accuracy": 0.0,
+      "sample_count": 2,
+      "avg_latency": 3.893513214932443,
+      "avg_token_count": 104.0
+    },
+    {
+      "model": "gemini",
+      "prompt_type": "zero_shot",
+      "accuracy": 1.0,
+      "sample_count": 3,
+      "avg_latency": 2.7544590871066945,
+      "avg_token_count": 106.33333333333333
+    },
+    {
+      "model": "groq",
+      "prompt_type": "cot",
+      "accuracy": 1.0,
+      "sample_count": 3,
+      "avg_latency": 2.855821151961442,
+      "avg_token_count": 88.0
+    },
+    {
+      "model": "groq",
+      "prompt_type": "few_shot_3",
+      "accuracy": 0.0,
+      "sample_count": 3,
+      "avg_latency": 2.21200227448073,
+      "avg_token_count": 119.33333333333333
+    },
+    {
+      "model": "groq",
+      "prompt_type": "react",
+      "accuracy": 0.0,
+      "sample_count": 2,
+      "avg_latency": 4.340679238639215,
+      "avg_token_count": 142.5
+    },
+    {
+      "model": "groq",
+      "prompt_type": "zero_shot",
+      "accuracy": 1.0,
+      "sample_count": 2,
+      "avg_latency": 4.0324197661639705,
+      "avg_token_count": 108.0
+    },
+    {
+      "model": "llama",
+      "prompt_type": "cot",
+      "accuracy": 1.0,
+      "sample_count": 2,
+      "avg_latency": 2.225071577025788,
+      "avg_token_count": 134.0
+    },
+    {
+      "model": "llama",
+      "prompt_type": "few_shot_3",
+      "accuracy": 0.0,
+      "sample_count": 2,
+      "avg_latency": 3.118916096120218,
+      "avg_token_count": 119.5
+    },
+    {
+      "model": "llama",
+      "prompt_type": "react",
+      "accuracy": 0.0,
+      "sample_count": 3,
+      "avg_latency": 3.16049572077347,
+      "avg_token_count": 128.33333333333334
+    },
+    {
+      "model": "llama",
+      "prompt_type": "zero_shot",
+      "accuracy": 1.0,
+      "sample_count": 3,
+      "avg_latency": 3.7717545731080335,
+      "avg_token_count": 127.33333333333333
+    }
+  ]
+}

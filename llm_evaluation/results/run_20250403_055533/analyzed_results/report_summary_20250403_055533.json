@@ -1,0 +1,69 @@
+{
+  "report_info": {
+    "title": "Báo Cáo Đánh Giá LLM",
+    "timestamp": "20250403_055533",
+    "language": "vietnamese"
+  },
+  "overall_metrics": {
+    "avg_latency": 137.48099206995082
+  },
+  "models": {
+    "gemini": {
+      "sample_count": 9,
+      "avg_latency": 3.725530015097724,
+      "avg_token_count": 275.55555555555554,
+      "avg_tokens_per_second": 0.0
+    },
+    "llama": {
+      "sample_count": 9,
+      "avg_latency": 200.4273374080658,
+      "avg_token_count": 231.55555555555554,
+      "avg_tokens_per_second": 2.6715533541656
+    },
+    "qwen": {
+      "sample_count": 9,
+      "avg_latency": 208.2901087866889,
+      "avg_token_count": 204.88888888888889,
+      "avg_tokens_per_second": 2.3389837998822074
+    }
+  },
+  "prompt_types": {
+    "zero_shot": {
+      "sample_count": 3,
+      "avg_latency": 758.5769387880961
+    },
+    "few_shot_3": {
+      "sample_count": 3,
+      "avg_latency": 61.370168129603066
+    },
+    "few_shot_5": {
+      "sample_count": 3,
+      "avg_latency": 47.91478872299194
+    },
+    "few_shot_7": {
+      "sample_count": 3,
+      "avg_latency": 38.68215171496073
+    },
+    "cot": {
+      "sample_count": 3,
+      "avg_latency": 53.141152143478394
+    },
+    "self_consistency_3": {
+      "sample_count": 3,
+      "avg_latency": 74.8345075448354
+    },
+    "self_consistency_5": {
+      "sample_count": 3,
+      "avg_latency": 74.51028927167256
+    },
+    "self_consistency_7": {
+      "sample_count": 3,
+      "avg_latency": 73.33460712432861
+    },
+    "react": {
+      "sample_count": 3,
+      "avg_latency": 54.964325189590454
+    }
+  },
+  "model_prompt_combinations": []
+}
