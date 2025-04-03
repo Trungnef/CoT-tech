@@ -1,4 +1,0 @@
-,elapsed_time,elapsed_time,elapsed_time,elapsed_time,response_length,response_length,response_length,response_length,has_error,tokens_per_second,response_quality_score,quality_index
-,mean,std,min,max,mean,std,min,max,mean,mean,mean,mean
-prompt_type,,,,,,,,,,,,
-standard,76.97075466314952,55.99298870117128,4.689165949821472,113.85143375396729,285.0,143.67184832109595,124,521,0.0,24.493507387608872,0.38166666666666665,0.229
