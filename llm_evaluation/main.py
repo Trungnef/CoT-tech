@@ -215,6 +215,31 @@ def main():
             for key, value in checkpoint_info.items():
                 logger.info(f"  {key}: {value}")
         
+    # Nếu --resume được chỉ định nhưng không có --checkpoint
+    elif args.resume:
+        log_section(logger, "Tìm kiếm checkpoint gần nhất để tiếp tục")
+        
+        # Tạo checkpoint manager chỉ để kiểm tra checkpoints
+        # Chú ý: Điều này chỉ để hiển thị thông tin, Evaluator sẽ tự tìm checkpoint sau
+        checkpoint_manager = CheckpointManager(
+            checkpoint_dir=os.path.join(args.results_dir, "checkpoints"),
+            timestamp=timestamp
+        )
+        
+        # Tìm checkpoint gần nhất
+        checkpoint_files = checkpoint_manager._get_checkpoint_files()
+        if checkpoint_files:
+            latest_checkpoint = checkpoint_files[-1]
+            checkpoint_info = checkpoint_manager.get_checkpoint_info(latest_checkpoint)
+            if checkpoint_info:
+                logger.info(f"Tìm thấy checkpoint gần nhất:")
+                for key, value in checkpoint_info.items():
+                    logger.info(f"  {key}: {value}")
+            else:
+                logger.warning("Tìm thấy checkpoint nhưng không thể đọc thông tin")
+        else:
+            logger.warning("Không tìm thấy checkpoint để tiếp tục. Sẽ bắt đầu đánh giá mới.")
+    
     # Chạy quá trình đánh giá
     try:
         if args.checkpoint:

@@ -33,7 +33,12 @@ class CheckpointManager:
             max_checkpoints (int): Số lượng checkpoint tối đa lưu giữ
             compress (bool): Có nén checkpoint không (chưa triển khai)
         """
-        self.checkpoint_dir = checkpoint_dir or "./checkpoints"
+        # Nếu checkpoint_dir là tương đối, lấy đường dẫn tuyệt đối
+        if checkpoint_dir:
+            self.checkpoint_dir = os.path.abspath(checkpoint_dir)
+        else:
+            self.checkpoint_dir = os.path.abspath("./checkpoints")
+            
         self.timestamp = timestamp or datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         self.max_checkpoints = max_checkpoints
         self.compress = compress
@@ -60,16 +65,18 @@ class CheckpointManager:
             checkpoint_data["checkpoint_timestamp"] = datetime.datetime.now().isoformat()
             checkpoint_data["checkpoint_version"] = "1.0"
             
-            # Chuẩn bị đường dẫn file
-            checkpoint_filename = f"checkpoint_{self.timestamp}_{len(checkpoint_data.get('results', []))}.json"
+            # Lưu thêm đường dẫn trong dữ liệu để tham chiếu sau này
+            result_count = len(checkpoint_data.get('results', []))
+            checkpoint_filename = f"checkpoint_{self.timestamp}_{result_count}.json"
             checkpoint_path = os.path.join(self.checkpoint_dir, checkpoint_filename)
+            checkpoint_data["checkpoint_path"] = checkpoint_path
             
             # Lưu trạng thái
             with open(checkpoint_path, 'w', encoding='utf-8') as f:
                 json.dump(checkpoint_data, f, ensure_ascii=False, indent=2)
                 
             logger.info(f"Đã lưu checkpoint tại: {checkpoint_path} "
-                      f"({len(checkpoint_data.get('results', []))} kết quả)")
+                      f"({result_count} kết quả)")
             
             # Quản lý số lượng checkpoint
             self._manage_checkpoints()
@@ -117,6 +124,10 @@ class CheckpointManager:
                         for combo in checkpoint_data["completed_combinations"]
                     ]
             
+            # Lưu đường dẫn checkpoint vào dữ liệu nếu chưa có
+            if "checkpoint_path" not in checkpoint_data:
+                checkpoint_data["checkpoint_path"] = checkpoint_path
+                
             logger.info(f"Đã tải checkpoint từ: {checkpoint_path} "
                       f"({len(checkpoint_data.get('results', []))} kết quả)")
                       
@@ -140,7 +151,30 @@ class CheckpointManager:
             logger.warning(f"Không tìm thấy checkpoint trong {self.checkpoint_dir}")
             return None
         
+        # Kiểm tra thư mục chính
         latest_checkpoint = checkpoint_files[-1]  # Đã được sắp xếp tăng dần
+        
+        # Kiểm tra thử thư mục cha (nếu đang ở trong thư mục con run_TIMESTAMP)
+        parent_dir = os.path.dirname(os.path.dirname(self.checkpoint_dir))
+        if os.path.basename(os.path.dirname(self.checkpoint_dir)).startswith("run_"):
+            parent_checkpoint_dir = os.path.join(parent_dir, "checkpoints")
+            if os.path.exists(parent_checkpoint_dir):
+                logger.debug(f"Kiểm tra thêm checkpoints trong thư mục cha: {parent_checkpoint_dir}")
+                
+                # Lấy tất cả checkpoint trong thư mục cha
+                parent_pattern = os.path.join(parent_checkpoint_dir, "checkpoint_*.json")
+                parent_checkpoints = glob.glob(parent_pattern)
+                parent_checkpoints.sort(key=lambda x: os.path.getmtime(x))
+                
+                # Nếu có checkpoint trong thư mục cha, so sánh với checkpoint hiện tại
+                if parent_checkpoints:
+                    latest_parent = parent_checkpoints[-1]
+                    if os.path.exists(latest_parent):
+                        # Kiểm tra thời gian sửa đổi để xác định cái nào mới hơn
+                        if os.path.getmtime(latest_parent) > os.path.getmtime(latest_checkpoint):
+                            latest_checkpoint = latest_parent
+                            logger.info(f"Tìm thấy checkpoint mới hơn trong thư mục cha: {latest_parent}")
+        
         return self.load_checkpoint(latest_checkpoint)
     
     def _get_checkpoint_files(self) -> List[str]:
@@ -150,13 +184,46 @@ class CheckpointManager:
         Returns:
             List[str]: Danh sách đường dẫn đến các file checkpoint
         """
-        # Lấy tất cả file .json trong thư mục checkpoint
+        # Lấy tất cả file checkpoint trong thư mục hiện tại
         checkpoint_pattern = os.path.join(self.checkpoint_dir, "checkpoint_*.json")
         checkpoint_files = glob.glob(checkpoint_pattern)
         
-        # Sắp xếp theo thời gian tạo file
+        # Thêm cả các file checkpoint khẩn cấp
+        emergency_pattern = os.path.join(self.checkpoint_dir, "emergency_*.json")
+        emergency_files = glob.glob(emergency_pattern)
+        checkpoint_files.extend(emergency_files)
+        
+        # Kiểm tra thư mục results nếu đang ở trong thư mục con
+        # Đây là để tìm các checkpoint từ các lần chạy trước
+        root_dir = os.path.dirname(os.path.dirname(self.checkpoint_dir))
+        if "checkpoints" in self.checkpoint_dir and os.path.exists(root_dir):
+            # Kiểm tra thư mục results/checkpoints nếu nó tồn tại
+            results_checkpoints = os.path.join(root_dir, "checkpoints")
+            if os.path.exists(results_checkpoints) and results_checkpoints != self.checkpoint_dir:
+                logger.debug(f"Quét thêm thư mục checkpoint chung: {results_checkpoints}")
+                results_pattern = os.path.join(results_checkpoints, "checkpoint_*.json")
+                results_files = glob.glob(results_pattern)
+                checkpoint_files.extend(results_files)
+                
+            # Kiểm tra các thư mục run khác
+            run_dirs = [d for d in os.listdir(root_dir) 
+                      if os.path.isdir(os.path.join(root_dir, d)) and d.startswith("run_")]
+            
+            for run_dir in run_dirs:
+                run_checkpoint_dir = os.path.join(root_dir, run_dir, "checkpoints")
+                if os.path.exists(run_checkpoint_dir) and run_checkpoint_dir != self.checkpoint_dir:
+                    logger.debug(f"Quét thêm thư mục checkpoint từ lần chạy khác: {run_checkpoint_dir}")
+                    run_pattern = os.path.join(run_checkpoint_dir, "checkpoint_*.json")
+                    run_files = glob.glob(run_pattern)
+                    checkpoint_files.extend(run_files)
+        
+        # Lọc ra các file thực sự tồn tại
+        checkpoint_files = [f for f in checkpoint_files if os.path.exists(f)]
+        
+        # Sắp xếp theo thời gian sửa đổi (tăng dần: cũ -> mới)
         checkpoint_files.sort(key=lambda x: os.path.getmtime(x))
         
+        logger.debug(f"Tìm thấy {len(checkpoint_files)} checkpoint files.")
         return checkpoint_files
     
     def _manage_checkpoints(self):
@@ -165,9 +232,12 @@ class CheckpointManager:
         """
         checkpoint_files = self._get_checkpoint_files()
         
-        if len(checkpoint_files) > self.max_checkpoints:
+        # Lọc các file chỉ có trong thư mục checkpoint hiện tại
+        current_dir_files = [f for f in checkpoint_files if os.path.dirname(f) == self.checkpoint_dir]
+        
+        if len(current_dir_files) > self.max_checkpoints:
             # Xóa các checkpoint cũ nhất để giữ số lượng dưới max_checkpoints
-            files_to_remove = checkpoint_files[:-self.max_checkpoints]
+            files_to_remove = current_dir_files[:-self.max_checkpoints]
             
             for file_path in files_to_remove:
                 try:

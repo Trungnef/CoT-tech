@@ -56,7 +56,7 @@ DEFAULT_MODELS = ["llama", "qwen", "gemini"]
 DEFAULT_PROMPTS = [
     "zero_shot", 
     "few_shot_3", "few_shot_5", "few_shot_7", 
-    "chain_of_thought", 
+    "cot", 
     "cot_self_consistency_3", "cot_self_consistency_5", "cot_self_consistency_7", 
     "react"
 ]
@@ -81,6 +81,7 @@ MODEL_CONFIGS = {
         "top_p": 0.95,
         "top_k": 40,
         "repetition_penalty": 1.1,
+        "disable_attention_warnings": True,
     },
     "gemini": {
         "max_tokens": 1024,

@@ -327,22 +327,51 @@ class PromptBuilder:
         Returns:
             str: Câu trả lời cuối cùng
         """
+        # Xử lý trường hợp không có phản hồi
+        if not response:
+            return ""
+            
+        # Chuyển response về lowercase để dễ tìm kiếm pattern
+        response_lower = response.lower()
+        
         # Xử lý khác nhau dựa trên loại prompt
         if prompt_type == "zero_shot":
             # Đối với zero-shot, câu trả lời thường là toàn bộ phản hồi hoặc phần sau "Đáp án:"
-            match = re.search(r"đáp án:?\s*(.*?)$", response.lower(), re.DOTALL)
-            if match:
-                return match.group(1).strip()
+            # Thử các pattern tìm đáp án cuối cùng
+            patterns = [
+                r"đáp án:?\s*(.*?)$",
+                r"vậy đáp án là:?\s*(.*?)$",
+                r"kết quả là:?\s*(.*?)$", 
+                r"kết luận:?\s*(.*?)$"
+            ]
+            
+            for pattern in patterns:
+                match = re.search(pattern, response_lower, re.DOTALL)
+                if match:
+                    return match.group(1).strip()
+                    
+            # Nếu không tìm thấy pattern, trả về toàn bộ phản hồi
             return response.strip()
         
         elif prompt_type.startswith("few_shot_"):
             # Đối với few-shot, tìm câu trả lời sau "Đáp án:" ở cuối
-            match = re.search(r"đáp án:?\s*(.*?)$", response.lower(), re.DOTALL)
-            if match:
-                return match.group(1).strip()
-            return response.strip()
+            patterns = [
+                r"đáp án:?\s*(.*?)$",
+                r"vậy đáp án là:?\s*(.*?)$",
+                r"kết quả là:?\s*(.*?)$", 
+                r"kết luận:?\s*(.*?)$"
+            ]
+            
+            for pattern in patterns:
+                match = re.search(pattern, response_lower, re.DOTALL)
+                if match:
+                    return match.group(1).strip()
+                    
+            # Nếu không tìm thấy pattern, trả về câu cuối cùng
+            sentences = re.split(r'[.!?]', response)
+            return sentences[-1].strip()
         
-        elif prompt_type == "cot":
+        elif prompt_type == "cot" or prompt_type.startswith("cot_"):
             # Đối với CoT, tìm câu trả lời cuối cùng sau các bước lập luận
             # Thường là phần sau "Vậy đáp án là" hoặc "Kết quả là" hoặc "Đáp án:"
             patterns = [
@@ -351,11 +380,13 @@ class PromptBuilder:
                 r"đáp án:?\s*(.*?)$",
                 r"vậy?[,\s]*kết quả:?\s*(.*?)$",
                 r"vậy?[,\s]*kết luận:?\s*(.*?)$",
-                r"kết luận:?\s*(.*?)$"
+                r"kết luận:?\s*(.*?)$",
+                r"do đó[,\s]*đáp án:?\s*(.*?)$",
+                r"do đó[,\s]*(.*?)$"
             ]
             
             for pattern in patterns:
-                match = re.search(pattern, response.lower(), re.DOTALL)
+                match = re.search(pattern, response_lower, re.DOTALL)
                 if match:
                     return match.group(1).strip()
             
@@ -363,20 +394,23 @@ class PromptBuilder:
             sentences = re.split(r'[.!?]', response)
             return sentences[-1].strip()
         
-        elif prompt_type.startswith("self_consistency_"):
+        elif prompt_type.startswith("self_consistency_") or prompt_type.startswith("cot_self_consistency_"):
             # Đối với self-consistency, tìm kết quả phổ biến nhất
             # Tìm tất cả đáp án trong các cách tiếp cận khác nhau
             answers = []
             
             # Tìm các đáp án trong mỗi cách giải
             patterns = [
-                r"đáp án:?\s*(.*?)(?:\n|$)",
-                r"kết quả:?\s*(.*?)(?:\n|$)",
-                r"vậy đáp án là:?\s*(.*?)(?:\n|$)"
+                r"(?:^|\n)đáp án:?\s*(.*?)(?:\n|$)",
+                r"(?:^|\n)kết quả:?\s*(.*?)(?:\n|$)",
+                r"(?:^|\n)vậy đáp án là:?\s*(.*?)(?:\n|$)",
+                r"(?:^|\n)vậy kết quả là:?\s*(.*?)(?:\n|$)",
+                r"(?:^|\n)kết luận:?\s*(.*?)(?:\n|$)",
+                r"(?:^|\n)\d+\.\s*đáp án:?\s*(.*?)(?:\n|$)"
             ]
             
             for pattern in patterns:
-                matches = re.finditer(pattern, response.lower(), re.DOTALL)
+                matches = re.finditer(pattern, response_lower, re.DOTALL)
                 for match in matches:
                     answers.append(match.group(1).strip())
             
@@ -392,24 +426,40 @@ class PromptBuilder:
                 # Trả về đáp án có tần suất xuất hiện nhiều nhất
                 return max(answer_count.items(), key=lambda x: x[1])[0]
             
-            # Nếu không tìm thấy đáp án rõ ràng, trả về câu cuối cùng
+            # Nếu không tìm thấy đáp án rõ ràng, tìm cách khác
+            # Tìm câu kết luận cuối cùng
+            conclusions = re.findall(r"(?:vậy|do đó)[,\s]*(.*?)(?:\n|$)", response_lower, re.DOTALL)
+            if conclusions:
+                return conclusions[-1].strip()
+                
+            # Nếu không tìm thấy kết luận, trả về câu cuối cùng
             return response.strip().split('\n')[-1]
         
         elif prompt_type == "react":
             # Đối với ReAct, tìm "Đáp án cuối cùng"
-            match = re.search(r"đáp án cuối cùng:?\s*(.*?)(?:\n|$)", response.lower(), re.DOTALL)
-            if match:
-                return match.group(1).strip()
+            patterns = [
+                r"đáp án cuối cùng:?\s*(.*?)(?:\n|$)", 
+                r"final answer:?\s*(.*?)(?:\n|$)",
+                r"kết quả cuối cùng:?\s*(.*?)(?:\n|$)",
+                r"kết luận cuối cùng:?\s*(.*?)(?:\n|$)"
+            ]
             
-            # Hoặc tìm kết quả cuối cùng
-            match = re.search(r"kết quả cuối cùng:?\s*(.*?)(?:\n|$)", response.lower(), re.DOTALL)
-            if match:
-                return match.group(1).strip()
+            for pattern in patterns:
+                match = re.search(pattern, response_lower, re.DOTALL)
+                if match:
+                    return match.group(1).strip()
             
             # Nếu không tìm thấy, tìm bất kỳ đáp án nào
-            match = re.search(r"đáp án:?\s*(.*?)(?:\n|$)", response.lower(), re.DOTALL)
-            if match:
-                return match.group(1).strip()
+            patterns = [
+                r"đáp án:?\s*(.*?)(?:\n|$)",
+                r"kết quả:?\s*(.*?)(?:\n|$)",
+                r"kết luận:?\s*(.*?)(?:\n|$)"
+            ]
+            
+            for pattern in patterns:
+                match = re.search(pattern, response_lower, re.DOTALL)
+                if match:
+                    return match.group(1).strip()
             
             # Nếu tất cả đều thất bại, trả về câu cuối cùng
             return response.strip().split('\n')[-1]
@@ -419,7 +469,7 @@ class PromptBuilder:
             return response.strip()
 
 # Hàm wrapper ở cấp module để tương thích với import statement trong evaluator.py
-def create_prompt(query, prompt_type, task_type=None, custom_examples=None):
+def create_prompt(query, prompt_type, task_type=None, question_type=None, custom_examples=None):
     """
     Hàm wrapper cho PromptBuilder.create_prompt để tương thích với các module khác.
     
@@ -427,6 +477,7 @@ def create_prompt(query, prompt_type, task_type=None, custom_examples=None):
         query (str): Câu hỏi cần trả lời
         prompt_type (str): Loại prompt (zero_shot, few_shot_3, few_shot_5, few_shot_7, etc.)
         task_type (str, optional): Loại nhiệm vụ, không sử dụng trong PromptBuilder hiện tại
+        question_type (str, optional): Loại câu hỏi, không sử dụng trong PromptBuilder hiện tại
         custom_examples (List[Dict], optional): Các ví dụ tùy chỉnh cho few-shot prompts
         
     Returns:

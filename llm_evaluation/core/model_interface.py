@@ -369,6 +369,11 @@ class ModelInterface:
             model = gen_config.get("model", "llama3-8b-8192")
             language = gen_config.get("language", "vietnamese")  # Mặc định là tiếng Việt
             
+            # Xử lý tên model nếu bắt đầu bằng "groq/"
+            if model.startswith("groq/"):
+                model = model.replace("groq/", "")
+                logger.debug(f"Đã xử lý tên model Groq: {model}")
+            
             # Log tham số
             logger.debug(f"Tham số sinh cho Groq: model={model}, max_tokens={max_tokens}, "
                         f"temp={temperature}, top_p={top_p}, language={language}")
@@ -513,20 +518,6 @@ class ModelInterface:
             _LAST_USED[cache_key] = time.time()
             return _TOKENIZER_CACHE.get(f"{model_name}_tokenizer"), _MODEL_CACHE.get(cache_key)
         
-        # Tìm kiếm model trong disk cache
-        if self.use_disk_cache and model_name in config.DISK_CACHE_CONFIG["models_to_cache"]:
-            disk_cache_result = self._load_model_from_disk(model_name)
-            if disk_cache_result is not None:
-                logger.info(f"Đã tải {model_name} từ disk cache")
-                tokenizer, model = disk_cache_result
-                
-                # Cập nhật memory cache
-                _TOKENIZER_CACHE[f"{model_name}_tokenizer"] = tokenizer
-                _MODEL_CACHE[cache_key] = model
-                _LAST_USED[cache_key] = time.time()
-                
-                return tokenizer, model
-        
         # Giải phóng bộ nhớ trước khi tải model mới
         self._clear_memory()
         
@@ -548,6 +539,10 @@ class ModelInterface:
         
         logger.info(f"Tải model {model_name} từ {model_path}")
         
+        # Biến để kiểm soát fallback sang CPU nếu GPU không đủ bộ nhớ
+        use_gpu = torch.cuda.is_available()
+        tried_cpu_fallback = False
+        
         try:
             # Quản lý cache model để tránh OOM
             self._manage_model_cache()
@@ -566,57 +561,162 @@ class ModelInterface:
                 else:
                     tokenizer.pad_token = tokenizer.unk_token
             
-            # Cấu hình quantization 4-bit
-            quantization_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.bfloat16,
-                bnb_4bit_use_double_quant=True
-            )
-            
-            # Tạo device map & memory config
-            device_map = "auto"
-            max_memory = self._get_max_memory_config()
-            
-            # Cấu hình dựa trên model cụ thể
-            model_kwargs = {
-                "device_map": device_map,
-                "max_memory": max_memory,
-                "quantization_config": quantization_config,
-                "torch_dtype": torch.bfloat16,
-                "trust_remote_code": True
-            }
-            
-            # Thêm cấu hình cho model cụ thể
-            if model_name == "llama":
-                model_kwargs["attn_implementation"] = "eager"
-            elif model_name == "qwen":
-                model_kwargs["attn_implementation"] = "eager"
-                model_kwargs["use_flash_attention_2"] = False
-            
-            # Tải model
-            logger.debug(f"Tải model weights từ {model_path}...")
-            model = AutoModelForCausalLM.from_pretrained(
-                model_path,
-                **model_kwargs
-            )
-            
-            # Lưu vào memory cache
-            _TOKENIZER_CACHE[f"{model_name}_tokenizer"] = tokenizer
-            _MODEL_CACHE[cache_key] = model
-            _LAST_USED[cache_key] = time.time()
-            
-            # Lưu vào disk cache nếu được bật
-            if self.use_disk_cache and model_name in config.DISK_CACHE_CONFIG["models_to_cache"]:
-                self._save_model_to_disk(model_name, tokenizer, model)
-            
-            logger.info(f"Đã tải thành công model {model_name}")
-            
-            return tokenizer, model
+            # THÊM: Tải model với vòng lặp thử các mức quantization khác nhau
+            for attempt in range(3):  # 3 nỗ lực: 4-bit trên GPU -> 8-bit trên GPU -> CPU fallback
+                try:
+                    # Thiết lập các tham số dựa trên nỗ lực hiện tại
+                    if attempt == 0:
+                        # Nỗ lực đầu tiên: 4-bit trên GPU (nhẹ nhất)
+                        use_4bit = True
+                        use_8bit = False
+                        use_gpu = torch.cuda.is_available()
+                        logger.info(f"Nỗ lực tải model {model_name} với 4-bit quantization trên GPU")
+                    elif attempt == 1:
+                        # Nỗ lực thứ hai: 8-bit trên GPU (sử dụng nhiều bộ nhớ hơn)
+                        use_4bit = False
+                        use_8bit = True
+                        use_gpu = torch.cuda.is_available()
+                        logger.info(f"Thử lại: Tải model {model_name} với 8-bit quantization trên GPU")
+                    else:
+                        # Nỗ lực cuối: CPU fallback (chậm nhưng ít bộ nhớ)
+                        use_4bit = False
+                        use_8bit = False
+                        use_gpu = False
+                        logger.warning(f"Fallback: Tải model {model_name} trên CPU (sẽ chậm đáng kể)")
+                    
+                    # Đảm bảo thư mục offload tồn tại
+                    offload_folder = Path(config.MODEL_CACHE_DIR) / "offload_folder"
+                    offload_folder.mkdir(exist_ok=True, parents=True)
+                    
+                    # Cấu hình quantization nếu sử dụng GPU
+                    quantization_config = None
+                    if use_gpu:
+                        if use_4bit:
+                            quantization_config = BitsAndBytesConfig(
+                                load_in_4bit=True,
+                                load_in_8bit=False,
+                                bnb_4bit_quant_type="nf4",
+                                bnb_4bit_compute_dtype=torch.bfloat16,
+                                bnb_4bit_use_double_quant=True,
+                                bnb_4bit_use_cpu_offload=True,
+                                offload_folder=str(offload_folder)
+                            )
+                            logger.info(f"Sử dụng 4-bit quantization cho model {model_name}")
+                        elif use_8bit:
+                            quantization_config = BitsAndBytesConfig(
+                                load_in_4bit=False,
+                                load_in_8bit=True,
+                                llm_int8_skip_modules=["lm_head"] if model_name.lower() == "qwen" else None,
+                                llm_int8_threshold=6.0,
+                                llm_int8_has_fp16_weight=True,
+                                offload_folder=str(offload_folder)
+                            )
+                            logger.info(f"Sử dụng 8-bit quantization cho model {model_name}")
+                    
+                    # Tạo device map & memory config
+                    device_map = "auto" if use_gpu else "cpu"
+                    max_memory = self._get_max_memory_config() if use_gpu else None
+                    
+                    # Cấu hình dựa trên model cụ thể
+                    model_kwargs = {
+                        "device_map": device_map,
+                        "torch_dtype": torch.bfloat16 if use_gpu else torch.float32
+                    }
+                    
+                    # Thêm cấu hình cho quantization nếu có
+                    if quantization_config:
+                        model_kwargs["quantization_config"] = quantization_config
+                    
+                    # Thêm cấu hình bộ nhớ nếu sử dụng GPU
+                    if use_gpu and max_memory:
+                        model_kwargs["max_memory"] = max_memory
+                    
+                    # Thêm cấu hình cho model cụ thể
+                    if model_name == "llama":
+                        model_kwargs["attn_implementation"] = "eager"
+                    elif model_name == "qwen":
+                        model_kwargs["attn_implementation"] = "eager"
+                        model_kwargs["use_flash_attention_2"] = False
+                        model_kwargs["trust_remote_code"] = True
+                        
+                        # Tắt cảnh báo về sliding window attention trong eager mode
+                        if config.MODEL_CONFIGS["qwen"].get("disable_attention_warnings", False):
+                            import transformers
+                            transformers.logging.set_verbosity_error()
+                            # Vô hiệu hóa cảnh báo cụ thể từ PyTorch
+                            import warnings
+                            warnings.filterwarnings("ignore", message=".*Sliding window attention is currently only supported.*")
+                    
+                    # Tải model
+                    logger.debug(f"Tải model weights từ {model_path} vào {'GPU' if use_gpu else 'CPU'}...")
+                    model = AutoModelForCausalLM.from_pretrained(
+                        model_path,
+                        **model_kwargs
+                    )
+                    
+                    # Lưu vào memory cache
+                    _TOKENIZER_CACHE[f"{model_name}_tokenizer"] = tokenizer
+                    _MODEL_CACHE[cache_key] = model
+                    _LAST_USED[cache_key] = time.time()
+                    
+                    logger.info(f"Đã tải thành công model {model_name} vào {'GPU' if use_gpu else 'CPU'}")
+                    
+                    return tokenizer, model
+                    
+                except torch.cuda.OutOfMemoryError as oom_error:
+                    # Xử lý lỗi OOM cụ thể
+                    logger.error(f"CUDA Out of Memory khi tải model {model_name}: {str(oom_error)}")
+                    logger.info("Giải phóng bộ nhớ GPU và thử lại với cấu hình nhẹ hơn")
+                    self._clear_memory()  # Giải phóng bộ nhớ GPU
+                    
+                    # Nếu đây là lần thử cuối, ghi log và cho phép chuyển sang exception handler bên ngoài
+                    if attempt == 2:
+                        logger.error("Đã thử tất cả các cấu hình, không thể tải model")
+                        raise oom_error
+                    
+                except Exception as e:
+                    # Lỗi khác
+                    logger.error(f"Lỗi khi tải model {model_name} (nỗ lực {attempt+1}/3): {str(e)}")
+                    if "CUDA out of memory" in str(e):
+                        logger.info("Phát hiện lỗi hết bộ nhớ CUDA, thử lại với cấu hình khác")
+                        self._clear_memory()
+                    else:
+                        # Nếu không phải lỗi OOM, không cần thử lại
+                        raise e
         
         except Exception as e:
             logger.error(f"Lỗi khi tải model {model_name}: {str(e)}")
             logger.error(traceback.format_exc())
+            
+            # Nếu chưa thử fallback sang CPU và đây là lỗi OOM, thử lại trên CPU
+            if use_gpu and not tried_cpu_fallback and ("CUDA out of memory" in str(e) or isinstance(e, torch.cuda.OutOfMemoryError)):
+                logger.warning(f"Thử fallback sang CPU cho model {model_name}")
+                tried_cpu_fallback = True
+                use_gpu = False
+                
+                try:
+                    # Giải phóng bộ nhớ GPU
+                    self._clear_memory()
+                    
+                    # Tải model trên CPU (không quantization)
+                    model = AutoModelForCausalLM.from_pretrained(
+                        model_path,
+                        device_map="cpu",
+                        torch_dtype=torch.float32,
+                        trust_remote_code=True if model_name == "qwen" else False
+                    )
+                    
+                    # Lưu vào memory cache
+                    _TOKENIZER_CACHE[f"{model_name}_tokenizer"] = tokenizer
+                    _MODEL_CACHE[cache_key] = model
+                    _LAST_USED[cache_key] = time.time()
+                    
+                    logger.info(f"Đã tải thành công model {model_name} vào CPU (fallback)")
+                    return tokenizer, model
+                    
+                except Exception as cpu_error:
+                    logger.error(f"Fallback CPU cũng thất bại cho model {model_name}: {str(cpu_error)}")
+            
             return None, None
     
     def _load_model_from_disk(self, model_name):
@@ -658,13 +758,51 @@ class ModelInterface:
         try:
             logger.info(f"Tải model {model_name} từ disk cache")
             
-            # Chuẩn bị cấu hình
-            quantization_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=torch.bfloat16,
-                bnb_4bit_use_double_quant=True
-            )
+            # Quyết định sử dụng 4-bit hay 8-bit dựa trên cấu hình
+            use_4bit = True  # Mặc định là 4-bit cho hiệu suất tốt nhất
+            use_8bit = False
+            
+            # Kiểm tra thông tin GPU
+            gpu_memory_total = 0
+            if torch.cuda.is_available():
+                gpu_count = torch.cuda.device_count()
+                for i in range(gpu_count):
+                    gpu_memory = torch.cuda.get_device_properties(i).total_memory / (1024**3)  # Convert to GB
+                    gpu_memory_total += gpu_memory
+                logger.info(f"Tổng bộ nhớ GPU: {gpu_memory_total:.2f} GB trên {gpu_count} GPU")
+                
+                # Đối với các model lớn (> 30B tham số), nếu tổng bộ nhớ > 80GB, sử dụng 8-bit để cải thiện chất lượng
+                if model_name.lower() == "llama" and gpu_memory_total > 80:
+                    use_8bit = True
+                    use_4bit = False
+                    logger.info(f"Sử dụng 8-bit quantization cho model {model_name} từ disk cache (GPU memory: {gpu_memory_total:.2f} GB)")
+            
+            # Đảm bảo thư mục offload tồn tại
+            offload_folder = Path(config.MODEL_CACHE_DIR) / "offload_folder"
+            offload_folder.mkdir(exist_ok=True, parents=True)
+            
+            # Cấu hình quantization
+            if use_4bit:
+                quantization_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    load_in_8bit=False,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_compute_dtype=torch.bfloat16,
+                    bnb_4bit_use_double_quant=True,
+                    bnb_4bit_use_cpu_offload=True,
+                    offload_folder=str(offload_folder)
+                )
+                logger.info(f"Sử dụng 4-bit quantization cho model {model_name} từ disk cache")
+            elif use_8bit:
+                quantization_config = BitsAndBytesConfig(
+                    load_in_4bit=False,
+                    load_in_8bit=True,
+                    llm_int8_skip_modules=["lm_head"] if model_name.lower() == "qwen" else None,
+                    llm_int8_threshold=6.0,
+                    llm_int8_has_fp16_weight=True,
+                    offload_folder=str(offload_folder)
+                )
+                logger.info(f"Sử dụng 8-bit quantization cho model {model_name} từ disk cache")
             
             # Tạo device map & memory config
             device_map = "auto"
@@ -687,8 +825,7 @@ class ModelInterface:
                 "device_map": device_map,
                 "max_memory": max_memory,
                 "quantization_config": quantization_config,
-                "torch_dtype": torch.bfloat16,
-                "trust_remote_code": True
+                "torch_dtype": torch.bfloat16
             }
             
             # Thêm cấu hình cho model cụ thể
@@ -697,6 +834,7 @@ class ModelInterface:
             elif model_name == "qwen":
                 model_init_args["attn_implementation"] = "eager"
                 model_init_args["use_flash_attention_2"] = False
+                model_init_args["trust_remote_code"] = True
             
             # Tải model weights
             with open(model_state_path, 'rb') as f:
@@ -950,6 +1088,7 @@ class ModelInterface:
     def _get_max_memory_config(self):
         """
         Tạo cấu hình bộ nhớ tối ưu cho các GPU và CPU.
+        Phân bổ bộ nhớ thông minh dựa trên số lượng GPU có sẵn.
         
         Returns:
             dict: Cấu hình bộ nhớ tối đa cho mỗi thiết bị
@@ -960,29 +1099,119 @@ class ModelInterface:
             # Xử lý bộ nhớ GPU nếu có
             if torch.cuda.is_available():
                 num_gpus = torch.cuda.device_count()
-                for i in range(num_gpus):
-                    # Lấy tổng bộ nhớ GPU và tính toán bộ nhớ khả dụng
-                    total_memory = torch.cuda.get_device_properties(i).total_memory / (1024**3)  # GB
-                    reserved_memory = config.SYSTEM_RESERVE_MEMORY_GB  # GB dự trữ cho hệ thống
-                    usable_memory = int(total_memory - reserved_memory)
-                    
-                    # Lưu cấu hình bộ nhớ tối đa cho GPU này
-                    max_memory[i] = f"{usable_memory}GiB"
+                total_gpu_memory = 0
+                gpu_info = []
                 
-                # Bộ nhớ CPU cho offload
-                max_memory["cpu"] = f"{config.CPU_OFFLOAD_GB}GiB"
+                # Thu thập thông tin về mỗi GPU
+                for i in range(num_gpus):
+                    total_memory = torch.cuda.get_device_properties(i).total_memory / (1024**3)  # GB
+                    free_memory = torch.cuda.get_device_properties(i).total_memory / (1024**3) - \
+                                 torch.cuda.memory_reserved(i) / (1024**3)
+                    
+                    gpu_info.append({
+                        'id': i,
+                        'total_memory': total_memory,
+                        'free_memory': free_memory,
+                        'name': torch.cuda.get_device_properties(i).name
+                    })
+                    
+                    total_gpu_memory += total_memory
+                
+                logger.info(f"Đã phát hiện {num_gpus} GPU với tổng bộ nhớ {total_gpu_memory:.2f} GB")
+                for i, gpu in enumerate(gpu_info):
+                    logger.info(f"GPU {i}: {gpu['name']}, {gpu['total_memory']:.2f} GB tổng, {gpu['free_memory']:.2f} GB trống")
+                
+                # Chiến lược phân bổ bộ nhớ
+                if num_gpus >= 3:
+                    # Đối với hệ thống nhiều GPU (3+), phân bổ nhiều bộ nhớ hơn cho GPU đầu tiên
+                    # vì nó thường phải xử lý các lớp đầu vào và đầu ra cộng với một số lớp ẩn
+                    for i in range(num_gpus):
+                        reserved_memory = config.SYSTEM_RESERVE_MEMORY_GB
+                        
+                        if i == 0:
+                            # GPU đầu tiên: để lại nhiều bộ nhớ hơn cho hệ thống
+                            reserved_memory += 1.0
+                        
+                        usable_memory = max(1, int(gpu_info[i]['total_memory'] - reserved_memory))
+                        max_memory[i] = f"{usable_memory}GiB"
+                
+                elif num_gpus == 2:
+                    # Đối với hệ thống 2 GPU, cân bằng giữa chúng
+                    for i in range(num_gpus):
+                        reserved_memory = config.SYSTEM_RESERVE_MEMORY_GB
+                        usable_memory = max(1, int(gpu_info[i]['total_memory'] - reserved_memory))
+                        max_memory[i] = f"{usable_memory}GiB"
+                
+                elif num_gpus == 1:
+                    # Đối với hệ thống 1 GPU, tối ưu hóa bộ nhớ cho GPU đơn
+                    reserved_memory = config.SYSTEM_RESERVE_MEMORY_GB
+                    usable_memory = max(1, int(gpu_info[0]['total_memory'] - reserved_memory))
+                    max_memory[0] = f"{usable_memory}GiB"
+                
+                # Bộ nhớ CPU cho offload - tăng lên dựa trên số lượng GPU
+                # Với nhiều GPU, chúng ta có thể giảm offload CPU
+                if num_gpus >= 3:
+                    cpu_offload = max(8, int(config.CPU_OFFLOAD_GB * 0.6))  # Giảm offload với 3+ GPU
+                elif num_gpus == 2:
+                    cpu_offload = max(12, int(config.CPU_OFFLOAD_GB * 0.8))  # Giảm nhẹ với 2 GPU
+                else:
+                    cpu_offload = config.CPU_OFFLOAD_GB  # Giữ nguyên với 1 GPU
+                
+                max_memory["cpu"] = f"{cpu_offload}GiB"
+                
             else:
                 # Nếu không có GPU, sử dụng CPU để xử lý mô hình
                 max_memory["cpu"] = f"{config.CPU_OFFLOAD_GB}GiB"
-                
-            logger.debug(f"Cấu hình bộ nhớ: {max_memory}")
+            
+            logger.info(f"Cấu hình bộ nhớ cho model: {max_memory}")
                 
         except Exception as e:
-            logger.error(f"Không thể tạo cấu hình bộ nhớ tối ưu: {e}")
+            logger.error(f"Không thể tạo cấu hình bộ nhớ tối ưu: {str(e)}")
+            logger.debug(traceback.format_exc())
             # Trả về None để sử dụng cấu hình mặc định
             return None
         
         return max_memory
+
+    def get_response(self, model_name, prompt, max_tokens=1024):
+        """
+        Lấy response từ model với giao diện đơn giản hơn.
+        
+        Args:
+            model_name (str): Tên của model
+            prompt (str): Prompt đầu vào
+            max_tokens (int): Số lượng token tối đa
+            
+        Returns:
+            str: Phản hồi từ model
+        """
+        # Xử lý trường hợp đặc biệt "groq/model_name"
+        actual_model_name = model_name
+        model_config = {}
+        
+        if model_name.startswith("groq/"):
+            # Trích xuất tên model thực tế 
+            actual_model_name = "groq"
+            model_config["model"] = model_name.replace("groq/", "")
+            logger.debug(f"Đã chuyển đổi {model_name} -> {actual_model_name} với model config: {model_config}")
+        
+        config = {
+            "max_tokens": max_tokens,
+            "temperature": 0.7,
+            "top_p": 0.95
+        }
+        
+        # Thêm model config nếu có
+        if model_config:
+            config.update(model_config)
+            
+        response, stats = self.generate_text(actual_model_name, prompt, config)
+        
+        if stats.get("has_error", False):
+            logger.error(f"Lỗi khi lấy phản hồi từ {model_name}: {stats.get('error_message', 'Unknown error')}")
+            return f"Error: {stats.get('error_message', 'Unknown error')}"
+            
+        return response
 
 # Singleton để sử dụng từ bên ngoài
 _model_interface = None

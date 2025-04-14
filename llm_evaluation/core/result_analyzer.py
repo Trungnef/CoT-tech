@@ -12,6 +12,7 @@ from typing import Dict, List, Any, Optional, Union, Tuple
 from collections import defaultdict
 import traceback
 import re
+import random
 
 # Import các module cần thiết
 try:
@@ -58,63 +59,91 @@ class ResultAnalyzer:
         self.verbose = verbose
         self.sample_size = self.reasoning_config.get("sample_size", 10)
         
-        # Các tiêu chí đánh giá suy luận (điểm từ 1-5)
+        # Các tiêu chí đánh giá mới
         self.reasoning_criteria = {
-            "logical_flow": "Tính hợp lý và mạch lạc của lập luận (1-5)",
-            "mathematical_correctness": "Độ chính xác về mặt toán học (1-5)",
-            "clarity": "Rõ ràng và dễ hiểu (1-5)",
-            "completeness": "Đầy đủ các bước cần thiết (1-5)",
-            "relevance": "Mức độ liên quan đến câu hỏi (1-5)"
+            "accuracy": "Độ chính xác (Accuracy)",
+            "reasoning_consistency": "Độ suy luận hợp lý (Reasoning Consistency)",
+            "consistency": "Tính nhất quán (Consistency)",
+            "difficulty_performance": "Hiệu suất trên độ khó (Difficulty Performance)",
+            "context_adherence": "Độ phù hợp ngữ cảnh (Context Adherence)"
         }
 
         # Cấu trúc prompt đánh giá
-        if language.lower() == "vietnamese":
-            self.reasoning_eval_template = """
-Bạn là một chuyên gia đánh giá chất lượng suy luận. Hãy đánh giá câu trả lời cho bài toán dưới đây theo 5 tiêu chí, đưa ra điểm số từ 1-5 (5 là tốt nhất).
+        self.reasoning_eval_template = """
+# HƯỚNG DẪN ĐÁNH GIÁ CHẤT LƯỢNG ĐẦU RA CỦA MÔ HÌNH LLM
 
-BÀI TOÁN:
+Bạn là một chuyên gia đánh giá chất lượng đầu ra của các mô hình ngôn ngữ lớn (LLMs). Nhiệm vụ của bạn là đánh giá câu trả lời của một mô hình LLM cho một bài toán cụ thể dựa trên các tiêu chí khách quan và rõ ràng.
+
+## TIÊU CHÍ ĐÁNH GIÁ
+
+1. **Độ chính xác (Accuracy)**
+   - Câu trả lời có đúng về mặt nội dung và kết quả so với đáp án chuẩn không?
+   - Với bài toán số học: kết quả cuối cùng có đúng không?
+   - Với bài toán lý luận: kết luận có chính xác không?
+   - Điểm 5: Hoàn toàn chính xác
+   - Điểm 1: Hoàn toàn sai
+
+2. **Độ suy luận hợp lý (Reasoning Consistency)**
+   - Quá trình lập luận có logic và có cấu trúc rõ ràng không?
+   - Các bước suy luận có thể theo dõi và kiểm chứng được không?
+   - Có sai sót logic trong các bước lập luận không?
+   - Điểm 5: Lập luận hoàn hảo, rõ ràng, và đầy đủ
+   - Điểm 1: Lập luận rời rạc, mâu thuẫn hoặc sai cơ bản
+
+3. **Tính nhất quán (Consistency)**
+   - Câu trả lời có nhất quán từ đầu đến cuối không?
+   - Không có mâu thuẫn giữa các phần trong câu trả lời?
+   - Các định nghĩa và ký hiệu được sử dụng nhất quán?
+   - Điểm 5: Hoàn toàn nhất quán
+   - Điểm 1: Nhiều mâu thuẫn nội bộ
+
+4. **Hiệu suất phù hợp với độ khó (Difficulty Performance)**
+   - Câu trả lời có phù hợp với độ khó của bài toán không?
+   - Mô hình có xử lý đầy đủ độ phức tạp của bài toán không?
+   - Điểm 5: Xử lý xuất sắc bài toán theo đúng độ khó
+   - Điểm 1: Không đáp ứng được yêu cầu cơ bản của bài toán
+
+5. **Độ phù hợp ngữ cảnh (Context Adherence)**
+   - Câu trả lời có tận dụng tốt ngữ cảnh/ví dụ được cung cấp không?
+   - Áp dụng đúng các mẫu/cấu trúc từ ngữ cảnh vào bài giải?
+   - Điểm 5: Tận dụng tối đa ngữ cảnh một cách hiệu quả
+   - Điểm 1: Hoàn toàn không sử dụng ngữ cảnh được cung cấp
+
+## BÀI TOÁN CẦN GIẢI QUYẾT
+
 {question}
 
-ĐÁP ÁN CHUẨN:
+## ĐÁP ÁN CHUẨN
+
 {correct_answer}
 
-CÂU TRẢ LỜI CẦN ĐÁNH GIÁ:
+## CÂU TRẢ LỜI CỦA MÔ HÌNH CẦN ĐÁNH GIÁ
+
 {model_answer}
 
-HÃY ĐÁNH GIÁ THEO CÁC TIÊU CHÍ SAU (điểm từ 1-5):
-1. Tính hợp lý và mạch lạc của lập luận (logical_flow): ?/5
-2. Độ chính xác về mặt toán học (mathematical_correctness): ?/5
-3. Rõ ràng và dễ hiểu (clarity): ?/5
-4. Đầy đủ các bước cần thiết (completeness): ?/5
-5. Mức độ liên quan đến câu hỏi (relevance): ?/5
+## ĐÁNH GIÁ THEO THANG ĐIỂM 5
 
-Điểm trung bình: ?/5
+Hãy đánh giá và cho điểm từ 1-5 cho từng tiêu chí, trong đó 1 là kém nhất và 5 là tốt nhất:
 
-Giải thích ngắn gọn cho mỗi điểm:
-"""
-        else:
-            self.reasoning_eval_template = """
-You are an expert evaluating reasoning quality. Please evaluate the answer to the following problem according to 5 criteria, giving scores from 1-5 (5 being the best).
+1. Độ chính xác (accuracy): ?/5
+2. Độ suy luận hợp lý (reasoning): ?/5
+3. Tính nhất quán (completeness): ?/5
+4. Hiệu suất phù hợp với độ khó (explanation): ?/5
+5. Độ phù hợp ngữ cảnh (cultural_context): ?/5
 
-PROBLEM:
-{question}
+Điểm trung bình (average): ?/5
 
-CORRECT ANSWER:
-{correct_answer}
+## GIẢI THÍCH CHI TIẾT
 
-ANSWER TO EVALUATE:
-{model_answer}
+- Độ chính xác: [giải thích chi tiết]
+- Độ suy luận hợp lý: [giải thích chi tiết]
+- Tính nhất quán: [giải thích chi tiết]
+- Hiệu suất phù hợp với độ khó: [giải thích chi tiết]
+- Độ phù hợp ngữ cảnh: [giải thích chi tiết]
 
-EVALUATE ACCORDING TO THESE CRITERIA (score 1-5):
-1. Logical flow and coherence (logical_flow): ?/5
-2. Mathematical correctness (mathematical_correctness): ?/5
-3. Clarity and understandability (clarity): ?/5
-4. Completeness of necessary steps (completeness): ?/5
-5. Relevance to the question (relevance): ?/5
+## KẾT LUẬN TỔNG THỂ
 
-Average score: ?/5
-
-Brief explanation for each score:
+[nhận xét tổng quan về chất lượng câu trả lời]
 """
 
     def analyze(self) -> pd.DataFrame:
@@ -140,10 +169,38 @@ Brief explanation for each score:
             logger.info(f"Các cột hiện có: {list(self.results_df.columns)}")
             return self.results_df
         
-        # Tính toán metrics cơ bản
-        analysis_results = self.analyze_results(self.results_df)
+        # Khởi tạo dictionary metrics chính với các khóa chính là dict rỗng
+        analysis_results = {
+            'basic_metrics': {},
+            'model_prompt_metrics': {},
+            'question_type_metrics': {},
+            'accuracy_metrics': {},
+            'reasoning_metrics': {},
+            'consistency_metrics': {},
+            'difficulty_metrics': {},
+            'context_metrics': {}
+        }
         
-        # Đánh giá tính nhất quán trong self-consistency runs
+        # Tính toán metrics cơ bản
+        analysis_results['basic_metrics'] = self._compute_basic_metrics(self.results_df)
+        
+        # Tính toán metrics theo model và prompt type
+        analysis_results['model_prompt_metrics'] = self._compute_metrics_by_model_prompt(self.results_df)
+        
+        # Tính toán metrics theo loại câu hỏi (nếu có thông tin)
+        if 'question_type' in self.results_df.columns:
+            analysis_results['question_type_metrics'] = self._compute_metrics_by_question_type(self.results_df)
+        
+        # Đánh giá theo các tiêu chí mới
+        # 1. Accuracy
+        if 'is_correct' in self.results_df.columns:
+            analysis_results['accuracy_metrics'] = self._compute_accuracy_metrics(self.results_df)
+        
+        # 2. Reasoning Consistency
+        if any(col.startswith('reasoning_') and col != 'reasoning_scores_str' for col in self.results_df.columns):
+            analysis_results['reasoning_metrics'] = self._compute_reasoning_metrics(self.results_df)
+        
+        # 3. Consistency
         if self.results_df['prompt_type'].str.contains('consistency|cot_self_consistency', case=False).any():
             if self.verbose:
                 logger.info("Đánh giá tính nhất quán trong các self-consistency runs")
@@ -155,78 +212,14 @@ Brief explanation for each score:
                 logger.error(f"Lỗi khi đánh giá tính nhất quán: {str(e)}")
                 logger.debug(traceback.format_exc())
         
-        # Đánh giá tính đầy đủ của câu trả lời
-        if self.reasoning_config.get("evaluate_completeness", True):
-            if self.verbose:
-                logger.info("Đánh giá tính đầy đủ của câu trả lời")
-                
-            try:
-                completeness_sample_size = self.reasoning_config.get("completeness_sample_size", self.sample_size)
-                self.results_df = self.evaluate_completeness(
-                    self.results_df,
-                    sample_size=completeness_sample_size
-                )
-                
-                analysis_results["completeness_metrics"] = self._compute_completeness_metrics(self.results_df)
-            except Exception as e:
-                logger.error(f"Lỗi khi đánh giá tính đầy đủ: {str(e)}")
-                logger.debug(traceback.format_exc())
+        # 4. Performance on different difficulty levels
+        analysis_results['difficulty_metrics'] = self._compute_difficulty_metrics(self.results_df)
         
-        # Tính toán metrics đo lường độ tương đồng với đáp án chuẩn
-        if 'correct_answer' in self.results_df.columns and self.reasoning_config.get("evaluate_similarity", True):
-            if self.verbose:
-                logger.info("Tính toán độ tương đồng với đáp án chuẩn")
-                
-            try:
-                self.results_df = self.evaluate_similarity(self.results_df)
-                analysis_results["similarity_metrics"] = self._compute_similarity_metrics(self.results_df)
-            except Exception as e:
-                logger.error(f"Lỗi khi tính toán độ tương đồng: {str(e)}")
-                logger.debug(traceback.format_exc())
+        # 5. Context Adherence
+        analysis_results['context_metrics'] = self._compute_context_adherence_metrics(self.results_df)
         
-        # Phân tích lỗi nếu có các câu trả lời sai
-        if 'is_correct' in self.results_df.columns and self.reasoning_config.get("error_analysis", True):
-            try:
-                error_sample_size = self.reasoning_config.get("error_sample_size", min(50, self.sample_size))
-                
-                if self.verbose:
-                    logger.info(f"Thực hiện phân tích lỗi với sample_size={error_sample_size}")
-                
-                self.results_df = self.analyze_errors(
-                    self.results_df,
-                    sample_size=error_sample_size
-                )
-                
-                analysis_results["error_analysis"] = self._compute_error_metrics(self.results_df)
-            except Exception as e:
-                logger.error(f"Lỗi khi phân tích lỗi: {str(e)}")
-                logger.debug(traceback.format_exc())
-        
-        # Đánh giá khả năng suy luận nếu được bật
-        if self.reasoning_config.get("enabled", True) and 'correct_answer' in self.results_df.columns:
-            try:
-                if self.verbose:
-                    logger.info(f"Đánh giá chất lượng suy luận với sample_size={self.sample_size}")
-                
-                # Thực hiện đánh giá suy luận cho mẫu ngẫu nhiên
-                self.results_df = self.evaluate_reasoning_quality(
-                    self.results_df, 
-                    sample_size=self.sample_size
-                )
-                
-                # Tính metrics cho kết quả đánh giá suy luận
-                reasoning_metrics = self._compute_reasoning_metrics(self.results_df)
-                analysis_results["reasoning_metrics"] = reasoning_metrics
-            except Exception as e:
-                logger.error(f"Lỗi khi đánh giá khả năng suy luận: {str(e)}")
-                logger.debug(traceback.format_exc())
-        
-        # Lưu kết quả phân tích vào instance để có thể truy cập sau
+        # Lưu kết quả phân tích vào thuộc tính
         self.analysis_results = analysis_results
-        
-        # Hiển thị tóm tắt nếu ở chế độ verbose
-        if self.verbose:
-            logger.info("\n" + self.export_summary(analysis_results))
         
         return self.results_df
     
@@ -598,185 +591,39 @@ Brief Explanation:
         
         # 4. Tỷ lệ lỗi theo model và prompt type
         metrics["by_model_prompt"] = {}
-        for model in error_df['model'].unique():
-            metrics["by_model_prompt"][model] = {}
-            model_df = error_df[error_df['model'] == model]
-            
-            for prompt in model_df['prompt_type'].unique():
-                prompt_df = model_df[model_df['prompt_type'] == prompt]
+        if 'model_name' in error_df.columns:
+            for model in error_df['model_name'].unique():
+                metrics["by_model_prompt"][model] = {}
+                model_df = error_df[error_df['model_name'] == model]
                 
-                mp_error_counts = prompt_df['error_type'].value_counts()
-                mp_error_percentages = mp_error_counts / len(prompt_df) * 100
+                for prompt in model_df['prompt_type'].unique():
+                    prompt_df = model_df[model_df['prompt_type'] == prompt]
+                    
+                    mp_error_counts = prompt_df['error_type'].value_counts()
+                    mp_error_percentages = mp_error_counts / len(prompt_df) * 100
+                    
+                    metrics["by_model_prompt"][model][prompt] = {
+                        "error_counts": mp_error_counts.to_dict(),
+                        "error_percentages": mp_error_percentages.to_dict()
+                    }
+        elif 'model' in error_df.columns:
+            for model in error_df['model'].unique():
+                metrics["by_model_prompt"][model] = {}
+                model_df = error_df[error_df['model'] == model]
                 
-                metrics["by_model_prompt"][model][prompt] = {
-                    "error_counts": mp_error_counts.to_dict(),
-                    "error_percentages": mp_error_percentages.to_dict()
-                }
+                for prompt in model_df['prompt_type'].unique():
+                    prompt_df = model_df[model_df['prompt_type'] == prompt]
+                    
+                    mp_error_counts = prompt_df['error_type'].value_counts()
+                    mp_error_percentages = mp_error_counts / len(prompt_df) * 100
+                    
+                    metrics["by_model_prompt"][model][prompt] = {
+                        "error_counts": mp_error_counts.to_dict(),
+                        "error_percentages": mp_error_percentages.to_dict()
+                    }
         
         return metrics
 
-    def analyze_results(self, results_df: pd.DataFrame) -> Dict[str, Any]:
-        """
-        Phân tích DataFrame kết quả và tính toán tất cả các metrics.
-        
-        Args:
-            results_df (pd.DataFrame): DataFrame chứa kết quả đánh giá
-            
-        Returns:
-            Dict[str, Any]: Dictionary chứa tất cả metrics và kết quả phân tích
-        """
-        if self.verbose:
-            logger.info(f"🔍 Phân tích kết quả cho {len(results_df)} mục")
-        
-        # 1. Tính toán metrics cơ bản
-        basic_metrics = self._compute_basic_metrics(results_df)
-        
-        # 2. Tính các metrics theo model và prompt type
-        model_prompt_metrics = self._compute_metrics_by_model_prompt(results_df)
-        
-        # 3. Tính toán metrics theo loại câu hỏi (nếu có thông tin)
-        question_type_metrics = {}
-        if 'question_type' in results_df.columns:
-            question_type_metrics = self._compute_metrics_by_question_type(results_df)
-        
-        # 4. Kết quả của phân tích
-        analysis_results = {
-            "basic_metrics": basic_metrics,
-            "model_prompt_metrics": model_prompt_metrics,
-            "question_type_metrics": question_type_metrics,
-            "raw_results": results_df
-        }
-        
-        return analysis_results
-    
-    def _compute_basic_metrics(self, df: pd.DataFrame) -> Dict[str, float]:
-        """
-        Tính toán các metrics cơ bản trên toàn bộ dataset.
-        
-        Args:
-            df (pd.DataFrame): DataFrame kết quả
-            
-        Returns:
-            Dict[str, float]: Các metrics cơ bản
-        """
-        metrics = {}
-        
-        # Tính toán accuracy tổng thể
-        if 'is_correct' in df.columns:
-            metrics['overall_accuracy'] = df['is_correct'].mean()
-        
-        # Tính toán thời gian trung bình
-        if 'latency' in df.columns:
-            metrics['average_latency'] = df['latency'].mean()
-            metrics['max_latency'] = df['latency'].max()
-            metrics['min_latency'] = df['latency'].min()
-        
-        # Tính toán độ dài phản hồi trung bình
-        if 'response_length' in df.columns:
-            metrics['average_response_length'] = df['response_length'].mean()
-        
-        return metrics
-    
-    def _compute_metrics_by_model_prompt(self, df: pd.DataFrame) -> Dict[str, Dict[str, Dict[str, float]]]:
-        """
-        Tính toán metrics theo từng model và prompt type.
-        
-        Args:
-            df (pd.DataFrame): DataFrame kết quả
-            
-        Returns:
-            Dict: Metrics theo model và prompt type
-        """
-        metrics = {}
-        
-        # Kiểm tra các cột cần thiết
-        model_col = 'model_name' if 'model_name' in df.columns else ('model' if 'model' in df.columns else None)
-        prompt_col = 'prompt_type' if 'prompt_type' in df.columns else None
-        
-        if not model_col or not prompt_col:
-            logger.warning(f"DataFrame thiếu cột cần thiết để tính metrics theo model/prompt. "
-                         f"Cần có 'model_name'/'model' và 'prompt_type', hiện có: {list(df.columns)}")
-            
-            # Tạo một bộ metrics đơn giản với dữ liệu khả dụng
-            if len(df) > 0:
-                # Tạo các cột giả nếu không có
-                if not model_col:
-                    df['model_name'] = 'unknown_model'
-                    model_col = 'model_name'
-                if not prompt_col:
-                    df['prompt_type'] = 'unknown_prompt'
-                    prompt_col = 'prompt_type'
-            else:
-                return metrics
-        
-        # Lặp qua từng model
-        for model in df[model_col].unique():
-            metrics[model] = {}
-            model_df = df[df[model_col] == model]
-            
-            # Lặp qua từng prompt type
-            for prompt_type in model_df[prompt_col].unique():
-                metrics[model][prompt_type] = {}
-                prompt_df = model_df[model_df[prompt_col] == prompt_type]
-                
-                # Tính accuracy nếu có cột is_correct
-                if 'is_correct' in df.columns:
-                    metrics[model][prompt_type]['accuracy'] = prompt_df['is_correct'].mean()
-                
-                # Tính thời gian trung bình - kiểm tra cả hai tên cột có thể có
-                latency_col = None
-                for col_name in ['latency', 'elapsed_time']:
-                    if col_name in df.columns:
-                        latency_col = col_name
-                        break
-                        
-                if latency_col:
-                    metrics[model][prompt_type]['avg_latency'] = prompt_df[latency_col].mean()
-                
-                # Tính độ dài phản hồi trung bình
-                if 'response_length' in df.columns:
-                    metrics[model][prompt_type]['avg_response_length'] = prompt_df['response_length'].mean()
-                elif 'token_count' in df.columns:
-                    metrics[model][prompt_type]['avg_token_count'] = prompt_df['token_count'].mean()
-                
-                # Thêm số lượng mẫu cho mỗi tổ hợp model/prompt
-                metrics[model][prompt_type]['sample_count'] = len(prompt_df)
-        
-        return metrics
-    
-    def _compute_metrics_by_question_type(self, df: pd.DataFrame) -> Dict[str, Dict[str, float]]:
-        """
-        Tính toán metrics theo loại câu hỏi.
-        
-        Args:
-            df (pd.DataFrame): DataFrame kết quả
-            
-        Returns:
-            Dict: Metrics theo loại câu hỏi
-        """
-        metrics = {}
-        
-        if 'question_type' not in df.columns:
-            return metrics
-        
-        # Lặp qua từng loại câu hỏi
-        for q_type in df['question_type'].unique():
-            metrics[q_type] = {}
-            type_df = df[df['question_type'] == q_type]
-            
-            # Tính accuracy cho loại câu hỏi này
-            if 'is_correct' in df.columns:
-                metrics[q_type]['accuracy'] = type_df['is_correct'].mean()
-            
-            # Tính thời gian trung bình
-            if 'latency' in df.columns:
-                metrics[q_type]['avg_latency'] = type_df['latency'].mean()
-            
-            # Tính số lượng câu hỏi
-            metrics[q_type]['count'] = len(type_df)
-        
-        return metrics
-    
     def evaluate_reasoning_quality(self, 
                                results_df: pd.DataFrame, 
                                sample_size: int = 10,
@@ -823,27 +670,23 @@ Brief Explanation:
                 
         # Lọc các mẫu có đáp án đúng và có sử dụng prompt yêu cầu lập luận
         has_reasoning = results_df['prompt_type'].str.contains('thought|cot|reasoning|react', case=False, na=False)
-        valid_rows = (
-            has_reasoning & 
-            results_df['reasoning_avg_score'].isna() &  # Chưa được đánh giá
-            ~results_df['correct_answer'].isna() &  # Có đáp án đúng
-            ~results_df['response'].isna()  # Có câu trả lời
-        )
         
-        valid_indices = results_df[valid_rows].index.tolist()
+        # Nếu không chỉ định mẫu cụ thể, chúng ta chọn ngẫu nhiên
+        valid_indices = results_df.index[has_reasoning].tolist()
         
         if not valid_indices:
-            logger.warning("Không có mẫu phù hợp để đánh giá suy luận")
+            logger.warning("Không có câu trả lời nào phù hợp để đánh giá suy luận")
             return results_df
             
-        # Lấy mẫu ngẫu nhiên nếu cần
-        np.random.seed(random_seed)
-        if len(valid_indices) > sample_size:
-            sample_indices = np.random.choice(valid_indices, size=sample_size, replace=False)
-        else:
-            sample_indices = valid_indices
-            
-        logger.info(f"Đánh giá suy luận cho {len(sample_indices)} mẫu")
+        # Lấy mẫu ngẫu nhiên từ các chỉ số hợp lệ
+        random.seed(random_seed)
+        
+        # Giới hạn số lượng mẫu để đánh giá
+        sample_size = min(sample_size, len(valid_indices))
+        sample_indices = random.sample(valid_indices, sample_size)
+        
+        if self.verbose:
+            logger.info(f"Đánh giá suy luận cho {sample_size} mẫu ngẫu nhiên")
         
         # Đánh giá từng mẫu
         for i, idx in enumerate(sample_indices):
@@ -868,7 +711,7 @@ Brief Explanation:
                             results_df.at[idx, col_name] = score
                 
                 # Tính điểm trung bình
-                criteria_scores = [v for k, v in eval_result.items() if k in self.reasoning_criteria]
+                criteria_scores = [v for k, v in eval_result.items() if k != 'explanation' and isinstance(v, (int, float))]
                 avg_score = sum(criteria_scores) / len(criteria_scores) if criteria_scores else 0
                 results_df.at[idx, 'reasoning_avg_score'] = avg_score
                 
@@ -881,6 +724,222 @@ Brief Explanation:
                 logger.error(traceback.format_exc())
         
         return results_df
+    
+    def _evaluate_single_reasoning(self, question, correct_answer, model_answer):
+        """
+        Đánh giá chất lượng suy luận cho một cặp câu hỏi-câu trả lời.
+        
+        Sử dụng LLM (mặc định là Llama 3 qua Groq API) để đánh giá chất lượng suy luận
+        dựa trên các tiêu chí như tính logic, tính toán chính xác, rõ ràng, đầy đủ và liên quan.
+        
+        Args:
+            question (str): Câu hỏi/bài toán
+            correct_answer (str): Câu trả lời đúng/đáp án
+            model_answer (str): Câu trả lời của mô hình cần đánh giá
+            
+        Returns:
+            Dict: Kết quả đánh giá với các tiêu chí và điểm số
+        """
+        # Import cần thiết chỉ trong hàm này để tránh import cycle
+        try:
+            from core.model_interface import generate_text
+        except ImportError:
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from core.model_interface import generate_text
+            
+        # Tạo prompt đánh giá
+        evaluation_prompt = self.reasoning_eval_template.format(
+            question=question,
+            correct_answer=correct_answer,
+            model_answer=model_answer
+        )
+        
+        # Lấy phản hồi đánh giá từ LLM
+        if self.verbose:
+            logger.info(f"Gửi yêu cầu đánh giá reasoning đến model: {self.reasoning_model}")
+            
+        try:
+            eval_response = generate_text(
+                model_name=self.reasoning_model,
+                prompt=evaluation_prompt,
+                generation_config={
+                    "temperature": 0.1,  # Giảm temperature để có kết quả ổn định
+                    "max_tokens": 1000    # Đủ dài cho đánh giá chi tiết
+                }
+            )
+            
+            # Nếu response là tuple (text, stats), lấy text
+            if isinstance(eval_response, tuple) and len(eval_response) > 0:
+                eval_response = eval_response[0]
+                
+            # Parse kết quả đánh giá
+            return self._parse_reasoning_evaluation(eval_response)
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi đánh giá suy luận với LLM: {str(e)}")
+            logger.error(traceback.format_exc())
+            
+            # Trả về kết quả mặc định nếu có lỗi
+            return {
+                'logical_flow': 0,
+                'mathematical_correctness': 0,
+                'clarity': 0,
+                'completeness': 0,
+                'relevance': 0,
+                'avg_score': 0,
+                'explanation': f"Lỗi khi đánh giá: {str(e)}"
+            }
+    
+    def _parse_reasoning_evaluation(self, eval_response):
+        """
+        Phân tích kết quả đánh giá từ LLM để trích xuất điểm số và giải thích.
+        
+        Args:
+            eval_response (str): Phản hồi từ mô hình đánh giá
+            
+        Returns:
+            Dict: Kết quả đánh giá với các tiêu chí và điểm số
+        """
+        # Kiểm tra xem eval_response có phải là chuỗi JSON hợp lệ không
+        import json
+        
+        # Khởi tạo kết quả mặc định
+        result = {
+            'logical_flow': 0,
+            'mathematical_correctness': 0,
+            'clarity': 0,
+            'completeness': 0,
+            'relevance': 0,
+            'avg_score': 0,
+            'explanation': ''
+        }
+        
+        # Xử lý khi eval_response là dict (đã được parse trước đó)
+        if isinstance(eval_response, dict):
+            # Cập nhật kết quả từ dict
+            for key in result.keys():
+                if key in eval_response:
+                    result[key] = eval_response[key]
+            return result
+        
+        # Thử phân tích dưới dạng JSON
+        if eval_response and isinstance(eval_response, str):
+            try:
+                # Xử lý trường hợp nhiều JSON objects bị nối với nhau
+                if eval_response.count('{') > 1 and eval_response.count('}') > 1:
+                    # Tìm JSON object đầu tiên
+                    first_open = eval_response.find('{')
+                    first_close = eval_response.find('}', first_open) + 1
+                    
+                    if first_open >= 0 and first_close > first_open:
+                        clean_response = eval_response[first_open:first_close]
+                        logger.debug(f"Phát hiện nhiều JSON objects, chỉ sử dụng object đầu tiên: {clean_response}")
+                        try:
+                            json_data = json.loads(clean_response)
+                            logger.debug(f"Đã phân tích chuỗi JSON đầu tiên thành công: {json_data}")
+                            
+                            # Cập nhật kết quả
+                            for key in result.keys():
+                                if key in json_data:
+                                    result[key] = json_data[key]
+                            
+                            return result
+                        except json.JSONDecodeError:
+                            logger.debug(f"Không thể phân tích JSON object đầu tiên, tiếp tục tìm kiếm")
+                
+                # Thử phân tích toàn bộ chuỗi như JSON
+                try:
+                    json_data = json.loads(eval_response)
+                    logger.debug(f"Đã phân tích chuỗi JSON thành công: {json_data}")
+                    
+                    # Cập nhật kết quả từ dữ liệu JSON
+                    for key in result.keys():
+                        if key in json_data:
+                            result[key] = json_data[key]
+                    
+                    # Hoàn tất và trả về kết quả
+                    return result
+                    
+                except json.JSONDecodeError:
+                    # Cố gắng làm sạch chuỗi và thử lại
+                    # Tìm JSON object hợp lệ trong chuỗi
+                    import re
+                    json_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
+                    match = re.search(json_pattern, eval_response)
+                    
+                    if match:
+                        potential_json = match.group(0)
+                        try:
+                            json_data = json.loads(potential_json)
+                            logger.debug(f"Đã phân tích chuỗi JSON được trích xuất thành công: {json_data}")
+                            
+                            # Cập nhật kết quả từ dữ liệu JSON
+                            for key in result.keys():
+                                if key in json_data:
+                                    result[key] = json_data[key]
+                            
+                            return result
+                        except:
+                            logger.debug("Không thể phân tích JSON sau khi trích xuất, tiếp tục với phương pháp regex")
+                    else:
+                        logger.debug("Không tìm thấy chuỗi JSON hợp lệ, tiếp tục với phương pháp regex")
+                    
+            except Exception as e:
+                logger.debug(f"Lỗi khi xử lý JSON: {str(e)}")
+        
+        # Tiếp tục với phương pháp phân tích regex nếu không phải JSON
+        # Các tiêu chí cần trích xuất
+        criteria = {
+            'logical_flow': r'(?:Tính hợp lý|Độ hợp lý|Logical flow|Tính logic).*?(\d+)[/\s]*5',
+            'mathematical_correctness': r'(?:Độ chính xác về mặt toán học|Mathematical correctness|Tính toán chính xác).*?(\d+)[/\s]*5',
+            'clarity': r'(?:Rõ ràng|Độ rõ ràng|Clarity).*?(\d+)[/\s]*5',
+            'completeness': r'(?:Tính đầy đủ|Đầy đủ|Completeness).*?(\d+)[/\s]*5',
+            'relevance': r'(?:Mức độ liên quan|Tính liên quan|Relevance).*?(\d+)[/\s]*5'
+        }
+        
+        # Mẫu để trích xuất điểm trung bình
+        avg_pattern = r'(?:Điểm trung bình|Average score|Avg score).*?(\d+\.?\d*)[/\s]*5'
+        
+        # Mẫu để trích xuất phần giải thích
+        explanation_pattern = r'(?:Giải thích|Explanation)\s*:(.*?)(?:$|(?=\n\s*\d))'
+        
+        # Trích xuất điểm số cho từng tiêu chí
+        import re
+        for criterion, pattern in criteria.items():
+            match = re.search(pattern, eval_response, re.IGNORECASE | re.DOTALL)
+            if match:
+                result[criterion] = int(match.group(1))
+        
+        # Trích xuất điểm trung bình
+        avg_match = re.search(avg_pattern, eval_response, re.IGNORECASE | re.DOTALL)
+        if avg_match:
+            try:
+                result['avg_score'] = float(avg_match.group(1))
+            except ValueError:
+                # Tính toán lại điểm trung bình nếu không thể trích xuất
+                scores = [result[c] for c in criteria.keys()]
+                result['avg_score'] = sum(scores) / len(scores) if scores else 0
+        else:
+            # Tính toán điểm trung bình
+            scores = [result[c] for c in criteria.keys()]
+            result['avg_score'] = sum(scores) / len(scores) if scores else 0
+        
+        # Trích xuất phần giải thích
+        explanation_match = re.search(explanation_pattern, eval_response, re.IGNORECASE | re.DOTALL)
+        if explanation_match:
+            result['explanation'] = explanation_match.group(1).strip()
+        else:
+            # Nếu không tìm thấy phần giải thích theo mẫu,
+            # lấy phần cuối của eval_response làm giải thích
+            lines = eval_response.strip().split('\n')
+            for i, line in enumerate(lines):
+                if 'giải thích' in line.lower() or 'explanation' in line.lower():
+                    result['explanation'] = '\n'.join(lines[i+1:]).strip()
+                    break
+        
+        return result
     
     def _compute_reasoning_metrics(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
@@ -895,15 +954,38 @@ Brief Explanation:
         metrics = {}
         
         # Kiểm tra các cột reasoning có tồn tại không
-        reasoning_cols = [col for col in df.columns if col.startswith('reasoning_') and col != 'reasoning_evaluation']
+        reasoning_cols = [col for col in df.columns if col.startswith('reasoning_') 
+                        and col not in ['reasoning_evaluation', 'reasoning_scores', 'reasoning_scores_str']]
+        
         if not reasoning_cols:
+            logger.warning("Không tìm thấy các cột reasoning_ để tính toán metrics")
+            return metrics
+        
+        logger.debug(f"Tính toán metrics từ các cột reasoning: {reasoning_cols}")
+        
+        # Đảm bảo các cột chứa dữ liệu số
+        for col in reasoning_cols:
+            try:
+                # Kiểm tra xem cột có chứa dữ liệu không phải số không
+                if df[col].dtype == 'object':
+                    logger.debug(f"Chuyển đổi cột {col} thành số")
+                    # Thử chuyển đổi cột thành số
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+            except Exception as e:
+                logger.error(f"Lỗi khi chuyển đổi cột {col} thành số: {e}")
+                # Loại bỏ cột này khỏi danh sách cần tính toán
+                reasoning_cols.remove(col)
+        
+        if not reasoning_cols:
+            logger.warning("Không còn cột reasoning_ nào để tính toán sau khi chuyển đổi")
             return metrics
         
         # 1. Metrics tổng thể
         metrics["overall"] = {}
         for col in reasoning_cols:
             criterion = col.replace('reasoning_', '')
-            metrics["overall"][criterion] = df[col].mean()
+            # Sử dụng mean trên dữ liệu số, bỏ qua giá trị NaN
+            metrics["overall"][criterion] = df[col].mean(skipna=True)
         
         # 2. Metrics theo model
         metrics["by_model"] = {}
@@ -913,7 +995,7 @@ Brief Explanation:
             
             for col in reasoning_cols:
                 criterion = col.replace('reasoning_', '')
-                metrics["by_model"][model][criterion] = model_df[col].mean()
+                metrics["by_model"][model][criterion] = model_df[col].mean(skipna=True)
         
         # 3. Metrics theo prompt type
         metrics["by_prompt_type"] = {}
@@ -923,7 +1005,7 @@ Brief Explanation:
             
             for col in reasoning_cols:
                 criterion = col.replace('reasoning_', '')
-                metrics["by_prompt_type"][prompt][criterion] = prompt_df[col].mean()
+                metrics["by_prompt_type"][prompt][criterion] = prompt_df[col].mean(skipna=True)
         
         # 4. Metrics theo model và prompt type
         metrics["by_model_prompt"] = {}
@@ -937,7 +1019,7 @@ Brief Explanation:
                 
                 for col in reasoning_cols:
                     criterion = col.replace('reasoning_', '')
-                    metrics["by_model_prompt"][model][prompt][criterion] = prompt_df[col].mean()
+                    metrics["by_model_prompt"][model][prompt][criterion] = prompt_df[col].mean(skipna=True)
         
         return metrics
     
@@ -1841,3 +1923,324 @@ Detailed analysis:
                     metrics["correlation"][f"{col}_vs_accuracy"] = corr
         
         return metrics
+
+    def _compute_accuracy_metrics(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Tính toán các metrics liên quan đến độ chính xác (Accuracy).
+        
+        Args:
+            df (pd.DataFrame): DataFrame chứa kết quả đánh giá
+            
+        Returns:
+            Dict[str, Any]: Các metrics liên quan đến accuracy
+        """
+        metrics = {}
+        
+        if 'is_correct' not in df.columns:
+            logger.warning("Không thể tính accuracy metrics: thiếu cột is_correct")
+            return metrics
+        
+        # Tính overall accuracy
+        metrics['overall_accuracy'] = df['is_correct'].mean()
+        
+        # Xác định cột model (có thể là 'model_name' hoặc 'model')
+        model_col = 'model_name' if 'model_name' in df.columns else 'model'
+        
+        # Tính accuracy theo model và prompt type
+        if model_col in df.columns:
+            accuracy_by_model = df.groupby(model_col)['is_correct'].mean().to_dict()
+            accuracy_by_model_prompt = df.groupby([model_col, 'prompt_type'])['is_correct'].mean().unstack().to_dict('index')
+            
+            metrics['accuracy_by_model'] = accuracy_by_model
+            metrics['accuracy_by_model_prompt'] = accuracy_by_model_prompt
+        
+        if 'prompt_type' in df.columns:
+            accuracy_by_prompt = df.groupby('prompt_type')['is_correct'].mean().to_dict()
+            metrics['accuracy_by_prompt'] = accuracy_by_prompt
+        
+        # Tính F1 score nếu có thể
+        try:
+            from sklearn.metrics import f1_score
+            if 'is_correct' in df.columns and 'expected_answer' in df.columns and 'response' in df.columns:
+                # Thực hiện tính toán F1 score cho từng model/prompt
+                f1_scores = {}
+                for (model, prompt), group in df.groupby(['model_name', 'prompt_type']):
+                    if len(group) > 0:
+                        f1 = self._calculate_f1_score(group)
+                        f1_scores[(model, prompt)] = f1
+                
+                metrics['f1_scores'] = f1_scores
+        except (ImportError, Exception) as e:
+            logger.warning(f"Không thể tính F1 score: {str(e)}")
+        
+        return metrics
+    
+    def _calculate_f1_score(self, group_df: pd.DataFrame) -> float:
+        """
+        Tính F1 score cho một nhóm kết quả.
+        
+        Args:
+            group_df (pd.DataFrame): DataFrame chứa một nhóm kết quả
+            
+        Returns:
+            float: F1 score
+        """
+        # Đơn giản hóa: coi is_correct như true positive/negative
+        try:
+            from sklearn.metrics import f1_score
+            return f1_score([1] * len(group_df), group_df['is_correct'])
+        except Exception:
+            # Fallback: tính thủ công
+            tp = group_df['is_correct'].sum()
+            total = len(group_df)
+            precision = tp / total if total > 0 else 0
+            recall = tp / total if total > 0 else 0
+            
+            return 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+    
+    def _compute_difficulty_metrics(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Phân tích hiệu suất dựa trên các mức độ khó khác nhau.
+        
+        Args:
+            df (pd.DataFrame): DataFrame chứa kết quả đánh giá
+            
+        Returns:
+            Dict[str, Any]: Các metrics về hiệu suất theo độ khó
+        """
+        metrics = {}
+        
+        if 'difficulty' not in df.columns or 'is_correct' not in df.columns:
+            logger.warning("Không thể tính difficulty metrics: thiếu cột difficulty hoặc is_correct")
+            return metrics
+        
+        # Đảm bảo cột difficulty có giá trị
+        df_valid = df.dropna(subset=['difficulty', 'is_correct'])
+        
+        if len(df_valid) == 0:
+            logger.warning("Không có dữ liệu hợp lệ để tính difficulty metrics")
+            return metrics
+        
+        # Tính accuracy theo độ khó
+        accuracy_by_difficulty = df_valid.groupby('difficulty')['is_correct'].mean().to_dict()
+        metrics['accuracy_by_difficulty'] = accuracy_by_difficulty
+        
+        # Tính accuracy theo model và độ khó
+        accuracy_by_model_difficulty = df_valid.groupby(['model_name', 'difficulty'])['is_correct'].mean().unstack().to_dict('index')
+        metrics['accuracy_by_model_difficulty'] = accuracy_by_model_difficulty
+        
+        # Tính accuracy theo prompt và độ khó
+        accuracy_by_prompt_difficulty = df_valid.groupby(['prompt_type', 'difficulty'])['is_correct'].mean().unstack().to_dict('index')
+        metrics['accuracy_by_prompt_difficulty'] = accuracy_by_prompt_difficulty
+        
+        # Phân tích mức độ cải thiện giữa các độ khó
+        difficulty_levels = ['Dễ', 'Trung bình', 'Khó']
+        valid_levels = [level for level in difficulty_levels if level in df_valid['difficulty'].unique()]
+        
+        if len(valid_levels) > 1:
+            improvements = {}
+            for model in df_valid['model_name'].unique():
+                model_improvements = {}
+                for i in range(len(valid_levels)-1):
+                    easier = valid_levels[i]
+                    harder = valid_levels[i+1]
+                    
+                    easier_acc = df_valid[(df_valid['model_name'] == model) & (df_valid['difficulty'] == easier)]['is_correct'].mean()
+                    harder_acc = df_valid[(df_valid['model_name'] == model) & (df_valid['difficulty'] == harder)]['is_correct'].mean()
+                    
+                    # Tính sự suy giảm hiệu suất
+                    if not np.isnan(easier_acc) and not np.isnan(harder_acc):
+                        diff = harder_acc - easier_acc
+                        model_improvements[f'{easier}_to_{harder}'] = diff
+                
+                improvements[model] = model_improvements
+            
+            metrics['difficulty_improvements'] = improvements
+        
+        return metrics
+    
+    def _compute_context_adherence_metrics(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Tính toán metrics cho đánh giá context adherence.
+        
+        Args:
+            df (pd.DataFrame): DataFrame đã có đánh giá context adherence
+            
+        Returns:
+            Dict: Metrics liên quan đến context adherence
+        """
+        metrics = {}
+        
+        # Lọc các loại prompt liên quan tới context (few-shot, react)
+        context_prompt_mask = df['prompt_type'].str.contains('few-shot|react', case=False, na=False)
+        df_context = df[context_prompt_mask]
+        
+        if len(df_context) == 0:
+            return metrics
+        
+        # 1. Tỷ lệ câu trả lời đúng cho prompts liên quan context
+        if 'is_correct' in df_context.columns:
+            metrics['context_accuracy'] = df_context['is_correct'].mean()
+        
+        # 2. So sánh với non-context prompts
+        non_context_mask = ~df['prompt_type'].str.contains('few-shot|react', case=False, na=False)
+        df_non_context = df[non_context_mask]
+        
+        if len(df_non_context) > 0 and 'is_correct' in df_non_context.columns:
+            metrics['non_context_accuracy'] = df_non_context['is_correct'].mean()
+            
+            # Tính delta accuracy
+            context_acc = metrics.get('context_accuracy', 0)
+            non_context_acc = metrics.get('non_context_accuracy', 0)
+            metrics['context_accuracy_delta'] = context_acc - non_context_acc
+        
+        # Phân tích reasoning_cultural_context nếu có
+        if 'reasoning_cultural_context' in df_context.columns:
+            try:
+                context_scores = df_context['reasoning_cultural_context'].dropna().tolist()
+                
+                if context_scores:
+                    metrics['avg_context_adherence_score'] = sum(context_scores) / len(context_scores)
+                    metrics['max_context_adherence_score'] = max(context_scores)
+                    metrics['min_context_adherence_score'] = min(context_scores)
+            except Exception as e:
+                logger.error(f"Lỗi khi tính toán context adherence score: {str(e)}")
+                logger.error(traceback.format_exc())
+        
+        return metrics
+
+    def _compute_basic_metrics(self, df: pd.DataFrame) -> Dict[str, float]:
+        """
+        Tính toán các metrics cơ bản trên toàn bộ dataset.
+        
+        Args:
+            df (pd.DataFrame): DataFrame kết quả
+            
+        Returns:
+            Dict[str, float]: Các metrics cơ bản
+        """
+        metrics = {}
+        
+        # Tính toán accuracy tổng thể
+        if 'is_correct' in df.columns:
+            metrics['overall_accuracy'] = df['is_correct'].mean()
+        
+        # Tính toán thời gian trung bình
+        if 'latency' in df.columns:
+            metrics['average_latency'] = df['latency'].mean()
+            metrics['max_latency'] = df['latency'].max()
+            metrics['min_latency'] = df['latency'].min()
+        
+        # Tính toán độ dài phản hồi trung bình
+        if 'response_length' in df.columns:
+            metrics['average_response_length'] = df['response_length'].mean()
+        
+        return metrics
+    
+    def _compute_metrics_by_model_prompt(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Tính toán các metrics theo từng cặp model-prompt.
+        
+        Args:
+            df (pd.DataFrame): DataFrame kết quả
+            
+        Returns:
+            Dict[str, Dict[str, Any]]: Các metrics theo từng cặp model-prompt
+        """
+        metrics = {}
+        
+        # Xác định cột model (có thể là 'model_name' hoặc 'model')
+        model_col = 'model_name' if 'model_name' in df.columns else 'model'
+        
+        if model_col not in df.columns or 'prompt_type' not in df.columns:
+            return metrics
+        
+        # Lấy danh sách models và prompt types
+        models = df[model_col].unique()
+        prompt_types = df['prompt_type'].unique()
+        
+        # Tính metrics cho từng cặp model-prompt
+        for model in models:
+            metrics[model] = {}
+            for prompt_type in prompt_types:
+                mp_df = df[(df[model_col] == model) & (df['prompt_type'] == prompt_type)]
+                
+                if len(mp_df) == 0:
+                    continue
+                
+                mp_metrics = {}
+                
+                # Accuracy (nếu có)
+                if 'is_correct' in mp_df.columns:
+                    mp_metrics['accuracy'] = mp_df['is_correct'].mean()
+                
+                # Latency (nếu có)
+                if 'latency' in mp_df.columns:
+                    mp_metrics['average_latency'] = mp_df['latency'].mean()
+                    mp_metrics['max_latency'] = mp_df['latency'].max()
+                    mp_metrics['min_latency'] = mp_df['latency'].min()
+                
+                # Token count (nếu có)
+                if 'token_count' in mp_df.columns:
+                    mp_metrics['average_token_count'] = mp_df['token_count'].mean()
+                
+                # Thêm các metrics khác nếu cần
+                
+                # Lưu metrics cho cặp model-prompt
+                metrics[model][prompt_type] = mp_metrics
+        
+        return metrics
+    
+    def _compute_metrics_by_question_type(self, df: pd.DataFrame) -> Dict[str, Dict[str, float]]:
+        """
+        Tính toán metrics theo loại câu hỏi.
+        
+        Args:
+            df (pd.DataFrame): DataFrame kết quả
+            
+        Returns:
+            Dict: Metrics theo loại câu hỏi
+        """
+        metrics = {}
+        
+        if 'question_type' not in df.columns:
+            return metrics
+        
+        # Lặp qua từng loại câu hỏi
+        for q_type in df['question_type'].unique():
+            metrics[q_type] = {}
+            type_df = df[df['question_type'] == q_type]
+            
+            # Tính accuracy cho loại câu hỏi này
+            if 'is_correct' in df.columns:
+                metrics[q_type]['accuracy'] = type_df['is_correct'].mean()
+            
+            # Tính thời gian trung bình
+            if 'latency' in df.columns:
+                metrics[q_type]['avg_latency'] = type_df['latency'].mean()
+            
+            # Tính số lượng câu hỏi
+            metrics[q_type]['count'] = len(type_df)
+        
+        return metrics
+
+    def _deep_merge(self, base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Gộp hai dict một cách đệ quy.
+        
+        Args:
+            base: Dict cơ sở
+            override: Dict ghi đè
+            
+        Returns:
+            Dict mới sau khi gộp
+        """
+        result = base.copy()
+        
+        for key, value in override.items():
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = self._deep_merge(result[key], value)
+            else:
+                result[key] = value
+        
+        return result

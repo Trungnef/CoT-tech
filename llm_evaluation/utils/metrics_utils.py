@@ -3,6 +3,7 @@ Tiện ích tính toán các metrics đánh giá mô hình LLM.
 Cung cấp các hàm tính precision, recall, F1, accuracy và các metrics khác.
 """
 
+import logging
 import numpy as np
 import pandas as pd
 import warnings
@@ -11,6 +12,7 @@ from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     roc_auc_score, confusion_matrix, classification_report
 )
+import json
 
 from .logging_utils import get_logger
 
@@ -308,62 +310,222 @@ def calculate_token_overlap(predictions: List[str],
         "token_f1": float(avg_f1)
     }
 
-def calculate_llm_reasoning_metrics(
-    reasoning_scores: List[Dict[str, float]],
-    criteria_weights: Optional[Dict[str, float]] = None
-) -> Dict[str, float]:
+def calculate_llm_reasoning_metrics(scores, criteria_weights=None):
     """
-    Tính toán các metrics đánh giá khả năng lập luận của LLM.
+    Tính toán các chỉ số cho việc đánh giá reasoning.
     
     Args:
-        reasoning_scores: Danh sách điểm số đánh giá theo từng tiêu chí
-        criteria_weights: Trọng số cho từng tiêu chí đánh giá
-        
+        scores (list): Danh sách các bản ghi điểm đánh giá reasoning. 
+                      Mỗi bản ghi có thể là dict hoặc là hàng DataFrame có các cột reasoning_*.
+        criteria_weights (dict, optional): Trọng số cho từng tiêu chí. 
+                                          Mặc định là None (cân bằng).
+    
     Returns:
-        Dict chứa các metrics tổng hợp
+        dict: Dictionary chứa các chỉ số đánh giá.
     """
-    if not reasoning_scores:
-        logger.warning("Không có dữ liệu đánh giá lập luận")
-        return {"reasoning_score": 0.0}
+    if not scores or len(scores) == 0:
+        return {
+            "average_score": 0,
+            "min_score": 0,
+            "max_score": 0,
+            "std_dev": 0,
+            "criterion_scores": {},
+            "samples_evaluated": 0
+        }
     
-    # Tạo DataFrame từ danh sách scores
-    df = pd.DataFrame(reasoning_scores)
+    # Chuẩn bị DataFrame từ scores
+    try:
+        data = []
+        for s in scores:
+            # Xử lý các trường hợp khác nhau của dữ liệu đầu vào
+            if isinstance(s, dict):
+                # Kiểm tra xem đây là dict reasoning_scores hay row dataframe
+                if "reasoning_accuracy" in s:
+                    # Row dataframe với các cột flattened
+                    row_data = {
+                        "accuracy": s.get("reasoning_accuracy", 0),
+                        "reasoning": s.get("reasoning_reasoning", 0),
+                        "completeness": s.get("reasoning_completeness", 0),
+                        "explanation": s.get("reasoning_explanation", 0),
+                        "cultural_context": s.get("reasoning_cultural_context", 0),
+                        "average": s.get("reasoning_average", 0)
+                    }
+                elif isinstance(s.get("reasoning_scores"), dict):
+                    # Row dataframe với cột reasoning_scores là dict
+                    reasoning_scores = s.get("reasoning_scores", {})
+                    row_data = {
+                        "accuracy": reasoning_scores.get("accuracy", 0),
+                        "reasoning": reasoning_scores.get("reasoning", 0),
+                        "completeness": reasoning_scores.get("completeness", 0),
+                        "explanation": reasoning_scores.get("explanation", 0),
+                        "cultural_context": reasoning_scores.get("cultural_context", 0),
+                        "average": reasoning_scores.get("average", 0)
+                    }
+                elif isinstance(s.get("reasoning_scores_str"), str):
+                    # Row dataframe với cột reasoning_scores_str (đã chuyển đổi để tránh lỗi)
+                    # Thử phân tích JSON để lấy dữ liệu
+                    try:
+                        # Kiểm tra chuỗi JSON có hợp lệ không
+                        reasoning_str = s.get("reasoning_scores_str", "{}")
+                        
+                        # Xử lý trường hợp có nhiều JSON objects bị nối với nhau
+                        if reasoning_str.count('{') > 1:
+                            # Tìm vị trí kết thúc của object JSON đầu tiên
+                            end_pos = reasoning_str.find('}') + 1
+                            # Chỉ sử dụng object đầu tiên
+                            reasoning_str = reasoning_str[:end_pos]
+                        
+                        reasoning_scores = json.loads(reasoning_str)
+                        
+                        # Nếu parse JSON thành công, sử dụng dữ liệu từ JSON
+                        row_data = {
+                            "accuracy": reasoning_scores.get("accuracy", s.get("reasoning_accuracy", 0)),
+                            "reasoning": reasoning_scores.get("reasoning", s.get("reasoning_reasoning", 0)),
+                            "completeness": reasoning_scores.get("completeness", s.get("reasoning_completeness", 0)),
+                            "explanation": reasoning_scores.get("explanation", s.get("reasoning_explanation", 0)),
+                            "cultural_context": reasoning_scores.get("cultural_context", s.get("reasoning_cultural_context", 0)),
+                            "average": reasoning_scores.get("average", s.get("reasoning_average", 0))
+                        }
+                    except json.JSONDecodeError:
+                        # Nếu không phân tích được JSON, sử dụng các cột flattened
+                        row_data = {
+                            "accuracy": s.get("reasoning_accuracy", 0),
+                            "reasoning": s.get("reasoning_reasoning", 0),
+                            "completeness": s.get("reasoning_completeness", 0),
+                            "explanation": s.get("reasoning_explanation", 0),
+                            "cultural_context": s.get("reasoning_cultural_context", 0),
+                            "average": s.get("reasoning_average", 0)
+                        }
+                    except Exception as e:
+                        # Log lỗi và dùng giá trị mặc định
+                        if hasattr(logging, 'getLogger'):
+                            logger = logging.getLogger("metrics_utils")
+                            logger.error(f"Lỗi khi phân tích reasoning_scores_str: {e}")
+                        
+                        row_data = {
+                            "accuracy": s.get("reasoning_accuracy", 0),
+                            "reasoning": s.get("reasoning_reasoning", 0),
+                            "completeness": s.get("reasoning_completeness", 0),
+                            "explanation": s.get("reasoning_explanation", 0),
+                            "cultural_context": s.get("reasoning_cultural_context", 0),
+                            "average": s.get("reasoning_average", 0)
+                        }
+                else:
+                    # Dict trực tiếp là reasoning_scores
+                    row_data = {
+                        "accuracy": s.get("accuracy", 0),
+                        "reasoning": s.get("reasoning", 0),
+                        "completeness": s.get("completeness", 0),
+                        "explanation": s.get("explanation", 0),
+                        "cultural_context": s.get("cultural_context", 0),
+                        "average": s.get("average", 0)
+                    }
+            else:
+                # Xử lý trường hợp không phải dict (có thể là pandas Series)
+                row_data = {
+                    "accuracy": getattr(s, "reasoning_accuracy", 0),
+                    "reasoning": getattr(s, "reasoning_reasoning", 0),
+                    "completeness": getattr(s, "reasoning_completeness", 0),
+                    "explanation": getattr(s, "reasoning_explanation", 0),
+                    "cultural_context": getattr(s, "reasoning_cultural_context", 0),
+                    "average": getattr(s, "reasoning_average", 0)
+                }
+            
+            # Đảm bảo tất cả các giá trị đều là số
+            for key, value in row_data.items():
+                if not isinstance(value, (int, float)) or pd.isna(value):
+                    row_data[key] = 0
+            
+            data.append(row_data)
+            
+        # Tạo DataFrame từ dữ liệu đã xử lý
+        df = pd.DataFrame(data)
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi tạo DataFrame từ scores: {e}")
+        return {
+            "average_score": 0,
+            "min_score": 0,
+            "max_score": 0,
+            "std_dev": 0,
+            "criterion_scores": {},
+            "samples_evaluated": 0,
+            "error": str(e)
+        }
     
-    # Xác định các tiêu chí đánh giá
-    criteria = [col for col in df.columns if col not in ['id', 'model', 'prompt_type', 'question']]
+    # Kiểm tra nếu không có tiêu chí nào
+    if df.empty or len(df.columns) == 0:
+        return {
+            "average_score": 0,
+            "min_score": 0,
+            "max_score": 0, 
+            "std_dev": 0,
+            "criterion_scores": {},
+            "samples_evaluated": 0
+        }
     
-    if not criteria:
-        logger.warning("Không tìm thấy tiêu chí đánh giá")
-        return {"reasoning_score": 0.0}
+    # Chuẩn hóa trọng số nếu có
+    all_criteria = ["accuracy", "reasoning", "completeness", "explanation", "cultural_context"]
     
-    # Áp dụng trọng số (mặc định là bằng nhau)
-    if criteria_weights is None:
-        criteria_weights = {criterion: 1.0 / len(criteria) for criterion in criteria}
-    else:
+    if criteria_weights:
+        # Đảm bảo tất cả các tiêu chí đều có trọng số
+        for criterion in all_criteria:
+            if criterion not in criteria_weights:
+                criteria_weights[criterion] = 1.0
+        
         # Chuẩn hóa trọng số
         total_weight = sum(criteria_weights.values())
-        criteria_weights = {k: v / total_weight for k, v in criteria_weights.items()}
+        normalized_weights = {k: v/total_weight for k, v in criteria_weights.items()}
+    else:
+        # Nếu không có trọng số, sử dụng trọng số bằng nhau
+        normalized_weights = {criterion: 1.0/len(all_criteria) for criterion in all_criteria}
     
-    # Tính điểm tổng hợp cho từng mẫu
-    weighted_scores = []
-    for _, row in df.iterrows():
-        score = sum(row[criterion] * criteria_weights.get(criterion, 0) for criterion in criteria if criterion in row)
-        weighted_scores.append(score)
+    # Tính toán chỉ số tổng thể
+    try:
+        # Lấy trung bình của cột 'average' nếu có, nếu không thì tính trung bình có trọng số
+        if "average" in df.columns and not df["average"].isna().all() and df["average"].sum() > 0:
+            overall_scores = df["average"]
+        else:
+            # Tính điểm trung bình có trọng số
+            overall_scores = pd.Series([0.0] * len(df), index=df.index)
+            for criterion in all_criteria:
+                if criterion in df.columns:
+                    weight = normalized_weights.get(criterion, 0)
+                    overall_scores = overall_scores.add(df[criterion] * weight)
+        
+        metrics = {
+            "average_score": overall_scores.mean(),
+            "min_score": overall_scores.min(),
+            "max_score": overall_scores.max(),
+            "std_dev": overall_scores.std(),
+            "samples_evaluated": len(scores)
+        }
+        
+        # Tính điểm cho từng tiêu chí
+        criterion_scores = {}
+        for criterion in all_criteria:
+            if criterion in df.columns:
+                criterion_scores[criterion] = {
+                    "average": df[criterion].mean(),
+                    "min": df[criterion].min(),
+                    "max": df[criterion].max(),
+                    "std_dev": df[criterion].std()
+                }
+        
+        metrics["criterion_scores"] = criterion_scores
+        return metrics
     
-    # Tính các metrics tổng hợp
-    metrics = {
-        "reasoning_score": float(np.mean(weighted_scores)),
-        "reasoning_score_min": float(np.min(weighted_scores)),
-        "reasoning_score_max": float(np.max(weighted_scores)),
-        "reasoning_score_std": float(np.std(weighted_scores))
-    }
-    
-    # Tính metrics cho từng tiêu chí
-    for criterion in criteria:
-        if criterion in df.columns:
-            metrics[f"{criterion}_avg"] = float(df[criterion].mean())
-    
-    return metrics
+    except Exception as e:
+        logger.error(f"Lỗi khi tính toán metrics: {e}")
+        return {
+            "average_score": 0,
+            "min_score": 0,
+            "max_score": 0,
+            "std_dev": 0, 
+            "criterion_scores": {},
+            "samples_evaluated": 0,
+            "error": str(e)
+        }
 
 def calculate_answer_correctness(
     predicted_answers: List[Any],
