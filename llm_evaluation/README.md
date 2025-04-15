@@ -211,8 +211,8 @@ Chào mừng các đóng góp! Vui lòng tạo Pull Request hoặc Issue trên r
 
 ## Tác Giả
 
-[Tên của bạn hoặc tổ chức]
+Trune
 
 ## Giấy Phép
 
-[Thông tin giấy phép, ví dụ: MIT License] 
+Alonee
