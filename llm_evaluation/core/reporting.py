@@ -146,28 +146,28 @@ class Reporting:
     
     def _create_accuracy_by_model_plot(self):
         """
-        Tạo biểu đồ accuracy theo model.
+        Creates accuracy chart by model.
         
         Returns:
-            str: Đường dẫn đến file biểu đồ
+            str: Path to the chart file
         """
         if 'is_correct' not in self.results_df.columns:
-            return self._create_fallback_plot("Accuracy theo Model", "Không có dữ liệu độ chính xác (is_correct)")
+            return self._create_fallback_plot("Accuracy by Model", "No accuracy data available (is_correct)")
         
-        # Tính accuracy theo model
+        # Calculate accuracy by model
         accuracy_by_model = self.results_df.groupby('model_name')['is_correct'].mean().reset_index()
         
-        # Sắp xếp theo độ chính xác giảm dần để dễ so sánh
+        # Sort by accuracy in descending order for easier comparison
         accuracy_by_model = accuracy_by_model.sort_values('is_correct', ascending=False)
         
-        # Tạo biểu đồ
+        # Create chart
         fig, ax = plt.subplots(figsize=(14, 10))
         
-        # Tạo biểu đồ cột với màu gradient
+        # Create bar chart with gradient colors
         palette = sns.color_palette("viridis", len(accuracy_by_model))
-        bars = sns.barplot(x='model_name', y='is_correct', data=accuracy_by_model, palette=palette, ax=ax)
+        bars = sns.barplot(x='model_name', y='is_correct', hue='model_name', data=accuracy_by_model, palette=palette, ax=ax, legend=False)
         
-        # Thêm giá trị lên đầu mỗi cột với định dạng phần trăm
+        # Add percentage values at the top of each bar
         for i, p in enumerate(bars.patches):
             percentage = f'{p.get_height():.1%}'
             ax.annotate(percentage, 
@@ -177,7 +177,7 @@ class Reporting:
                        color='#333333')
         
         # Thêm nhãn và tiêu đề
-        ax.set_title('Độ chính xác (Accuracy) theo Model', fontsize=18, pad=20, fontweight='bold')
+        ax.set_title('Accuracy by Model', fontsize=18, pad=20, fontweight='bold')
         ax.set_xlabel('Model', fontsize=15, labelpad=15)
         ax.set_ylabel('Accuracy', fontsize=15, labelpad=15)
         ax.set_ylim(0, min(1.1, max(accuracy_by_model['is_correct']) * 1.15))  # Tự động điều chỉnh khoảng
@@ -198,7 +198,7 @@ class Reporting:
         
         # Thêm chú thích cuối biểu đồ
         plt.figtext(0.5, 0.01, 
-                  f'Dựa trên {len(self.results_df)} kết quả đánh giá', 
+                  f'Based on {len(self.results_df)} evaluation results', 
                   ha='center', fontsize=12, fontstyle='italic')
         
         plt.tight_layout()
@@ -218,7 +218,7 @@ class Reporting:
             str: Đường dẫn đến file biểu đồ
         """
         if 'is_correct' not in self.results_df.columns:
-            return self._create_fallback_plot("Accuracy theo Prompt", "Không có dữ liệu độ chính xác (is_correct)")
+            return self._create_fallback_plot("Accuracy by Prompt", "No accuracy data available (is_correct)")
         
         # Tính accuracy theo prompt
         accuracy_by_prompt = self.results_df.groupby('prompt_type')['is_correct'].mean().reset_index()
@@ -227,7 +227,7 @@ class Reporting:
         plt.figure(figsize=(14, 8))
         
         # Tạo biểu đồ cột
-        bar_plot = sns.barplot(x='prompt_type', y='is_correct', data=accuracy_by_prompt)
+        bar_plot = sns.barplot(x='prompt_type', y='is_correct', hue='prompt_type', data=accuracy_by_prompt, legend=False)
         
         # Thêm giá trị lên đầu mỗi cột
         for p in bar_plot.patches:
@@ -236,8 +236,8 @@ class Reporting:
                              ha = 'center', va = 'bottom', fontsize=11)
         
         # Thêm nhãn và tiêu đề
-        plt.title('Accuracy theo Loại Prompt', fontsize=16)
-        plt.xlabel('Loại Prompt', fontsize=14)
+        plt.title('Accuracy by Prompt Type', fontsize=16)
+        plt.xlabel('Prompt Type', fontsize=14)
         plt.ylabel('Accuracy', fontsize=14)
         plt.ylim(0, 1.0)
         plt.xticks(rotation=45, ha='right')
@@ -254,42 +254,41 @@ class Reporting:
     
     def _create_accuracy_heatmap(self):
         """
-        Tạo biểu đồ heatmap về accuracy theo model và prompt type.
+        Tạo biểu đồ heatmap thể hiện accuracy theo model và prompt.
         
         Returns:
             str: Đường dẫn đến file biểu đồ
         """
         if 'is_correct' not in self.results_df.columns:
-            return self._create_fallback_plot("Accuracy Heatmap", "Không có dữ liệu độ chính xác (is_correct)")
+            return self._create_fallback_plot("Accuracy Heatmap", "No accuracy data available (is_correct)")
         
         # Tính accuracy theo model và prompt
-        heatmap_data = self.results_df.pivot_table(
-            index='model_name', 
-            columns='prompt_type', 
-            values='is_correct',
-            aggfunc='mean'
-        )
+        accuracy_heatmap = self.results_df.groupby(['model_name', 'prompt_type'])['is_correct'].mean().unstack()
         
         # Tạo biểu đồ
-        plt.figure(figsize=(18, 12))
+        plt.figure(figsize=(15, 10))
         
-        # Tạo một colormap đẹp với chuyển màu rõ ràng
-        custom_cmap = sns.diverging_palette(240, 10, as_cmap=True)
-        
-        # Tạo heatmap với các cải tiến
+        # Tạo heatmap
         ax = sns.heatmap(
-            heatmap_data, 
+            accuracy_heatmap, 
             annot=True, 
-            cmap=custom_cmap,
-            fmt='.1%',  # Hiển thị dưới dạng phần trăm
-            linewidths=1,
-            linecolor='white',
+            cmap="YlGnBu", 
+            fmt=".2f", 
+            linewidths=.5,
             vmin=0, 
-            vmax=1,
-            cbar_kws={'label': 'Accuracy Rate', 'shrink': 0.8}
+            vmax=1.0,
+            cbar_kws={'label': 'Accuracy'}
         )
         
         # Thêm nhãn và tiêu đề
+        plt.title('Model-Prompt Accuracy Heatmap', fontsize=18, pad=20)
+        plt.xlabel('Prompt Type', fontsize=14, labelpad=10)
+        plt.ylabel('Model', fontsize=14, labelpad=10)
+        
+        plt.tight_layout()
+        
+        # Lưu biểu đồ
+        output_path = os.path.join(self.plots_dir, f"accuracy_heatmap_{self.timestamp}.png")
         plt.title('So sánh Accuracy theo Model và Loại Prompt', fontsize=20, pad=20, fontweight='bold')
         plt.xlabel('Loại Prompt', fontsize=16, labelpad=15)
         plt.ylabel('Model', fontsize=16, labelpad=15)
@@ -364,24 +363,25 @@ class Reporting:
     
     def _create_html_report(self, plot_paths):
         """
-        Tạo báo cáo HTML đầy đủ với các biểu đồ.
+        Tạo báo cáo HTML dựa trên kết quả phân tích và các biểu đồ đã tạo.
         
         Args:
-            plot_paths: Dictionary chứa đường dẫn đến các biểu đồ
-            
+            plot_paths (Dict[str, str]): Đường dẫn đến các biểu đồ
+        
         Returns:
             str: Đường dẫn đến file báo cáo HTML
         """
         try:
             # Các chỉ số tổng quan
             total_questions = len(self.results_df)
-            total_correct = len(self.results_df[self.results_df['is_correct'] == True])
-            overall_accuracy = total_correct / total_questions if total_questions > 0 else 0
+            total_correct = len(self.results_df[self.results_df['is_correct'] == True]) if 'is_correct' in self.results_df.columns else 0
+            overall_accuracy = total_correct / total_questions if total_questions > 0 and 'is_correct' in self.results_df.columns else 0
             
-            models = self.results_df['model_name'].unique()
-            prompts = self.results_df['prompt_type'].unique()
+            # Lấy danh sách models và prompts
+            models = self.results_df['model_name'].unique() if 'model_name' in self.results_df.columns else []
+            prompts = self.results_df['prompt_type'].unique() if 'prompt_type' in self.results_df.columns else []
             
-            # Tạo HTML với thiết kế hiện đại hơn
+            # Tạo HTML với thiết kế hiện đại
             html = f"""
             <!DOCTYPE html>
             <html lang="vi">
@@ -580,6 +580,14 @@ class Reporting:
                         font-weight: 600;
                     }}
                     
+                    .plot-description {{
+                        padding: 10px 20px;
+                        color: #666;
+                        font-size: 0.95rem;
+                        border-bottom: 1px solid #eee;
+                        background-color: #fafafa;
+                    }}
+                    
                     .plot-img-container {{
                         padding: 20px;
                         text-align: center;
@@ -589,6 +597,21 @@ class Reporting:
                         max-width: 100%;
                         height: auto;
                         border-radius: 4px;
+                    }}
+                    
+                    /* Nhóm biểu đồ */
+                    .plot-group {{
+                        margin-bottom: 40px;
+                    }}
+                    
+                    .plot-group-header {{
+                        background-color: var(--secondary-color);
+                        color: white;
+                        padding: 10px 15px;
+                        border-radius: var(--border-radius);
+                        margin-bottom: 20px;
+                        font-size: 1.2rem;
+                        font-weight: 500;
                     }}
                     
                     /* Bảng kết quả chi tiết */
@@ -646,28 +669,6 @@ class Reporting:
                         font-size: 13px;
                     }}
                     
-                    /* Pagination for results table */
-                    .pagination {{
-                        display: flex;
-                        justify-content: center;
-                        margin: 20px 0;
-                    }}
-                    
-                    .pagination button {{
-                        background-color: var(--light-color);
-                        border: none;
-                        padding: 8px 16px;
-                        margin: 0 5px;
-                        cursor: pointer;
-                        border-radius: 4px;
-                        font-weight: bold;
-                    }}
-                    
-                    .pagination button:hover, .pagination button.active {{
-                        background-color: var(--primary-color);
-                        color: white;
-                    }}
-                    
                     /* Footer */
                     .report-footer {{
                         margin-top: 40px;
@@ -706,6 +707,35 @@ class Reporting:
                     .collapsible-content.show {{
                         display: block;
                     }}
+                    
+                    /* Tooltip */
+                    .tooltip {{
+                        position: relative;
+                        display: inline-block;
+                        cursor: help;
+                    }}
+                    
+                    .tooltip .tooltiptext {{
+                        visibility: hidden;
+                        width: 200px;
+                        background-color: #555;
+                        color: #fff;
+                        text-align: center;
+                        border-radius: 6px;
+                        padding: 5px;
+                        position: absolute;
+                        z-index: 1;
+                        bottom: 125%;
+                        left: 50%;
+                        margin-left: -100px;
+                        opacity: 0;
+                        transition: opacity 0.3s;
+                    }}
+                    
+                    .tooltip:hover .tooltiptext {{
+                        visibility: visible;
+                        opacity: 1;
+                    }}
                 </style>
             </head>
             <body>
@@ -721,6 +751,11 @@ class Reporting:
                             <div class="stat-label">Tổng số câu hỏi</div>
                             <div class="stat-value">{total_questions}</div>
                         </div>
+            """
+            
+            # Thêm thống kê về câu trả lời đúng và accuracy nếu có dữ liệu is_correct
+            if 'is_correct' in self.results_df.columns:
+                html += f"""
                         <div class="stat-card">
                             <div class="stat-label">Câu trả lời đúng</div>
                             <div class="stat-value">{total_correct}</div>
@@ -729,156 +764,303 @@ class Reporting:
                             <div class="stat-label">Accuracy tổng thể</div>
                             <div class="stat-value">{overall_accuracy:.1%}</div>
                         </div>
+                """
+            
+            html += """
                     </div>
-                    
+            """
+            
+            # Hiển thị thông tin về Model nếu có
+            if len(models) > 0:
+                html += """
                     <h2>Hiệu suất theo Model</h2>
                     <div class="model-list">
-            """
-            
-            # Thêm thông tin về mỗi model với hiệu ứng thanh ngang
-            for model in models:
-                model_df = self.results_df[self.results_df['model_name'] == model]
-                model_correct = len(model_df[model_df['is_correct'] == True])
-                model_total = len(model_df)
-                model_accuracy = model_correct / model_total if model_total > 0 else 0
-                accuracy_percentage = model_accuracy * 100
-                
-                html += f"""
-                <div class="model-card">
-                    <div class="model-name">{model}</div>
-                    <div>Câu đúng: {model_correct}/{model_total}</div>
-                    <div class="model-accuracy">
-                        <div class="accuracy-bar">
-                            <div class="accuracy-fill" style="width: {accuracy_percentage}%;"></div>
-                        </div>
-                        <div class="accuracy-value">{model_accuracy:.1%}</div>
-                    </div>
-                </div>
                 """
-            
-            html += """
-                    </div>
-                    
-                    <h2>Hiệu suất theo Loại Prompt</h2>
-                    <div class="prompt-list">
-            """
-            
-            # Thêm thông tin về mỗi loại prompt
-            for prompt in prompts:
-                prompt_df = self.results_df[self.results_df['prompt_type'] == prompt]
-                prompt_correct = len(prompt_df[prompt_df['is_correct'] == True])
-                prompt_total = len(prompt_df)
-                prompt_accuracy = prompt_correct / prompt_total if prompt_total > 0 else 0
-                accuracy_percentage = prompt_accuracy * 100
                 
-                html += f"""
-                <div class="prompt-card">
-                    <div class="prompt-name">{prompt}</div>
-                    <div>Câu đúng: {prompt_correct}/{prompt_total}</div>
-                    <div class="prompt-accuracy">
-                        <div class="accuracy-bar">
-                            <div class="accuracy-fill" style="width: {accuracy_percentage}%;"></div>
+                # Thêm thông tin về mỗi model
+                for model in models:
+                    model_df = self.results_df[self.results_df['model_name'] == model]
+                    model_total = len(model_df)
+                    
+                    # Tính accuracy nếu có dữ liệu is_correct
+                    if 'is_correct' in self.results_df.columns:
+                        model_correct = len(model_df[model_df['is_correct'] == True])
+                        model_accuracy = model_correct / model_total if model_total > 0 else 0
+                        accuracy_percentage = model_accuracy * 100
+                        
+                        accuracy_info = f"""
+                        <div>Câu đúng: {model_correct}/{model_total}</div>
+                        <div class="model-accuracy">
+                            <div class="accuracy-bar">
+                                <div class="accuracy-fill" style="width: {accuracy_percentage}%;"></div>
+                            </div>
+                            <div class="accuracy-value">{model_accuracy:.1%}</div>
                         </div>
-                        <div class="accuracy-value">{prompt_accuracy:.1%}</div>
-                    </div>
-                </div>
-                """
-            
-            html += """
-                    </div>
-                    
-                    <h2>Các Biểu đồ Phân tích</h2>
-                    <div class="plots-container">
-            """
-            
-            # Thêm các biểu đồ với lớp bọc UI đẹp hơn
-            for plot_name, plot_path in plot_paths.items():
-                try:
-                    # Đảm bảo đường dẫn tồn tại
-                    if not os.path.exists(plot_path):
-                        continue
-                    
-                    # Tạo tên hiển thị
-                    display_name = " ".join(word.capitalize() for word in plot_name.split("_"))
-                    
-                    # Chuyển ảnh thành dạng base64 để nhúng vào HTML
-                    with open(plot_path, "rb") as image_file:
-                        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                        """
+                    else:
+                        accuracy_info = f"<div>Số mẫu: {model_total}</div>"
                     
                     html += f"""
-                    <div class="plot-card">
-                        <div class="plot-title">{display_name}</div>
-                        <div class="plot-img-container">
-                            <img class="plot-img" src="data:image/png;base64,{encoded_string}" alt="{display_name}">
+                    <div class="model-card">
+                        <div class="model-name">{model}</div>
+                        {accuracy_info}
+                    </div>
+                    """
+                
+                html += """
+                    </div>
+                """
+            
+            # Hiển thị thông tin về Prompt nếu có
+            if len(prompts) > 0:
+                html += """
+                    <h2>Hiệu suất theo Loại Prompt</h2>
+                    <div class="prompt-list">
+                """
+                
+                # Thêm thông tin về mỗi loại prompt
+                for prompt in prompts:
+                    prompt_df = self.results_df[self.results_df['prompt_type'] == prompt]
+                    prompt_total = len(prompt_df)
+                    
+                    # Tính accuracy nếu có dữ liệu is_correct
+                    if 'is_correct' in self.results_df.columns:
+                        prompt_correct = len(prompt_df[prompt_df['is_correct'] == True])
+                        prompt_accuracy = prompt_correct / prompt_total if prompt_total > 0 else 0
+                        accuracy_percentage = prompt_accuracy * 100
+                        
+                        accuracy_info = f"""
+                        <div>Câu đúng: {prompt_correct}/{prompt_total}</div>
+                        <div class="prompt-accuracy">
+                            <div class="accuracy-bar">
+                                <div class="accuracy-fill" style="width: {accuracy_percentage}%;"></div>
+                            </div>
+                            <div class="accuracy-value">{prompt_accuracy:.1%}</div>
+                        </div>
+                        """
+                    else:
+                        accuracy_info = f"<div>Số mẫu: {prompt_total}</div>"
+                    
+                    html += f"""
+                    <div class="prompt-card">
+                        <div class="prompt-name">{prompt}</div>
+                        {accuracy_info}
+                    </div>
+                    """
+                
+                html += """
+                    </div>
+                """
+            
+            # Thêm các biểu đồ phân tích theo nhóm
+            html += """
+                <h2>Các Biểu đồ Phân tích</h2>
+            """
+            
+            # Định nghĩa các nhóm biểu đồ và mô tả
+            plot_groups = {
+                "accuracy": {
+                    "title": "Biểu đồ Độ chính xác (Accuracy)",
+                    "plots": {
+                        "accuracy_by_model": "Hiển thị độ chính xác (accuracy) của từng mô hình, giúp so sánh hiệu suất tổng thể giữa các mô hình.",
+                        "accuracy_by_prompt": "So sánh độ chính xác theo từng loại prompt, giúp xác định loại prompt hiệu quả nhất.",
+                        "accuracy_heatmap": "Hiển thị chi tiết độ chính xác của mỗi mô hình trên từng loại prompt dưới dạng heatmap.",
+                        "simple_comparison": "So sánh tổng quan giữa các mô hình trên các loại prompt khác nhau."
+                    }
+                },
+                "difficulty": {
+                    "title": "Biểu đồ Phân tích theo Độ khó",
+                    "plots": {
+                        "difficulty_performance": "Hiển thị hiệu suất của các mô hình theo độ khó của câu hỏi.",
+                        "difficulty_comparison": "So sánh hiệu suất của từng mô hình trên các mức độ khó khác nhau."
+                    }
+                },
+                "reasoning": {
+                    "title": "Biểu đồ Phân tích Lập luận (Reasoning)",
+                    "plots": {
+                        "criteria_evaluation": "Đánh giá các mô hình theo từng tiêu chí cụ thể.",
+                        "criteria_radar": "Hiển thị điểm số trên các tiêu chí dưới dạng biểu đồ radar cho tổng quan trực quan.",
+                        "overall_criteria": "So sánh tất cả tiêu chí đánh giá giữa các mô hình.",
+                        "reasoning_criteria": "Phân tích chi tiết về khả năng lập luận của từng mô hình.",
+                        "reasoning_by_prompt": "Hiển thị chất lượng lập luận của mô hình theo từng loại prompt.",
+                        "reasoning_by_question_type": "Phân tích chất lượng lập luận của mô hình theo từng loại câu hỏi."
+                    }
+                },
+                "context": {
+                    "title": "Biểu đồ Phân tích Ngữ cảnh",
+                    "plots": {
+                        "context_adherence": "So sánh hiệu suất khi sử dụng prompt có ngữ cảnh và không có ngữ cảnh."
+                    }
+                }
+            }
+            
+            # Thêm các biểu đồ theo nhóm
+            for group_key, group_info in plot_groups.items():
+                group_title = group_info["title"]
+                group_plots = group_info["plots"]
+                
+                # Kiểm tra xem có biểu đồ nào thuộc nhóm này không
+                group_has_plots = any(plot_key in plot_paths for plot_key in group_plots.keys())
+                
+                if group_has_plots:
+                    html += f"""
+                    <div class="plot-group">
+                        <div class="plot-group-header">{group_title}</div>
+                        <div class="plots-container">
+                    """
+                    
+                    # Thêm từng biểu đồ trong nhóm
+                    for plot_key, plot_description in group_plots.items():
+                        if plot_key in plot_paths:
+                            plot_info = plot_paths[plot_key]
+                            
+                            # Kiểm tra cấu trúc của plot_info
+                            if isinstance(plot_info, dict) and 'path' in plot_info:
+                                plot_path = plot_info['path']
+                                description = plot_info.get('description', plot_description)
+                            else:
+                                # Cấu trúc cũ - chuỗi đường dẫn trực tiếp
+                                plot_path = plot_info
+                                description = plot_description
+                            
+                            # Đảm bảo đường dẫn tồn tại
+                            if not os.path.exists(plot_path):
+                                continue
+                            
+                            # Tạo tên hiển thị
+                            display_name = " ".join(word.capitalize() for word in plot_key.split("_"))
+                            
+                            # Chuyển ảnh thành dạng base64 để nhúng vào HTML
+                            with open(plot_path, "rb") as image_file:
+                                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                            
+                            html += f"""
+                            <div class="plot-card">
+                                <div class="plot-title">{display_name}</div>
+                                <div class="plot-description">{description}</div>
+                                <div class="plot-img-container">
+                                    <img class="plot-img" src="data:image/png;base64,{encoded_string}" alt="{display_name}">
+                                </div>
+                            </div>
+                            """
+                    
+                    html += """
                         </div>
                     </div>
                     """
-                except Exception as e:
-                    logger.error(f"Lỗi khi thêm biểu đồ {plot_name}: {str(e)}")
             
-            # Thêm bảng kết quả chi tiết
-            html += """
-                    </div>
-                    
+            # Thêm bảng kết quả chi tiết nếu có dữ liệu là_correct
+            if 'is_correct' in self.results_df.columns:
+                html += """
                     <h2>Kết quả chi tiết</h2>
-                    <div style="overflow-x:auto;">
+                    <div class="collapsible-header">Xem chi tiết kết quả đánh giá</div>
+                    <div class="collapsible-content">
+                        <div style="overflow-x:auto;">
+                            <table class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mô hình</th>
+                                        <th>Prompt</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Câu trả lời</th>
+                                        <th>Đáp án đúng</th>
+                                        <th>Đánh giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                """
+                
+                # Lấy 20 mẫu ngẫu nhiên từ kết quả
+                if len(self.results_df) > 20:
+                    sample_df = self.results_df.sample(20, random_state=42)
+                else:
+                    sample_df = self.results_df
+                    
+                for _, row in sample_df.iterrows():
+                    is_correct = "Đúng" if row.get('is_correct') == True else "Sai"
+                    accuracy_class = "correct" if row.get('is_correct') == True else "incorrect"
+                    
+                    # Lấy và chuẩn bị nội dung
+                    question = row.get('question_text', '')
+                    model_answer = row.get('response', '')
+                    correct_answer = row.get('correct_answer', '')
+                    
+                    html += f"""
+                    <tr>
+                        <td>{row.get('model_name', '')}</td>
+                        <td>{row.get('prompt_type', '')}</td>
+                        <td>
+                            <div class="result-text">{question}</div>
+                        </td>
+                        <td>
+                            <div class="result-text">{model_answer}</div>
+                        </td>
+                        <td>
+                            <div class="result-text">{correct_answer}</div>
+                        </td>
+                        <td><span class="{accuracy_class}">{is_correct}</span></td>
+                    </tr>
+                    """
+                
+                html += """
+                                </tbody>
+                            </table>
+                        </div>
+                        <p>(Hiển thị một số kết quả ngẫu nhiên từ tập dữ liệu)</p>
+                    </div>
+                """
+            
+            # Thêm thông tin về các tiêu chí đánh giá nếu có
+            criteria_columns = [col for col in self.results_df.columns if col.startswith('reasoning_') and col != 'reasoning_scores_str']
+            if criteria_columns:
+                html += """
+                    <h2>Thông tin tiêu chí đánh giá</h2>
+                    <div class="collapsible-header">Xem mô tả các tiêu chí đánh giá reasoning</div>
+                    <div class="collapsible-content">
                         <table class="results-table">
                             <thead>
                                 <tr>
-                                    <th>Mô hình</th>
-                                    <th>Prompt</th>
-                                    <th>Câu hỏi</th>
-                                    <th>Câu trả lời</th>
-                                    <th>Đáp án đúng</th>
-                                    <th>Đánh giá</th>
+                                    <th>Tiêu chí</th>
+                                    <th>Mô tả</th>
+                                    <th>Thang điểm</th>
                                 </tr>
                             </thead>
                             <tbody>
-            """
-            
-            # Lấy 20 mẫu ngẫu nhiên từ kết quả thay vì chỉ 10
-            if len(self.results_df) > 20:
-                sample_df = self.results_df.sample(20, random_state=42)
-            else:
-                sample_df = self.results_df
-                
-            for _, row in sample_df.iterrows():
-                is_correct = "Đúng" if row.get('is_correct') == True else "Sai"
-                accuracy_class = "correct" if row.get('is_correct') == True else "incorrect"
-                
-                # Lấy và chuẩn bị nội dung
-                question = row.get('question_text', '')
-                model_answer = row.get('response', '')
-                correct_answer = row.get('correct_answer', '')
-                
-                # Hiển thị đầy đủ nội dung không giới hạn
-                # Và dùng hàm định dạng chuỗi Python để tránh lỗi HTML
-                html += f"""
-                <tr>
-                    <td>{row.get('model_name', '')}</td>
-                    <td>{row.get('prompt_type', '')}</td>
-                    <td>
-                        <div class="result-text">{question}</div>
-                    </td>
-                    <td>
-                        <div class="result-text">{model_answer}</div>
-                    </td>
-                    <td>
-                        <div class="result-text">{correct_answer}</div>
-                    </td>
-                    <td><span class="{accuracy_class}">{is_correct}</span></td>
-                </tr>
-                """
-            
-            # Thêm footer và JS để hỗ trợ interactive features
-            html += """
+                                <tr>
+                                    <td>Độ chính xác (Accuracy)</td>
+                                    <td>Đánh giá mức độ chính xác của câu trả lời so với đáp án chuẩn.</td>
+                                    <td>1-5 (1: Hoàn toàn sai, 5: Hoàn toàn đúng)</td>
+                                </tr>
+                                <tr>
+                                    <td>Suy luận hợp lý (Reasoning)</td>
+                                    <td>Đánh giá quá trình suy luận, lập luận dẫn đến câu trả lời có hợp lý không.</td>
+                                    <td>1-5 (1: Không có lập luận, 5: Lập luận rất logic)</td>
+                                </tr>
+                                <tr>
+                                    <td>Tính đầy đủ (Completeness)</td>
+                                    <td>Đánh giá mức độ đầy đủ của câu trả lời, có bao quát hết nội dung của câu hỏi không.</td>
+                                    <td>1-5 (1: Thiếu nhiều, 5: Rất đầy đủ)</td>
+                                </tr>
+                                <tr>
+                                    <td>Giải thích rõ ràng (Explanation)</td>
+                                    <td>Đánh giá mức độ rõ ràng, dễ hiểu của phần giải thích trong câu trả lời.</td>
+                                    <td>1-5 (1: Rất khó hiểu, 5: Rất rõ ràng)</td>
+                                </tr>
+                                <tr>
+                                    <td>Phù hợp ngữ cảnh (Cultural Context)</td>
+                                    <td>Đánh giá mức độ phù hợp với ngữ cảnh văn hóa, ngôn ngữ trong câu trả lời.</td>
+                                    <td>1-5 (1: Không phù hợp, 5: Rất phù hợp)</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                    <p>(Hiển thị một số kết quả ngẫu nhiên từ tập dữ liệu)</p>
-                    
+                """
+            
+            # Thêm footer và JS
+            html += """
                     <div class="report-footer">
                         <p>Báo cáo được tạo tự động bởi hệ thống đánh giá LLM</p>
+                        <p>© Trune Evaluation System</p>
                     </div>
                 </div>
                 
@@ -1038,7 +1220,27 @@ Thời gian tạo: {self.timestamp}
                 model_total = len(model_df)
                 model_accuracy = model_correct / model_total if model_total > 0 else 0
                 
-                md += f"- **{model}**: {model_correct}/{model_total} câu đúng (accuracy: {model_accuracy:.2%})\n"
+                # Thêm thông tin về F1, METEOR và BERT score nếu có
+                model_metrics = []
+                
+                if 'f1_score' in self.results_df.columns:
+                    f1_avg = model_df['f1_score'].mean() 
+                    if not pd.isna(f1_avg):
+                        model_metrics.append(f"F1 Score: {f1_avg:.4f}")
+                
+                if 'meteor_score' in self.results_df.columns:
+                    meteor_avg = model_df['meteor_score'].mean()
+                    if not pd.isna(meteor_avg):
+                        model_metrics.append(f"METEOR: {meteor_avg:.4f}")
+                
+                if 'bert_score' in self.results_df.columns:
+                    bert_avg = model_df['bert_score'].mean()
+                    if not pd.isna(bert_avg):
+                        model_metrics.append(f"BERT Score: {bert_avg:.4f}")
+                
+                metrics_text = f" ({', '.join(model_metrics)})" if model_metrics else ""
+                
+                md += f"- **{model}**: {model_correct}/{model_total} câu đúng (accuracy: {model_accuracy:.2%}){metrics_text}\n"
             
             md += "\n## Loại Prompt đã đánh giá\n\n"
             
@@ -1051,18 +1253,117 @@ Thời gian tạo: {self.timestamp}
                 
                 md += f"- **{prompt}**: {prompt_correct}/{prompt_total} câu đúng (accuracy: {prompt_accuracy:.2%})\n"
             
+            # Thêm phần đánh giá text similarity metrics nếu có dữ liệu
+            has_similarity_metrics = any(col in self.results_df.columns for col in ['f1_score', 'meteor_score', 'bert_score'])
+            
+            if has_similarity_metrics:
+                md += "\n## Đánh giá độ tương đồng văn bản\n\n"
+                md += "Các metrics đánh giá độ tương đồng giữa câu trả lời của mô hình và đáp án chuẩn:\n\n"
+                
+                metrics_table = "| Metric | Mô tả | Giá trị trung bình |\n| --- | --- | --- |\n"
+                
+                if 'f1_score' in self.results_df.columns:
+                    f1_avg = self.results_df['f1_score'].mean() 
+                    metrics_table += f"| F1_SCORE | Đánh giá độ tương đồng văn bản | {f1_avg:.4f} |\n"
+                
+                if 'meteor_score' in self.results_df.columns:
+                    meteor_avg = self.results_df['meteor_score'].mean()
+                    metrics_table += f"| METEOR_SCORE | Đánh giá chất lượng dịch thuật | {meteor_avg:.4f} |\n"
+                
+                if 'bert_score' in self.results_df.columns:
+                    bert_avg = self.results_df['bert_score'].mean()
+                    metrics_table += f"| BERT_SCORE | Đánh giá độ tương đồng ngữ nghĩa | {bert_avg:.4f} |\n"
+                
+                md += metrics_table + "\n"
+            
             md += "\n## Biểu đồ\n\n"
             
             # Thêm thông tin về các biểu đồ
-            for plot_name, plot_path in plot_paths.items():
+            for plot_name, plot_info in plot_paths.items():
+                # Kiểm tra cấu trúc của plot_info
+                if isinstance(plot_info, dict) and 'path' in plot_info:
+                    plot_path = plot_info['path']
+                    description = plot_info.get('description', '')
+                else:
+                    # Cấu trúc cũ - chuỗi đường dẫn trực tiếp
+                    plot_path = plot_info
+                    description = ''
+                
                 if os.path.exists(plot_path):
                     # Tạo tên hiển thị
                     display_name = " ".join(word.capitalize() for word in plot_name.split("_"))
                     md += f"### {display_name}\n\n"
                     
+                    # Thêm mô tả chi tiết hơn cho các biểu đồ F1, METEOR và BERT
+                    if plot_name == 'f1_score':
+                        md += "F1_SCORE đánh giá độ tương đồng văn bản dựa trên sự trùng lặp từ ngữ giữa câu trả lời và đáp án chuẩn. Giá trị từ 0-1, càng cao càng tốt.\n\n"
+                    elif plot_name == 'meteor_score':
+                        md += "METEOR_SCORE là thước đo đánh giá chất lượng dịch thuật, tính cả khả năng khớp từ vựng, đồng nghĩa và cấu trúc. Giá trị từ 0-1, càng cao càng tốt.\n\n"
+                    elif plot_name == 'bert_score':
+                        md += "BERT_SCORE đánh giá độ tương đồng ngữ nghĩa sử dụng mô hình ngôn ngữ BERT, xét đến ngữ cảnh sâu hơn so với chỉ đếm từ. Giá trị từ 0-1, càng cao càng tốt.\n\n"
+                    # Không thay thế mô tả gốc cho các biểu đồ khác
+                    elif description:
+                        md += f"{description}\n\n"
+                        
                     # Tạo đường dẫn tương đối
                     rel_path = os.path.relpath(plot_path, self.reports_dir)
                     md += f"![{display_name}]({rel_path})\n\n"
+            
+            # Thêm bảng kết quả chi tiết
+            if len(self.results_df) > 0:
+                md += "\n## Kết quả chi tiết\n\n"
+                
+                # Tạo bảng kết quả với thêm cột F1, METEOR và BERT Score
+                table_cols = ["Model", "Prompt", "Accuracy"]
+                
+                if 'f1_score' in self.results_df.columns:
+                    table_cols.append("F1_SCORE")
+                if 'meteor_score' in self.results_df.columns:
+                    table_cols.append("METEOR_SCORE")
+                if 'bert_score' in self.results_df.columns:
+                    table_cols.append("BERT_SCORE")
+                
+                table_header = " | ".join(table_cols)
+                table_separator = " | ".join(["---" for _ in table_cols])
+                
+                md += f"| {table_header} |\n| {table_separator} |\n"
+                
+                # Tính toán kết quả chi tiết theo model và prompt
+                model_prompt_results = []
+                
+                for model in models:
+                    for prompt in prompts:
+                        subset = self.results_df[(self.results_df['model_name'] == model) & 
+                                                (self.results_df['prompt_type'] == prompt)]
+                        
+                        if len(subset) > 0:
+                            accuracy = subset['is_correct'].mean()
+                            result = {
+                                "Model": model,
+                                "Prompt": prompt,
+                                "Accuracy": f"{accuracy:.2%}"
+                            }
+                            
+                            # Thêm các metrics đo lường nếu có
+                            if 'f1_score' in self.results_df.columns:
+                                f1_avg = subset['f1_score'].mean()
+                                result["F1_SCORE"] = f"{f1_avg:.4f}" if not pd.isna(f1_avg) else "N/A"
+                                
+                            if 'meteor_score' in self.results_df.columns:
+                                meteor_avg = subset['meteor_score'].mean()
+                                result["METEOR_SCORE"] = f"{meteor_avg:.4f}" if not pd.isna(meteor_avg) else "N/A"
+                                
+                            if 'bert_score' in self.results_df.columns:
+                                bert_avg = subset['bert_score'].mean()
+                                result["BERT_SCORE"] = f"{bert_avg:.4f}" if not pd.isna(bert_avg) else "N/A"
+                            
+                            model_prompt_results.append(result)
+                
+                # Thêm dòng cho từng cặp model-prompt
+                for result in model_prompt_results:
+                    row_values = [result[col] for col in table_cols]
+                    row_str = " | ".join(row_values)
+                    md += f"| {row_str} |\n"
             
             # Lưu file Markdown
             report_path = os.path.join(self.reports_dir, f"report_{self.timestamp}.md")
@@ -1079,67 +1380,37 @@ Thời gian tạo: {self.timestamp}
 
     def _create_difficulty_performance_plot(self) -> str:
         """
-        Tạo biểu đồ đánh giá hiệu suất dựa trên độ khó.
+        Tạo biểu đồ hiệu suất theo độ khó của câu hỏi.
         
         Returns:
             str: Đường dẫn đến file biểu đồ
         """
         if 'difficulty' not in self.results_df.columns or 'is_correct' not in self.results_df.columns:
-            return self._create_fallback_plot("Hiệu suất theo độ khó", "Không có dữ liệu độ khó")
+            return self._create_fallback_plot("Performance by Difficulty", "No difficulty data available")
         
-        # Đảm bảo cột difficulty có giá trị
-        df_valid = self.results_df.dropna(subset=['difficulty', 'is_correct'])
-        
-        if len(df_valid) == 0:
-            return self._create_fallback_plot("Hiệu suất theo độ khó", "Không có dữ liệu hợp lệ")
-            
-        # Tính toán accuracy theo độ khó
-        accuracy_by_difficulty = df_valid.groupby('difficulty')['is_correct'].mean().reset_index()
-        
-        # Đảm bảo có độ khó để vẽ
-        if len(accuracy_by_difficulty) <= 1:
-            return self._create_fallback_plot("Hiệu suất theo độ khó", "Chỉ có một mức độ khó")
-        
-        # Sắp xếp theo thứ tự độ khó (giả định: Dễ, Trung bình, Khó)
-        difficulty_order = ['Dễ', 'Trung bình', 'Khó']
-        
-        # Lọc và sắp xếp các độ khó có trong dữ liệu
-        available_difficulties = [d for d in difficulty_order if d in accuracy_by_difficulty['difficulty'].values]
-        
-        # Nếu không có độ khó nào khớp với thứ tự mặc định, sử dụng thứ tự từ dữ liệu
-        if not available_difficulties:
-            available_difficulties = accuracy_by_difficulty['difficulty'].unique()
-        
-        # Lọc dữ liệu theo các độ khó có sẵn
-        accuracy_by_difficulty = accuracy_by_difficulty[accuracy_by_difficulty['difficulty'].isin(available_difficulties)]
-        
-        # Tạo bảng cho việc vẽ biểu đồ, đảm bảo thứ tự đúng
-        if all(d in difficulty_order for d in accuracy_by_difficulty['difficulty']):
-            # Sử dụng CategoricalDtype để sắp xếp
-            from pandas.api.types import CategoricalDtype
-            cat_type = CategoricalDtype(categories=difficulty_order, ordered=True)
-            accuracy_by_difficulty['difficulty'] = accuracy_by_difficulty['difficulty'].astype(cat_type)
-            accuracy_by_difficulty = accuracy_by_difficulty.sort_values('difficulty')
-        
-        # Vẽ biểu đồ
+        # Tạo biểu đồ
         plt.figure(figsize=(12, 8))
         
-        # Tạo biểu đồ cột
-        bar_plot = sns.barplot(x='difficulty', y='is_correct', data=accuracy_by_difficulty)
+        # Tính toán accuracy theo độ khó
+        difficulty_perf = self.results_df.groupby('difficulty')['is_correct'].mean().reset_index()
+        counts = self.results_df.groupby('difficulty').size().reset_index(name='count')
+        difficulty_perf = pd.merge(difficulty_perf, counts, on='difficulty')
         
-        # Thêm giá trị lên đầu mỗi cột
-        for p in bar_plot.patches:
-            bar_plot.annotate(f'{p.get_height():.2f}', 
-                             (p.get_x() + p.get_width() / 2., p.get_height()), 
-                             ha = 'center', va = 'bottom', fontsize=11)
+        # Tạo bar plot (sửa để tránh FutureWarning, thêm hue và legend=False)
+        ax = sns.barplot(x='difficulty', y='is_correct', hue='difficulty', data=difficulty_perf, palette='viridis', legend=False)
         
-        # Thêm nhãn và tiêu đề
-        plt.title('Hiệu suất dựa trên độ khó của câu hỏi', fontsize=16)
-        plt.xlabel('Độ khó', fontsize=14)
-        plt.ylabel('Độ chính xác (Accuracy)', fontsize=14)
+        # Thêm số lượng mẫu lên mỗi cột
+        for i, row in enumerate(difficulty_perf.itertuples()):
+            ax.text(i, row.is_correct + 0.02, f'n={row.count}', ha='center')
+            ax.text(i, row.is_correct/2, f'{row.is_correct:.1%}', ha='center', color='white', fontweight='bold')
+        
+        # Thêm labels và title
+        plt.title('Performance based on Question Difficulty', fontsize=16)
+        plt.xlabel('Difficulty Level', fontsize=14)
+        plt.ylabel('Accuracy', fontsize=14)
         plt.ylim(0, 1.0)
-        
         plt.grid(axis='y', linestyle='--', alpha=0.7)
+        
         plt.tight_layout()
         
         # Lưu biểu đồ
@@ -1148,7 +1419,7 @@ Thời gian tạo: {self.timestamp}
         plt.close()
         
         return output_path
-        
+    
     def _create_criteria_evaluation_plot(self) -> str:
         """
         Tạo biểu đồ đánh giá theo các tiêu chí dựa trên reasoning scores.
@@ -1212,17 +1483,16 @@ Thời gian tạo: {self.timestamp}
         # Vẽ biểu đồ
         plt.figure(figsize=(14, 10))
         
-        # Tạo biểu đồ thanh
+        # Tạo biểu đồ thanh - để seaborn tự động xử lý legend
         bar_plot = sns.barplot(x='model', y='score', hue='criterion', data=plot_df)
         
-        # Thêm nhãn và tiêu đề
+        # Thiết lập legend
+        plt.legend(title='Tiêu chí', title_fontsize=12, fontsize=10, loc='best')
+        
         plt.title('Đánh giá các mô hình theo từng tiêu chí', fontsize=16)
         plt.xlabel('Mô hình', fontsize=14)
         plt.ylabel('Điểm đánh giá (1-5)', fontsize=14)
         plt.ylim(0, 5.5)
-        
-        # Thêm legend
-        plt.legend(title='Tiêu chí', title_fontsize=12, fontsize=10, loc='best')
         
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
@@ -1385,42 +1655,32 @@ Thời gian tạo: {self.timestamp}
         
     def _create_difficulty_comparison_plot(self) -> str:
         """
-        Tạo biểu đồ so sánh hiệu suất theo độ khó cho từng mô hình.
+        Tạo biểu đồ so sánh hiệu suất các mô hình theo độ khó.
         
         Returns:
             str: Đường dẫn đến file biểu đồ
         """
         if 'difficulty' not in self.results_df.columns or 'is_correct' not in self.results_df.columns:
-            return self._create_fallback_plot("So sánh hiệu suất theo độ khó", "Không có dữ liệu độ khó")
+            return self._create_fallback_plot("Model Performance by Difficulty", "No difficulty data available")
         
-        # Đảm bảo cột difficulty có giá trị
-        df_valid = self.results_df.dropna(subset=['difficulty', 'is_correct'])
+        # Tạo biểu đồ
+        plt.figure(figsize=(14, 9))
         
-        if len(df_valid) == 0:
-            return self._create_fallback_plot("So sánh hiệu suất theo độ khó", "Không có dữ liệu hợp lệ")
+        # Tính toán accuracy theo model và độ khó
+        model_difficulty_perf = self.results_df.groupby(['model_name', 'difficulty'])['is_correct'].mean().reset_index()
         
-        # Lấy các mức độ khó duy nhất
-        difficulty_levels = df_valid['difficulty'].unique()
+        # Pivot để dễ vẽ biểu đồ
+        pivot_data = model_difficulty_perf.pivot(index='model_name', columns='difficulty', values='is_correct')
         
-        if len(difficulty_levels) <= 1:
-            return self._create_fallback_plot("So sánh hiệu suất theo độ khó", "Chỉ có một mức độ khó")
+        # Vẽ heatmap
+        sns.heatmap(pivot_data, annot=True, fmt='.1%', cmap='viridis', 
+                   vmin=0, vmax=1, linewidths=.5, cbar_kws={'label': 'Accuracy'})
         
-        # Tính accuracy theo mô hình và độ khó
-        model_difficulty_acc = df_valid.groupby(['model_name', 'difficulty'])['is_correct'].mean().reset_index()
+        # Thêm tiêu đề và labels
+        plt.title('Model Performance by Question Difficulty Level', fontsize=15)
+        plt.xlabel('Difficulty Level', fontsize=13)
+        plt.ylabel('Model', fontsize=13)
         
-        # Tạo biểu đồ line với marker
-        plt.figure(figsize=(14, 8))
-        
-        # Vẽ biểu đồ line
-        sns.pointplot(x='difficulty', y='is_correct', hue='model_name', data=model_difficulty_acc, markers=['o', 's', 'D', '^', 'v', '<', '>'], linestyles=['-', '--', '-.', ':', '-', '--', '-.'])
-        
-        # Thêm nhãn và tiêu đề
-        plt.title('Hiệu suất của các mô hình theo độ khó của câu hỏi', fontsize=15)
-        plt.xlabel('Độ khó', fontsize=12)
-        plt.ylabel('Độ chính xác (Accuracy)', fontsize=12)
-        plt.ylim(0, 1.0)
-        
-        plt.grid(True, linestyle='--', alpha=0.7)
         plt.tight_layout()
         
         # Lưu biểu đồ
@@ -1518,65 +1778,86 @@ Thời gian tạo: {self.timestamp}
         
         return output_path
 
-    def _create_fallback_plot(self, title: str, message: str = "Không đủ dữ liệu") -> str:
+    def _create_fallback_plot(self, title: str, message: str = "Insufficient data") -> str:
         """
-        Tạo biểu đồ thay thế khi không đủ dữ liệu hoặc có lỗi.
+        Creates a fallback plot when there is not enough data.
         
         Args:
-            title (str): Tiêu đề của biểu đồ
-            message (str): Thông báo hiển thị trên biểu đồ
+            title: Chart title
+            message: Error message
             
         Returns:
-            str: Đường dẫn đến file biểu đồ
+            str: Path to the chart file
         """
-        plt.figure(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.text(0.5, 0.5, message, ha='center', va='center', fontsize=14)
+        ax.set_title(title)
+        ax.axis('off')
         
-        # Tạo biểu đồ trống với thông báo
-        plt.text(0.5, 0.5, message, ha='center', va='center', fontsize=14)
-        plt.title(title, fontsize=16)
-        plt.grid(False)
-        plt.axis('off')
-        
-        # Xác định tên file
-        sanitized_title = title.lower().replace(' ', '_').replace(':', '').replace('(', '').replace(')', '')
-        output_path = os.path.join(self.plots_dir, f"fallback_{sanitized_title}_{self.timestamp}.png")
-        
-        # Lưu biểu đồ
-        plt.savefig(output_path, bbox_inches='tight')
+        # Create filename from title
+        filename = title.lower().replace(' ', '_')
+        output_path = os.path.join(self.plots_dir, f"{filename}_{self.timestamp}.png")
+        plt.savefig(output_path)
         plt.close()
-        
-        logger.info(f"Đã tạo biểu đồ fallback '{title}': {message}")
         
         return output_path
 
     def _create_reasoning_criteria_plot(self):
         """Tạo biểu đồ radar về các tiêu chí đánh giá reasoning."""
-        # Kiểm tra có đủ dữ liệu
-        required_columns = ['model_name', 'reasoning_accuracy', 'reasoning_reasoning', 
-                            'reasoning_completeness', 'reasoning_explanation', 
-                            'reasoning_cultural_context', 'reasoning_average']
-                            
-        for col in required_columns:
-            if col not in self.results_df.columns:
-                return self._create_fallback_plot("Đánh giá tiêu chí", f"Thiếu cột dữ liệu: {col}")
-        
-        # Lọc các hàng có dữ liệu reasoning
-        valid_df = self.results_df[~self.results_df['reasoning_average'].isna()]
-        if len(valid_df) == 0:
-            return self._create_fallback_plot("Đánh giá tiêu chí", "Không có dữ liệu reasoning")
-        
-        # Chuẩn bị dữ liệu
+        # Kiểm tra dữ liệu với cách tiếp cận linh hoạt hơn
+        # Danh sách tiêu chí cần kiểm tra
         criteria = ['accuracy', 'reasoning', 'completeness', 'explanation', 'cultural_context']
-        model_scores = {}
+        criteria_cols = [f'reasoning_{c}' for c in criteria]
+        
+        # Kiểm tra nếu có ít nhất một cột tiêu chí reasoning
+        has_reasoning_data = any(col in self.results_df.columns for col in criteria_cols)
+        if not has_reasoning_data:
+            return self._create_fallback_plot("Đánh giá tiêu chí", "Không có dữ liệu đánh giá reasoning")
+        
+        # Chuẩn bị DataFrame hợp lệ cho việc phân tích
+        valid_df = self.results_df
+        
+        # Nếu có cột reasoning_average, sử dụng để lọc dữ liệu
+        if 'reasoning_average' in self.results_df.columns:
+            valid_df = self.results_df[~self.results_df['reasoning_average'].isna()]
+            if len(valid_df) == 0:
+                return self._create_fallback_plot("Đánh giá tiêu chí", "Không có dữ liệu reasoning_average")
+        else:
+            # Tạo cột reasoning_average nếu không có
+            for col in criteria_cols:
+                if col not in self.results_df.columns:
+                    valid_df[col] = np.nan
+            
+            # Tính toán điểm trung bình từ các cột có sẵn
+            valid_cols = [col for col in criteria_cols if col in self.results_df.columns]
+            if valid_cols:
+                valid_df['reasoning_average'] = valid_df[valid_cols].mean(axis=1, skipna=True)
+            else:
+                return self._create_fallback_plot("Đánh giá tiêu chí", "Không đủ dữ liệu reasoning")
+            
+            # Lọc các hàng có dữ liệu reasoning
+            valid_df = valid_df[~valid_df['reasoning_average'].isna()]
+            if len(valid_df) == 0:
+                return self._create_fallback_plot("Đánh giá tiêu chí", "Không có dữ liệu reasoning hợp lệ")
         
         # Tính điểm trung bình cho mỗi model và tiêu chí
+        model_scores = {}
+        
         for model in valid_df['model_name'].unique():
             model_df = valid_df[valid_df['model_name'] == model]
             scores = []
             
             for criterion in criteria:
                 criterion_key = f'reasoning_{criterion}'
-                avg_score = model_df[criterion_key].mean()
+                if criterion_key in model_df.columns:
+                    # Loại bỏ các giá trị NaN trước khi tính trung bình
+                    valid_scores = model_df[criterion_key].dropna()
+                    if len(valid_scores) > 0:
+                        avg_score = valid_scores.mean()
+                    else:
+                        avg_score = 0
+                else:
+                    avg_score = 0
                 scores.append(avg_score)
             
             model_scores[model] = scores
@@ -1589,42 +1870,92 @@ Thời gian tạo: {self.timestamp}
         angles = np.linspace(0, 2*np.pi, len(criteria), endpoint=False).tolist()
         angles += angles[:1]  # Khép vòng tròn
         
+        # Tạo bảng màu đẹp cho các model
+        colors = plt.cm.tab10(np.linspace(0, 1, len(model_scores)))
+        
         # Vẽ biểu đồ cho từng model
         for i, (model, scores) in enumerate(model_scores.items()):
             scores = scores + scores[:1]  # Khép vòng tròn
-            ax.plot(angles, scores, linewidth=2, label=model)
-            ax.fill(angles, scores, alpha=0.1)
+            ax.plot(angles, scores, linewidth=2, label=model, color=colors[i])
+            ax.fill(angles, scores, alpha=0.1, color=colors[i])
         
         # Thiết lập trục và nhãn
         ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(criteria)
+        # Dùng tên tiêu chí dễ đọc hơn
+        criterion_labels = {
+            'accuracy': 'Độ chính xác',
+            'reasoning': 'Suy luận hợp lý',
+            'completeness': 'Tính đầy đủ',
+            'explanation': 'Giải thích rõ ràng',
+            'cultural_context': 'Phù hợp ngữ cảnh'
+        }
+        ax.set_xticklabels([criterion_labels.get(c, c) for c in criteria])
+        
+        # Thiết lập đường tròn mức độ
         ax.set_yticks([1, 2, 3, 4, 5])
         ax.set_yticklabels(['1', '2', '3', '4', '5'])
         ax.set_ylim(0, 5)
         
-        plt.title('Đánh giá các tiêu chí lập luận', size=15)
-        plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+        plt.title('Đánh giá các tiêu chí lập luận', size=15, fontweight='bold')
         
-        # Lưu biểu đồ
-        plot_path = os.path.join(self.plots_dir, 'reasoning_criteria_plot.png')
+        # Đặt legend ở vị trí tốt hơn
+        plt.legend(loc='best', bbox_to_anchor=(1.05, 1), borderaxespad=0.)
+        
+        # Lưu biểu đồ với timestamp để tránh ghi đè
+        plot_path = os.path.join(self.plots_dir, f"reasoning_criteria_plot_{self.timestamp}.png")
         plt.tight_layout()
-        plt.savefig(plot_path)
+        plt.savefig(plot_path, dpi=120, bbox_inches='tight')
         plt.close()
         
         return plot_path
     
     def _create_reasoning_by_prompt_plot(self):
         """Tạo biểu đồ so sánh chất lượng reasoning theo prompt type."""
-        # Kiểm tra có đủ dữ liệu
-        required_columns = ['model_name', 'prompt_type', 'reasoning_average']
-        for col in required_columns:
-            if col not in self.results_df.columns:
-                return self._create_fallback_plot("Reasoning theo prompt", f"Thiếu cột dữ liệu: {col}")
+        # Kiểm tra dữ liệu với cách tiếp cận linh hoạt hơn
+        criteria = ['accuracy', 'reasoning', 'completeness', 'explanation', 'cultural_context']
+        criteria_cols = [f'reasoning_{c}' for c in criteria]
         
-        # Lọc các hàng có dữ liệu reasoning
-        valid_df = self.results_df[~self.results_df['reasoning_average'].isna()]
+        # Kiểm tra nếu có ít nhất một cột tiêu chí reasoning
+        has_reasoning_data = any(col in self.results_df.columns for col in criteria_cols)
+        if not has_reasoning_data:
+            return self._create_fallback_plot("Reasoning theo prompt", "Không có dữ liệu đánh giá reasoning")
+            
+        # Kiểm tra cột prompt_type
+        if 'prompt_type' not in self.results_df.columns:
+            return self._create_fallback_plot("Reasoning theo prompt", "Không có dữ liệu về loại prompt")
+        
+        # Chuẩn bị DataFrame hợp lệ cho việc phân tích
+        valid_df = self.results_df
+        
+        # Nếu có cột reasoning_average, sử dụng để lọc dữ liệu
+        if 'reasoning_average' in self.results_df.columns:
+            valid_df = valid_df[~valid_df['reasoning_average'].isna()]
+        else:
+            # Tạo cột reasoning_average nếu không có
+            valid_cols = [col for col in criteria_cols if col in self.results_df.columns]
+            if valid_cols:
+                valid_df['reasoning_average'] = valid_df[valid_cols].mean(axis=1, skipna=True)
+            else:
+                return self._create_fallback_plot("Reasoning theo prompt", "Không đủ dữ liệu reasoning")
+            
+            # Lọc các hàng có dữ liệu reasoning
+            valid_df = valid_df[~valid_df['reasoning_average'].isna()]
+        
+        # Kiểm tra sau khi lọc dữ liệu
         if len(valid_df) == 0:
-            return self._create_fallback_plot("Reasoning theo prompt", "Không có dữ liệu reasoning")
+            return self._create_fallback_plot("Reasoning theo prompt", "Không có dữ liệu reasoning hợp lệ")
+        
+        # Kiểm tra số lượng dữ liệu cho từng mô hình và loại prompt
+        pivot_counts = valid_df.pivot_table(
+            index='model_name', 
+            columns='prompt_type', 
+            values='reasoning_average',
+            aggfunc='count'
+        ).fillna(0)
+        
+        # Nếu không có đủ dữ liệu để phân tích
+        if pivot_counts.sum().sum() < 3:  # Yêu cầu tối thiểu 3 điểm dữ liệu
+            return self._create_fallback_plot("Reasoning theo prompt", "Không đủ dữ liệu để phân tích")
         
         # Tính điểm trung bình cho mỗi cặp (model, prompt_type)
         pivot_df = valid_df.pivot_table(
@@ -1636,142 +1967,401 @@ Thời gian tạo: {self.timestamp}
         
         # Tạo heatmap
         plt.figure(figsize=(12, 8))
-        sns.heatmap(pivot_df, annot=True, cmap='YlGnBu', vmin=0, vmax=5, 
-                   linewidths=.5, fmt='.2f')
         
-        plt.title('Chất lượng lập luận theo loại prompt', size=15)
+        # Tùy chỉnh colormap để phù hợp với thang điểm 0-5
+        cmap = sns.color_palette("YlGnBu", as_cmap=True)
+        
+        # Tạo heatmap với các thông số cải tiến
+        ax = sns.heatmap(
+            pivot_df, 
+            annot=True, 
+            cmap=cmap, 
+            vmin=0, 
+            vmax=5, 
+            linewidths=.5, 
+            fmt='.2f',
+            cbar_kws={'label': 'Điểm đánh giá (1-5)', 'shrink': 0.8}
+        )
+        
+        # Cải thiện trình bày
+        plt.title('Chất lượng lập luận theo loại prompt', size=16, fontweight='bold', pad=20)
+        plt.xlabel('Loại Prompt', fontsize=14, labelpad=10)
+        plt.ylabel('Mô hình', fontsize=14, labelpad=10)
+        
+        # Cải thiện nhãn trục
+        plt.xticks(rotation=45, ha='right', fontsize=12)
+        plt.yticks(fontsize=12)
+        
+        # Thêm viền cho heatmap
+        for _, spine in ax.spines.items():
+            spine.set_visible(True)
+            spine.set_color('#dddddd')
+            spine.set_linewidth(0.5)
+        
         plt.tight_layout()
         
-        # Lưu biểu đồ
-        plot_path = os.path.join(self.plots_dir, 'reasoning_by_prompt_plot.png')
-        plt.savefig(plot_path)
+        # Lưu biểu đồ với timestamp và độ phân giải cao
+        plot_path = os.path.join(self.plots_dir, f"reasoning_by_prompt_plot_{self.timestamp}.png")
+        plt.savefig(plot_path, dpi=120, bbox_inches='tight')
         plt.close()
         
         return plot_path
     
     def _create_reasoning_by_question_type_plot(self):
-        """Tạo biểu đồ so sánh chất lượng reasoning theo question type."""
-        # Kiểm tra có đủ dữ liệu
-        required_columns = ['model_name', 'question_type', 'reasoning_average']
-        for col in required_columns:
-            if col not in self.results_df.columns:
-                return self._create_fallback_plot("Reasoning theo question type", f"Thiếu cột dữ liệu: {col}")
+        """
+        Tạo biểu đồ đánh giá reasoning theo loại câu hỏi.
         
-        # Lọc các hàng có dữ liệu reasoning
-        valid_df = self.results_df[~self.results_df['reasoning_average'].isna()]
-        if len(valid_df) == 0:
-            return self._create_fallback_plot("Reasoning theo question type", "Không có dữ liệu reasoning")
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        if 'question_type' not in self.results_df.columns:
+            return self._create_fallback_plot("Reasoning by Question Type", "No question type data available")
+            
+        # Kiểm tra xem có dữ liệu reasoning không
+        reasoning_cols = [col for col in self.results_df.columns if col.startswith('reasoning_') 
+                        and col not in ['reasoning_evaluation', 'reasoning_scores_str']]
         
-        # Tính điểm trung bình cho mỗi cặp (model, question_type)
-        grouped_df = valid_df.groupby(['model_name', 'question_type'])['reasoning_average'].mean().reset_index()
+        if not reasoning_cols:
+            return self._create_fallback_plot("Reasoning by Question Type", "No reasoning data available")
         
-        # Tạo biểu đồ cột
-        plt.figure(figsize=(14, 10))
-        g = sns.catplot(
-            data=grouped_df,
-            kind="bar",
-            x="question_type",
-            y="reasoning_average",
-            hue="model_name",
-            palette="deep",
-            height=6,
-            aspect=1.5
-        )
+        try:
+            # Chuẩn bị dữ liệu
+            question_types = self.results_df['question_type'].unique()
+            criteria_labels = {
+                'reasoning_accuracy': 'Accuracy',
+                'reasoning_logic': 'Logic',
+                'reasoning_consistency': 'Consistency',
+                'reasoning_difficulty': 'Difficulty',
+                'reasoning_context': 'Context',
+                'reasoning_average': 'Average'
+            }
+            
+            # Tính toán điểm trung bình cho mỗi loại câu hỏi và tiêu chí
+            data_for_plot = []
+            for q_type in question_types:
+                type_df = self.results_df[self.results_df['question_type'] == q_type]
+                
+                for col in reasoning_cols:
+                    if col in self.results_df.columns:
+                        label = criteria_labels.get(col, col.replace('reasoning_', '').title())
+                        avg_score = type_df[col].mean()
+                        data_for_plot.append({
+                            'Question Type': q_type,
+                            'Criteria': label,
+                            'Score': avg_score
+                        })
+            
+            if not data_for_plot:
+                return self._create_fallback_plot("Reasoning by Question Type", "Insufficient reasoning data")
+            
+            # Tạo DataFrame cho dễ vẽ biểu đồ
+            plot_df = pd.DataFrame(data_for_plot)
+            
+            # Vẽ biểu đồ
+            plt.figure(figsize=(14, 10))
+            
+            # Sử dụng seaborn để vẽ biểu đồ nhiệt heat map
+            pivot_table = plot_df.pivot_table(values='Score', index='Question Type', columns='Criteria')
+            
+            # Sắp xếp Question Type theo điểm trung bình để dễ so sánh
+            if 'Average' in pivot_table.columns:
+                avg_scores = pivot_table['Average']
+                pivot_table = pivot_table.loc[avg_scores.sort_values(ascending=False).index]
+            else:
+                avg_scores = pivot_table.mean(axis=1)
+                pivot_table = pivot_table.loc[avg_scores.sort_values(ascending=False).index]
+            
+            # Vẽ heatmap với annotation
+            sns.heatmap(pivot_table, annot=True, cmap="YlGnBu", fmt=".2f", linewidths=.5,
+                      vmin=1, vmax=5, cbar_kws={'label': 'Score (1-5 scale)'})
+            
+            plt.title('Reasoning Quality by Question Type', fontsize=18, pad=20)
+            plt.tight_layout()
+            
+            # Lưu biểu đồ
+            output_path = os.path.join(self.plots_dir, f"reasoning_by_question_type_{self.timestamp}.png")
+            plt.savefig(output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ reasoning theo loại câu hỏi: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("Reasoning by Question Type", f"Error: {str(e)}")
+    
+    def _create_f1_score_plot(self):
+        """
+        Tạo biểu đồ F1 Score theo model và prompt type.
         
-        g.set_xticklabels(rotation=45, ha="right")
-        g.set(ylim=(0, 5))
-        g.fig.suptitle('Chất lượng lập luận theo loại câu hỏi', fontsize=15)
-        g.fig.tight_layout()
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        if 'f1_score' not in self.results_df.columns:
+            return self._create_fallback_plot("F1 Score", "No F1 score data available")
         
-        # Lưu biểu đồ
-        plot_path = os.path.join(self.plots_dir, 'reasoning_by_question_type_plot.png')
-        plt.savefig(plot_path)
-        plt.close()
+        try:
+            # Kiểm tra số lượng giá trị không phải NaN
+            non_nan_count = self.results_df['f1_score'].notna().sum()
+            if non_nan_count == 0:
+                logger.warning("Không có giá trị F1 score hợp lệ nào để vẽ biểu đồ")
+                return self._create_fallback_plot("F1 Score", "No valid F1 score values available")
+                
+            logger.info(f"Tìm thấy {non_nan_count} giá trị F1 score hợp lệ để vẽ biểu đồ")
+            
+            # Tính F1 score trung bình theo model và prompt
+            f1_by_model_prompt = self.results_df.groupby(['model_name', 'prompt_type'])['f1_score'].mean().unstack()
+            
+            # Kiểm tra xem có đủ dữ liệu để vẽ biểu đồ không
+            if f1_by_model_prompt.empty or f1_by_model_prompt.isna().all().all():
+                logger.warning("Không đủ dữ liệu F1 score để vẽ biểu đồ")
+                return self._create_fallback_plot("F1 Score", "Insufficient data for F1 score visualization")
+            
+            # Vẽ biểu đồ
+            fig, ax = plt.subplots(figsize=(14, 10))
+            
+            # Xác định giới hạn giá trị dựa trên dữ liệu thực tế
+            vmin = np.floor(f1_by_model_prompt.min().min() * 10) / 10 if not np.isnan(f1_by_model_prompt.min().min()) else 0
+            vmax = np.ceil(f1_by_model_prompt.max().max() * 10) / 10 if not np.isnan(f1_by_model_prompt.max().max()) else 1
+            
+            # Đảm bảo vmin và vmax nằm trong khoảng [0, 1]
+            vmin = max(0, min(vmin, 0.9))
+            vmax = min(1.0, max(vmax, 0.1))
+            
+            # Log để debug
+            logger.debug(f"F1 score range: vmin={vmin}, vmax={vmax}")
+            
+            # Sử dụng seaborn heatmap với định dạng số tùy chỉnh
+            sns.heatmap(f1_by_model_prompt, annot=True, cmap="YlGnBu", fmt=".3f", linewidths=.5,
+                      vmin=vmin, vmax=vmax, cbar_kws={'label': 'F1 Score'}, annot_kws={"size": 10})
+            
+            plt.title('F1 Score by Model and Prompt Type', fontsize=18, pad=20)
+            plt.tight_layout()
+            
+            # Thêm chú thích về ý nghĩa của F1 Score
+            plt.figtext(0.5, 0.01, 
+                       "F1 Score đo lường độ tương đồng về mặt từ vựng (token overlap) giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn.", 
+                       ha="center", fontsize=10, bbox={"facecolor":"orange", "alpha":0.15, "pad":5})
+            
+            # Lưu biểu đồ
+            output_path = os.path.join(self.plots_dir, f"f1_score_{self.timestamp}.png")
+            plt.savefig(output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ F1 score: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("F1 Score", f"Error: {str(e)}")
+    
+    def _create_meteor_score_plot(self):
+        """
+        Tạo biểu đồ METEOR Score theo model và prompt type.
         
-        return plot_path
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        if 'meteor_score' not in self.results_df.columns:
+            return self._create_fallback_plot("METEOR Score", "No METEOR score data available")
+        
+        try:
+            # Kiểm tra số lượng giá trị không phải NaN
+            non_nan_count = self.results_df['meteor_score'].notna().sum()
+            if non_nan_count == 0:
+                logger.warning("Không có giá trị METEOR score hợp lệ nào để vẽ biểu đồ")
+                return self._create_fallback_plot("METEOR Score", "No valid METEOR score values available")
+                
+            logger.info(f"Tìm thấy {non_nan_count} giá trị METEOR score hợp lệ để vẽ biểu đồ")
+            
+            # Tính METEOR score trung bình theo model và prompt
+            meteor_by_model_prompt = self.results_df.groupby(['model_name', 'prompt_type'])['meteor_score'].mean().unstack()
+            
+            # Kiểm tra xem có đủ dữ liệu để vẽ biểu đồ không
+            if meteor_by_model_prompt.empty or meteor_by_model_prompt.isna().all().all():
+                logger.warning("Không đủ dữ liệu METEOR score để vẽ biểu đồ")
+                return self._create_fallback_plot("METEOR Score", "Insufficient data for METEOR score visualization")
+            
+            # Vẽ biểu đồ
+            fig, ax = plt.subplots(figsize=(14, 10))
+            
+            # Xác định giới hạn giá trị dựa trên dữ liệu thực tế
+            vmin = np.floor(meteor_by_model_prompt.min().min() * 10) / 10 if not np.isnan(meteor_by_model_prompt.min().min()) else 0
+            vmax = np.ceil(meteor_by_model_prompt.max().max() * 10) / 10 if not np.isnan(meteor_by_model_prompt.max().max()) else 1
+            
+            # Đảm bảo vmin và vmax nằm trong khoảng [0, 1]
+            vmin = max(0, min(vmin, 0.9))
+            vmax = min(1.0, max(vmax, 0.1))
+            
+            # Log để debug
+            logger.debug(f"METEOR score range: vmin={vmin}, vmax={vmax}")
+            
+            # Sử dụng seaborn heatmap với định dạng số tùy chỉnh
+            sns.heatmap(meteor_by_model_prompt, annot=True, cmap="YlGnBu", fmt=".3f", linewidths=.5,
+                      vmin=vmin, vmax=vmax, cbar_kws={'label': 'METEOR Score'}, annot_kws={"size": 10})
+            
+            plt.title('METEOR Score by Model and Prompt Type', fontsize=18, pad=20)
+            plt.tight_layout()
+            
+            # Thêm chú thích về ý nghĩa của METEOR Score
+            plt.figtext(0.5, 0.01, 
+                       "METEOR Score đo lường chất lượng tương đồng thông qua các tiêu chí đồng nghĩa, từ vựng và cấu trúc.\nĐược dùng nhiều trong đánh giá dịch thuật, giá trị cao hơn thể hiện sự tương đồng tốt hơn.", 
+                       ha="center", fontsize=10, bbox={"facecolor":"orange", "alpha":0.15, "pad":5})
+            
+            # Lưu biểu đồ
+            output_path = os.path.join(self.plots_dir, f"meteor_score_{self.timestamp}.png")
+            plt.savefig(output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ METEOR score: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("METEOR Score", f"Error: {str(e)}")
+    
+    def _create_bertscore_plot(self):
+        """
+        Tạo biểu đồ BERT Score theo model và prompt type.
+        
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        if 'bert_score' not in self.results_df.columns:
+            return self._create_fallback_plot("BERT Score", "No BERT score data available")
+        
+        try:
+            # Kiểm tra số lượng giá trị không phải NaN
+            non_nan_count = self.results_df['bert_score'].notna().sum()
+            if non_nan_count == 0:
+                logger.warning("Không có giá trị BERT score hợp lệ nào để vẽ biểu đồ")
+                return self._create_fallback_plot("BERT Score", "No valid BERT score values available")
+                
+            logger.info(f"Tìm thấy {non_nan_count} giá trị BERT score hợp lệ để vẽ biểu đồ")
+            
+            # Tính BERT score trung bình theo model và prompt
+            bert_by_model_prompt = self.results_df.groupby(['model_name', 'prompt_type'])['bert_score'].mean().unstack()
+            
+            # Kiểm tra xem có đủ dữ liệu để vẽ biểu đồ không
+            if bert_by_model_prompt.empty or bert_by_model_prompt.isna().all().all():
+                logger.warning("Không đủ dữ liệu BERT score để vẽ biểu đồ")
+                return self._create_fallback_plot("BERT Score", "Insufficient data for BERT score visualization")
+            
+            # Vẽ biểu đồ
+            fig, ax = plt.subplots(figsize=(14, 10))
+            
+            # Xác định giới hạn giá trị dựa trên dữ liệu thực tế
+            vmin = np.floor(bert_by_model_prompt.min().min() * 10) / 10 if not np.isnan(bert_by_model_prompt.min().min()) else 0
+            vmax = np.ceil(bert_by_model_prompt.max().max() * 10) / 10 if not np.isnan(bert_by_model_prompt.max().max()) else 1
+            
+            # Đảm bảo vmin và vmax nằm trong khoảng [0, 1]
+            vmin = max(0, min(vmin, 0.9))
+            vmax = min(1.0, max(vmax, 0.1))
+            
+            # Log để debug
+            logger.debug(f"BERT score range: vmin={vmin}, vmax={vmax}")
+            
+            # Định dạng số hiển thị trong heatmap để dễ đọc
+            def fmt(x):
+                if np.isnan(x):
+                    return "N/A"
+                else:
+                    return f'{x:.3f}'
+            
+            # Sử dụng seaborn heatmap với định dạng số tùy chỉnh
+            sns.heatmap(bert_by_model_prompt, annot=True, cmap="YlGnBu", fmt=".3f", linewidths=.5,
+                      vmin=vmin, vmax=vmax, cbar_kws={'label': 'BERT Score'}, annot_kws={"size": 10})
+            
+            plt.title('BERT Score by Model and Prompt Type', fontsize=18, pad=20)
+            plt.tight_layout()
+            
+            # Thêm chú thích về ý nghĩa của BERT Score
+            plt.figtext(0.5, 0.01, 
+                       "BERT Score đo lường độ tương đồng về mặt ngữ nghĩa giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn.", 
+                       ha="center", fontsize=10, bbox={"facecolor":"orange", "alpha":0.15, "pad":5})
+            
+            # Lưu biểu đồ
+            output_path = os.path.join(self.plots_dir, f"bert_score_{self.timestamp}.png")
+            plt.savefig(output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ BERT score: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("BERT Score", f"Error: {str(e)}")
 
     def _generate_visualizations(self) -> Dict[str, str]:
         """
-        Tạo các biểu đồ visualization từ dữ liệu đánh giá.
+        Tạo tất cả các biểu đồ trực quan hóa cho báo cáo.
         
         Returns:
-            Dict[str, str]: Dictionary chứa đường dẫn đến các file biểu đồ
+            Dict[str, str]: Dictionary chứa đường dẫn đến các biểu đồ
         """
-        logger.info("Bắt đầu tạo các biểu đồ visualization")
         plot_paths = {}
         
-        try:
-            # Một số biểu đồ cơ bản
-            if 'is_correct' in self.results_df.columns:
-                # 1. Accuracy by Model
-                plot_path = self._create_accuracy_by_model_plot()
-                if plot_path:
-                    plot_paths['accuracy_by_model'] = plot_path
-                    
-                # 2. Accuracy by Prompt Type 
-                plot_path = self._create_accuracy_by_prompt_plot()
-                if plot_path:
-                    plot_paths['accuracy_by_prompt'] = plot_path
-                    
-                # 3. Accuracy Heatmap (Model x Prompt)
-                plot_path = self._create_accuracy_heatmap()
-                if plot_path:
-                    plot_paths['accuracy_heatmap'] = plot_path
-                    
-                # 4. Biểu đồ so sánh đơn giản
-                plot_path = self._create_simple_comparison_plot()
-                if plot_path:
-                    plot_paths['simple_comparison'] = plot_path
-            
-            # 5. Biểu đồ đánh giá độ khó
-            plot_path = self._create_difficulty_performance_plot()
-            if plot_path:
-                plot_paths['difficulty_performance'] = plot_path
-                
-            # 6. Biểu đồ đánh giá theo từng tiêu chí
-            plot_path = self._create_criteria_evaluation_plot()
-            if plot_path:
-                plot_paths['criteria_evaluation'] = plot_path
-
-            # 7. Biểu đồ Radar các tiêu chí
-            plot_path = self._create_criteria_radar_plot()
-            if plot_path:
-                plot_paths['criteria_radar'] = plot_path
-                
-            # 8. Biểu đồ so sánh độ phù hợp ngữ cảnh
-            plot_path = self._create_context_adherence_plot()
-            if plot_path:
-                plot_paths['context_adherence'] = plot_path
-                
-            # 9. Biểu đồ so sánh hiệu suất theo độ khó
-            plot_path = self._create_difficulty_comparison_plot()
-            if plot_path:
-                plot_paths['difficulty_comparison'] = plot_path
-                
-            # 10. Tạo biểu đồ tổng quan tất cả tiêu chí
-            plot_path = self._create_overall_criteria_comparison()
-            if plot_path:
-                plot_paths['overall_criteria'] = plot_path
-            
-            # 11. Biểu đồ radar cho các tiêu chí đánh giá suy luận
-            plot_path = self._create_reasoning_criteria_plot()
-            if plot_path:
-                plot_paths['reasoning_criteria'] = plot_path
-            
-            # 12. Biểu đồ heatmap cho chất lượng suy luận theo từng loại prompt
-            plot_path = self._create_reasoning_by_prompt_plot()
-            if plot_path:
-                plot_paths['reasoning_by_prompt'] = plot_path
-            
-            # 13. Biểu đồ so sánh chất lượng suy luận theo từng loại câu hỏi
-            plot_path = self._create_reasoning_by_question_type_plot()
-            if plot_path:
-                plot_paths['reasoning_by_question_type'] = plot_path
-            
-            logger.info(f"Đã tạo {len(plot_paths)} biểu đồ visualization")
-            
-        except Exception as e:
-            logger.error(f"Lỗi khi tạo biểu đồ: {str(e)}")
-            logger.debug(traceback.format_exc())
+        def create_plot(plot_function, plot_name, description):
+            logger.info(f"Đang tạo biểu đồ: {plot_name}")
+            try:
+                path = plot_function()
+                if path:
+                    plot_paths[plot_name] = {
+                        'path': path,
+                        'description': description
+                    }
+                    logger.info(f"Đã tạo biểu đồ {plot_name}: {path}")
+                else:
+                    logger.warning(f"Không thể tạo biểu đồ {plot_name}")
+            except Exception as e:
+                logger.error(f"Lỗi khi tạo biểu đồ {plot_name}: {str(e)}")
+                logger.debug(traceback.format_exc())
         
+        # Các biểu đồ cơ bản (giữ nguyên)
+        create_plot(self._create_accuracy_by_model_plot, 'accuracy_by_model', 
+                   'Accuracy trung bình theo từng model')
+        
+        create_plot(self._create_accuracy_by_prompt_plot, 'accuracy_by_prompt',
+                   'Accuracy trung bình theo từng loại prompt')
+        
+        create_plot(self._create_accuracy_heatmap, 'accuracy_heatmap',
+                   'Accuracy chi tiết theo model và prompt')
+        
+        create_plot(self._create_simple_comparison_plot, 'simple_comparison',
+                   'So sánh hiệu suất tổng thể giữa các model')
+        
+        # Thêm các biểu đồ đánh giá reasoning
+        create_plot(self._create_reasoning_criteria_plot, 'reasoning_criteria',
+                   'Đánh giá các tiêu chí suy luận theo model')
+        
+        create_plot(self._create_reasoning_by_prompt_plot, 'reasoning_by_prompt',
+                   'Chất lượng suy luận trung bình theo loại prompt')
+        
+        # Thêm biểu đồ reasoning theo loại câu hỏi
+        create_plot(self._create_reasoning_by_question_type_plot, 'reasoning_by_question_type',
+                   'Chất lượng suy luận phân theo loại câu hỏi')
+        
+        # Thêm các biểu đồ đánh giá theo criteria khác
+        create_plot(self._create_criteria_evaluation_plot, 'criteria_evaluation',
+                   'Đánh giá theo các tiêu chí chất lượng')
+        
+        create_plot(self._create_criteria_radar_plot, 'criteria_radar',
+                   'Đánh giá đa tiêu chí theo dạng radar chart')
+        
+        create_plot(self._create_difficulty_performance_plot, 'difficulty_performance',
+                   'Hiệu suất trên các câu hỏi có độ khó khác nhau')
+        
+        create_plot(self._create_context_adherence_plot, 'context_adherence',
+                   'Độ phù hợp ngữ cảnh theo model và prompt')
+        
+        # Thêm các biểu đồ metrics nâng cao
+        create_plot(self._create_f1_score_plot, 'f1_score',
+                   'F1 Score dựa trên sự trùng lặp token')
+        
+        create_plot(self._create_meteor_score_plot, 'meteor_score',
+                   'METEOR Score đánh giá chất lượng dịch thuật')
+        
+        create_plot(self._create_bertscore_plot, 'bert_score',
+                   'BERT Score đánh giá độ tương đồng ngữ nghĩa')
+                   
         return plot_paths

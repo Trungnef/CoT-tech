@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "timestamp": "20250416_230812",
+    "total_questions": 3,
+    "total_correct": 3
+  },
+  "models": {
+    "gemini": {
+      "correct": 3,
+      "total": 3,
+      "accuracy": 1.0
+    }
+  },
+  "prompts": {
+    "zero_shot": {
+      "correct": 1,
+      "total": 1,
+      "accuracy": 1.0
+    },
+    "cot_self_consistency_7": {
+      "correct": 1,
+      "total": 1,
+      "accuracy": 1.0
+    },
+    "react": {
+      "correct": 1,
+      "total": 1,
+      "accuracy": 1.0
+    }
+  }
+}

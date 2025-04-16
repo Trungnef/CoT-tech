@@ -1,20 +1,48 @@
-torch>=2.0.0
-transformers>=4.36.0
-accelerate>=0.25.0
+# Core dependencies
+numpy>=1.22.0
+pandas>=1.4.0
+matplotlib>=3.5.0
+seaborn>=0.11.2
+nltk>=3.7.0
+scikit-learn>=1.0.2
+tqdm>=4.64.0
+
+# Embedding and similarity
+sentence-transformers>=2.2.2
+transformers>=4.18.0
+torch>=1.10.0
+rouge>=1.0.1
+
+# Interactive visualization
+plotly>=5.7.0
+bokeh>=2.4.2
+
+# Web-based reporting
+jinja2>=3.0.0
+ipywidgets>=7.7.0
+
+# API clients for model evaluation
+google-generativeai>=0.1.0
+openai>=0.27.0
+groq>=0.3.0
+
+# Utilities
+python-dotenv>=0.20.0
+requests>=2.27.0
+portalocker>=2.5.0
+
+# Additional dependencies
 safetensors
 bitsandbytes>=0.41.0
 sympy
 PyMuPDF>=1.22.0
-openai>=1.0.0
-google-generativeai>=0.3.0
-pandas>=2.0.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
 tqdm>=4.65.0
 tenacity>=8.2.0
-python-dotenv>=1.0.0
 fpdf
-plotly
 rich
-scikit-learn
-# pip install wget ; python -c "import wget; wget.download('https://github.com/dejavu-fonts/dejavu-fonts/raw/master/ttf/DejaVuSansCondensed.ttf')" 
+# pip install wget ; python -c "import wget; wget.download('https://github.com/dejavu-fonts/dejavu-fonts/raw/master/ttf/DejaVuSansCondensed.ttf')"
+
+# Các thư viện cho metrics nâng cao
+bert-score>=0.3.12
+nltk>=3.7
+sentence-transformers>=2.2.2 

@@ -473,9 +473,13 @@ class Evaluator:
                     reasoning_prompt = self._create_reasoning_evaluation_prompt(question_text, response, expected_answer)
 
                     # Lấy phản hồi đánh giá từ mô hình giám khảo (Llama3-70B qua Groq API)
-                    logger.debug(f"Gửi yêu cầu đánh giá reasoning đến model: {config.REASONING_EVALUATION_CONFIG.get('model', 'groq/llama3-70b-8192')}")
+                    logger.debug(f"Gửi yêu cầu đánh giá reasoning đến model: {config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')}")
+                    
+                    # Định dạng tên model đúng cho Groq
+                    reasoning_model = "groq/" + config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')
+                    
                     reasoning_eval = self.model_interface.get_response(
-                        model_name=config.REASONING_EVALUATION_CONFIG.get('model', 'groq/llama3-70b-8192'),
+                        model_name=reasoning_model,
                         prompt=reasoning_prompt,
                         max_tokens=800  # Tăng max_tokens để đảm bảo nhận được phản hồi đầy đủ
                     )
@@ -1894,3 +1898,71 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
                 'avg_score': 0,
                 'explanation': f"Lỗi khi đánh giá: {str(e)}"
             }
+
+    def analyze_and_report(self):
+        """
+        Phân tích các kết quả thu thập được và tạo báo cáo.
+        """
+        if self.results_df is None or len(self.results_df) == 0:
+            self.logger.warning("Không có kết quả để phân tích")
+            return
+        
+        self.logger.info(f"Bắt đầu phân tích {len(self.results_df)} kết quả đánh giá")
+        
+        # Tạo đối tượng ResultAnalyzer
+        analyzer = ResultAnalyzer(
+            results_df=self.results_df,
+            reasoning_evaluation_config=self.reasoning_evaluation_config,
+            reasoning_model=self.reasoning_model,
+            language=self.language,
+            verbose=True
+        )
+        
+        # Phân tích kết quả cơ bản
+        self.results_df = analyzer.analyze()
+        
+        # Tính toán các metrics nâng cao (BERT, METEOR, F1)
+        self.logger.info("Tính toán các metrics nâng cao (BERT score, METEOR score, F1 score)...")
+        self.results_df = analyzer.calculate_additional_metrics()
+        
+        # Xuất kết quả thô
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        
+        raw_results_dir = os.path.join(self.results_dir, "raw_results")
+        os.makedirs(raw_results_dir, exist_ok=True)
+        
+        # Lưu kết quả dạng CSV
+        csv_path = os.path.join(raw_results_dir, f"evaluation_results_{timestamp}.csv")
+        self.results_df.to_csv(csv_path, index=False)
+        self.logger.info(f"Đã lưu kết quả thô vào {csv_path}")
+        
+        # Lưu kết quả dạng JSON
+        json_path = os.path.join(raw_results_dir, f"evaluation_results_{timestamp}.json")
+        self.results_df.to_json(json_path, orient="records", force_ascii=False, indent=2)
+        self.logger.info(f"Đã lưu kết quả thô vào {json_path}")
+        
+        # Tạo báo cáo
+        self.logger.info("Tạo báo cáo từ kết quả phân tích...")
+        
+        from core.reporting import Reporting
+        reporter = Reporting(
+            results_df=self.results_df, 
+            output_dir=self.results_dir,
+            timestamp=timestamp
+        )
+        
+        report_paths = reporter.generate_reports()
+        
+        if report_paths:
+            for report_type, path in report_paths.items():
+                self.logger.info(f"Đã tạo báo cáo {report_type}: {path}")
+        else:
+            self.logger.warning("Không thể tạo báo cáo")
+        
+        self.logger.info("Quá trình phân tích và báo cáo hoàn tất")
+        
+        return {
+            'csv_path': csv_path,
+            'json_path': json_path,
+            'reports': report_paths
+        }

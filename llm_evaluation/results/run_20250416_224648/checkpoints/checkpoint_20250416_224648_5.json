@@ -1,0 +1,148 @@
+{
+  "timestamp": "2025-04-16T22:47:15.614113",
+  "results": [
+    {
+      "model_name": "gemini",
+      "prompt_type": "zero_shot",
+      "question_id": 1320,
+      "question_text": "Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",
+      "question_type": "Bài toán công việc",
+      "difficulty": "Dễ",
+      "response": "Trong 1 giờ, thợ A làm được 1/6 công việc.\nTrong 1 giờ, thợ B làm được 1/4 công việc.\n\nNếu cả hai thợ cùng làm, trong 1 giờ họ làm được:\n\n1/6 + 1/4 = 2/12 + 3/12 = 5/12 công việc.\n\nThời gian để cả hai thợ cùng làm xong công việc là:\n\n1 / (5/12) = 12/5 = 2,4 giờ = 2 giờ 24 phút.\n\n**Đáp án: 2 giờ 24 phút**",
+      "expected_answer": "Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",
+      "is_correct": true,
+      "latency": 1.5055365562438965,
+      "timestamp": "2025-04-16T22:46:52.165292",
+      "reasoning_accuracy": 5.0,
+      "reasoning_reasoning": 5.0,
+      "reasoning_completeness": 5.0,
+      "reasoning_explanation": 5.0,
+      "reasoning_cultural_context": 5.0,
+      "reasoning_average": 5.0,
+      "reasoning_scores_str": "{\"accuracy\": 5.0, \"reasoning\": 5.0, \"completeness\": 5.0, \"explanation\": 5.0, \"cultural_context\": 5.0, \"average\": 5.0}"
+    },
+    {
+      "model_name": "gemini",
+      "prompt_type": "zero_shot",
+      "question_id": 244,
+      "question_text": "Có 73 quả cam ngon,\nChia đều cho 6 người em.\nMỗi người được mấy quả?\nCòn dư mấy quả cam?",
+      "question_type": "Thơ toán học",
+      "difficulty": "Dễ",
+      "response": "73 quả cam chia đều cho 6 người, ta thực hiện phép chia:\n\n73 ÷ 6 = 12 (dư 1)\n\nĐáp án:\n\n* Mỗi người được 12 quả cam.\n* Còn dư 1 quả cam.",
+      "expected_answer": "Số cam chia được: 73 ÷ 6 = 12 quả mỗi người.\nSố cam còn dư: 73 - (6 × 12) = 1 quả.",
+      "is_correct": true,
+      "latency": 0.8119397163391113,
+      "timestamp": "2025-04-16T22:46:54.313219",
+      "reasoning_accuracy": 5.0,
+      "reasoning_reasoning": 5.0,
+      "reasoning_completeness": 5.0,
+      "reasoning_explanation": 4.0,
+      "reasoning_cultural_context": 5.0,
+      "reasoning_average": 4.8,
+      "reasoning_scores_str": "{\"accuracy\": 5.0, \"reasoning\": 5.0, \"completeness\": 5.0, \"explanation\": 4.0, \"cultural_context\": 5.0, \"average\": 4.8}"
+    },
+    {
+      "model_name": "gemini",
+      "prompt_type": "cot_self_consistency_7",
+      "question_id": 1320,
+      "question_text": "Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",
+      "question_type": "Bài toán công việc",
+      "difficulty": "Dễ",
+      "response": "Bài toán này yêu cầu tìm thời gian hoàn thành công việc khi hai thợ cùng làm.  Chúng ta có thể giải bằng nhiều cách tiếp cận khác nhau:\n\n**Cách 1: Sử dụng tỷ lệ công việc**\n\n* **Bước 1:** Tính năng suất của mỗi thợ.\n    * Thợ A: 1 công việc / 6 giờ = 1/6 công việc/giờ\n    * Thợ B: 1 công việc / 4 giờ = 1/4 công việc/giờ\n* **Bước 2:** Tính tổng năng suất của hai thợ khi cùng làm.\n    * Năng suất chung = 1/6 + 1/4 = (2+3)/12 = 5/12 công việc/giờ\n* **Bước 3:** Tính thời gian hoàn thành công việc khi cả hai cùng làm.\n    * Thời gian = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút\n\n**Cách 2: Sử dụng phương pháp công việc chung**\n\n* **Bước 1:** Tìm mẫu số chung của 6 và 4 là 12.\n* **Bước 2:**  Trong 12 giờ, thợ A làm được 12/6 = 2 công việc, thợ B làm được 12/4 = 3 công việc.\n* **Bước 3:** Cả hai cùng làm trong 12 giờ sẽ hoàn thành 2 + 3 = 5 công việc.\n* **Bước 4:** Thời gian hoàn thành 1 công việc khi cả hai cùng làm là 12 giờ / 5 = 2.4 giờ = 2 giờ 24 phút\n\n**Cách 3: Sử dụng tỷ lệ nghịch**\n\n* **Bước 1:**  Nếu thợ A làm 1 mình mất 6 giờ, thì trong 1 giờ A làm được 1/6 công việc.\n* **Bước 2:** Nếu thợ B làm 1 mình mất 4 giờ, thì trong 1 giờ B làm được 1/4 công việc.\n* **Bước 3:**  Cùng làm trong 1 giờ, cả hai làm được 1/6 + 1/4 = 5/12 công việc.\n* **Bước 4:** Thời gian để hoàn thành công việc là 1 / (5/12) = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút\n\n**Cách 4: Sử dụng công thức tổng quát**\n\nCông thức chung cho hai người cùng làm một công việc:  Thời gian = (Thời gian người 1 * Thời gian người 2) / (Thời gian người 1 + Thời gian người 2)\n\nThời gian = (6 * 4) / (6 + 4) = 24 / 10 = 2.4 giờ = 2 giờ 24 phút\n\n\n**Cách 5:  Sử dụng giả thiết (phương pháp ước lượng)**\n\nGiả sử công việc là 12 đơn vị (bội chung nhỏ nhất của 6 và 4).\n\n* Thợ A làm 2 đơn vị/giờ (12 đơn vị / 6 giờ)\n* Thợ B làm 3 đơn vị/giờ (12 đơn vị / 4 giờ)\n* Cùng làm, họ làm được 5 đơn vị/giờ.\n* Thời gian hoàn thành: 12 đơn vị / 5 đơn vị/giờ = 2.4 giờ = 2 giờ 24 phút\n\n\n**Cách 6:  Biểu đồ Gantt (phương pháp trực quan - không chính xác tuyệt đối)**\n\nVẽ biểu đồ Gantt minh họa tiến độ công việc của mỗi người, sau đó ước lượng thời gian hoàn thành khi cả hai cùng làm. Phương pháp này không chính xác bằng các phương pháp tính toán nhưng cho phép hình dung quá trình.  Kết quả ước lượng sẽ xấp xỉ 2.4 giờ.\n\n\n**Cách 7:  Giải bằng lập phương trình**\n\nGọi x là thời gian hoàn thành công việc khi cả hai cùng làm.\n\n* Trong 1 giờ, thợ A làm được 1/6 công việc.\n* Trong 1 giờ, thợ B làm được 1/4 công việc.\n* Trong x giờ, cả hai làm được (1/6 + 1/4)x = 5x/12 công việc.\n\nVì hoàn thành công việc nên: 5x/12 = 1  => x = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút",
+      "expected_answer": "Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",
+      "is_correct": true,
+      "latency": 6.889832019805908,
+      "timestamp": "2025-04-16T22:47:02.521773",
+      "reasoning_accuracy": 5.0,
+      "reasoning_reasoning": 5.0,
+      "reasoning_completeness": 5.0,
+      "reasoning_explanation": 5.0,
+      "reasoning_cultural_context": 5.0,
+      "reasoning_average": 5.0,
+      "reasoning_scores_str": "{\"accuracy\": 5.0, \"reasoning\": 5.0, \"completeness\": 5.0, \"explanation\": 5.0, \"cultural_context\": 5.0, \"average\": 5.0}"
+    },
+    {
+      "model_name": "gemini",
+      "prompt_type": "cot_self_consistency_7",
+      "question_id": 244,
+      "question_text": "Có 73 quả cam ngon,\nChia đều cho 6 người em.\nMỗi người được mấy quả?\nCòn dư mấy quả cam?",
+      "question_type": "Thơ toán học",
+      "difficulty": "Dễ",
+      "response": "Bài toán chia 73 quả cam cho 6 người em có thể được giải bằng nhiều cách khác nhau. Dưới đây là 7 cách tiếp cận, mỗi cách đều trình bày từng bước logic và kết quả cuối cùng:\n\n\n**Cách 1: Phép chia có dư thông thường**\n\n* **Bước 1:** Thực hiện phép chia 73 cho 6:  73 ÷ 6 = 12 (thương) dư 1 (số dư)\n* **Bước 2:** Thương là số quả cam mỗi người nhận được (12 quả).\n* **Bước 3:** Số dư là số quả cam còn lại (1 quả).\n* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.\n\n\n**Cách 2: Phép chia lặp**\n\n* **Bước 1:** Trừ đi 6 quả cam cho mỗi người, lặp lại cho đến khi số cam còn lại nhỏ hơn 6.\n73 - 6 = 67\n67 - 6 = 61\n61 - 6 = 55\n55 - 6 = 49\n49 - 6 = 43\n43 - 6 = 37\n37 - 6 = 31\n31 - 6 = 25\n25 - 6 = 19\n19 - 6 = 13\n13 - 6 = 7\n7 - 6 = 1\n* **Bước 2:** Đếm số lần trừ được 6 (12 lần), đây là số quả cam mỗi người nhận được.\n* **Bước 3:** Số cam còn lại sau khi trừ là 1 quả.\n* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.\n\n\n**Cách 3: Sử dụng bảng cửu chương**\n\n* **Bước 1:** Tìm số lớn nhất trong bảng cửu chương 6 nhỏ hơn hoặc bằng 73.  6 x 12 = 72\n* **Bước 2:** Số quả cam mỗi người nhận được là 12.\n* **Bước 3:** Số cam còn lại là 73 - 72 = 1 quả.\n* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.\n\n\n**Cách 4:  Phân phối từng quả cam**\n\n(Cách này khá tốn thời gian, không khuyến khích cho số lượng lớn)\n\n* **Bước 1:** Chia lần lượt từng quả cam cho 6 người, cho đến khi hết 72 quả.  Mỗi người nhận được 12 quả.\n* **Bước 2:** Còn lại 1 quả cam.\n* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.\n\n\n**Cách 5:  Sử dụng máy tính**\n\n* **Bước 1:** Sử dụng chức năng phép chia trên máy tính: 73 ÷ 6\n* **Bước 2:** Máy tính sẽ hiển thị kết quả là 12.1666...  Phần nguyên (12) là số quả cam mỗi người nhận được.\n* **Bước 3:**  Nhân 12 với 6 để tìm tổng số cam đã chia: 12 x 6 = 72.  Số cam còn lại là 73 - 72 = 1 quả.\n* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.\n\n\n**Cách 6: Biểu diễn bằng hình ảnh (sơ đồ)**\n\nVẽ 73 hình tròn (quả cam) và chia chúng thành 6 nhóm bằng nhau,  sẽ thấy mỗi nhóm có 12 hình tròn và còn dư 1 hình tròn.\n\n\n**Cách 7:  Tách số bị chia**\n\n* **Bước 1:** Tách 73 thành 72 + 1 (vì 72 chia hết cho 6)\n* **Bước 2:** 72 ÷ 6 = 12\n* **Bước 3:**  Số dư là 1\n* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.\n\n\nTất cả các cách trên đều cho cùng một kết quả: **Mỗi người được 12 quả cam, còn dư 1 quả.**  Điều này chứng tỏ tính nhất quán của kết quả.",
+      "expected_answer": "Số cam chia được: 73 ÷ 6 = 12 quả mỗi người.\nSố cam còn dư: 73 - (6 × 12) = 1 quả.",
+      "is_correct": true,
+      "latency": 6.706136703491211,
+      "timestamp": "2025-04-16T22:47:11.123278",
+      "reasoning_accuracy": 5.0,
+      "reasoning_reasoning": 5.0,
+      "reasoning_completeness": 5.0,
+      "reasoning_explanation": 5.0,
+      "reasoning_cultural_context": 5.0,
+      "reasoning_average": 5.0,
+      "reasoning_scores_str": "{\"accuracy\": 5.0, \"reasoning\": 5.0, \"completeness\": 5.0, \"explanation\": 5.0, \"cultural_context\": 5.0, \"average\": 5.0}"
+    },
+    {
+      "model_name": "gemini",
+      "prompt_type": "react",
+      "question_id": 1320,
+      "question_text": "Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",
+      "question_type": "Bài toán công việc",
+      "difficulty": "Dễ",
+      "response": "Suy nghĩ 1: Bài toán yêu cầu tìm thời gian hoàn thành công việc khi hai thợ cùng làm.  Tôi cần tìm năng suất của mỗi thợ rồi cộng lại để tìm năng suất chung, sau đó tính thời gian.\n\nHành động 1: Tính năng suất của mỗi thợ. Năng suất được tính bằng phần công việc hoàn thành trong 1 giờ.\n\nKết quả 1: Năng suất của thợ A là 1/6 công việc/giờ. Năng suất của thợ B là 1/4 công việc/giờ.\n\nSuy nghĩ 2:  Tôi cần cộng năng suất của hai thợ lại để tìm năng suất chung khi cả hai cùng làm.\n\nHành động 2: Cộng năng suất của thợ A và thợ B.\n\nKết quả 2: Năng suất chung là 1/6 + 1/4 = 2/12 + 3/12 = 5/12 công việc/giờ.\n\nSuy nghĩ 3:  Tôi có năng suất chung, bây giờ cần tính thời gian hoàn thành công việc.  Thời gian bằng tổng công việc chia cho năng suất.\n\nHành động 3: Tính thời gian hoàn thành công việc khi cả hai cùng làm.  Tổng công việc là 1 (toàn bộ công việc).\n\nKết quả 3: Thời gian = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2.4 giờ.\n\nSuy nghĩ 4:  Tôi cần chuyển đổi kết quả từ giờ sang giờ và phút để dễ hiểu hơn.\n\nHành động 4: Chuyển 0.4 giờ sang phút: 0.4 giờ * 60 phút/giờ = 24 phút.\n\nKết quả 4: Thời gian hoàn thành công việc là 2 giờ 24 phút.\n\nĐáp án cuối cùng: Nếu hai thợ cùng làm, họ sẽ hoàn thành công việc trong 2 giờ 24 phút.",
+      "expected_answer": "Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",
+      "is_correct": true,
+      "latency": 3.118854284286499,
+      "timestamp": "2025-04-16T22:47:15.613977",
+      "reasoning_accuracy": 5.0,
+      "reasoning_reasoning": 5.0,
+      "reasoning_completeness": 5.0,
+      "reasoning_explanation": 5.0,
+      "reasoning_cultural_context": 5.0,
+      "reasoning_average": 5.0,
+      "reasoning_scores_str": "{\"accuracy\": 5.0, \"reasoning\": 5.0, \"completeness\": 5.0, \"explanation\": 5.0, \"cultural_context\": 5.0, \"average\": 5.0}"
+    }
+  ],
+  "current_model": "gemini",
+  "current_prompt": "react",
+  "current_question_idx": 0,
+  "completed_combinations": [
+    [
+      "gemini",
+      "zero_shot",
+      1320
+    ],
+    [
+      "gemini",
+      "cot_self_consistency_7",
+      244
+    ],
+    [
+      "gemini",
+      "cot_self_consistency_7",
+      1320
+    ],
+    [
+      "gemini",
+      "zero_shot",
+      244
+    ],
+    [
+      "gemini",
+      "react",
+      1320
+    ]
+  ],
+  "total_questions": 2,
+  "models": [
+    "gemini"
+  ],
+  "prompts": [
+    "zero_shot",
+    "cot_self_consistency_7",
+    "react"
+  ],
+  "results_file": "G:\\Trune\\llm_evaluation\\results\\run_20250416_224648\\raw_results\\evaluation_results_20250416_224648.csv",
+  "checkpoint_timestamp": "2025-04-16T22:47:15.614123",
+  "checkpoint_version": "1.0",
+  "checkpoint_path": "G:\\Trune\\llm_evaluation\\results\\run_20250416_224648\\checkpoints\\checkpoint_20250416_224648_5.json"
+}

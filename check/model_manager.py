@@ -442,18 +442,30 @@ def get_thread_local_model(model_type):
     )
 
 def load_gemini_model(model_name="gemini-1.5-flash"):
-    """Load Gemini model."""
+    """
+    Load Gemini API model.
+    
+    Args:
+        model_name: Specific Gemini model name
+        
+    Returns:
+        Client: Gemini API client
+    """
     try:
-        # Validate API key
+        # Get API key from environment variables
         api_key = os.getenv("GEMINI_API_KEY")
+        
         if not api_key:
             raise ValueError("Gemini API key not found in environment variables")
         
         # Set API key again before creating model
         genai.configure(api_key=api_key)
         
+        # Create client first
+        genai_client = genai
+        
         # Use the 'flash' version which is smaller and has higher quota limits
-        model = genai.GenerativeModel(model_name)
+        model = genai_client.GenerativeModel(model_name)
         print(f"✅ Gemini model '{model_name}' loaded")
         return model
     except Exception as e:
@@ -618,8 +630,11 @@ def generate_text_with_model(prompt, model_type="local", model_name=None, custom
                 # Ensure API is configured
                 genai.configure(api_key=api_key)
                 
+                # Create client first
+                genai_client = genai
+                
                 # Use gemini-1.5-flash by default for better performance/cost ratio
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                model = genai_client.GenerativeModel('gemini-1.5-flash')
                 
                 # Calculate input length for statistics
                 input_length = len(prompt.split())
@@ -640,12 +655,12 @@ def generate_text_with_model(prompt, model_type="local", model_name=None, custom
                 # Generate content with proper error handling and use the specified max_tokens
                 response = model.generate_content(
                     prompt,
-                    generation_config={
-                        "temperature": temperature,
-                        "max_output_tokens": max_output_tokens,
-                        "top_p": top_p,
-                        "top_k": top_k
-                    }
+                    generation_config=genai_client.GenerationConfig(
+                        temperature=temperature,
+                        max_output_tokens=max_output_tokens,
+                        top_p=top_p,
+                        top_k=top_k
+                    )
                 )
                 
                 # Ensure response is valid

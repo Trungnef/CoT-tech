@@ -1,0 +1,89 @@
+model_name,prompt_type,question_id,question_text,question_type,difficulty,response,expected_answer,is_correct,latency,timestamp,reasoning_accuracy,reasoning_reasoning,reasoning_completeness,reasoning_explanation,reasoning_cultural_context,reasoning_average,reasoning_scores_str,consistency_score,consistency_agreement_rate,consistency_most_common,f1_score,meteor_score,bert_score
+gemini,zero_shot,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Trong 1 giờ, thợ A làm được 1/6 công việc.
+Trong 1 giờ, thợ B làm được 1/4 công việc.
+
+Nếu hai thợ cùng làm, trong 1 giờ họ làm được:
+
+1/6 + 1/4 = 2/12 + 3/12 = 5/12 công việc.
+
+Thời gian để hai thợ cùng làm xong công việc là:
+
+1 / (5/12) = 12/5 = 2,4 giờ = 2 giờ 24 phút.
+
+Đáp án: **2 giờ 24 phút**","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,1.6654260158538818,2025-04-16T23:08:15.948201,5.0,5.0,5.0,5.0,5.0,5.0,"{""accuracy"": 5.0, ""reasoning"": 5.0, ""completeness"": 5.0, ""explanation"": 5.0, ""cultural_context"": 5.0, ""average"": 5.0}",,,,0.6153846153846153,0.6948162553648068,0.8519549369812012
+gemini,cot_self_consistency_7,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Bài toán này hỏi về thời gian hoàn thành công việc khi hai thợ cùng làm.  Ta có thể giải bằng nhiều cách khác nhau:
+
+**Cách 1: Sử dụng tỷ lệ công việc**
+
+* **Bước 1:** Tìm năng suất của mỗi thợ.
+    * Năng suất của thợ A: 1/6 công việc/giờ
+    * Năng suất của thợ B: 1/4 công việc/giờ
+* **Bước 2:** Tính năng suất chung của cả hai thợ.
+    * Năng suất chung: (1/6) + (1/4) = 5/12 công việc/giờ
+* **Bước 3:** Tính thời gian hoàn thành công việc khi cả hai cùng làm.
+    * Thời gian = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 2: Sử dụng phương pháp công việc chung**
+
+* **Bước 1:**  Giả sử công việc có tổng lượng là 12 đơn vị (bội chung nhỏ nhất của 6 và 4).
+* **Bước 2:** Tính số đơn vị công việc mỗi thợ làm trong 1 giờ.
+    * Thợ A: 12 đơn vị / 6 giờ = 2 đơn vị/giờ
+    * Thợ B: 12 đơn vị / 4 giờ = 3 đơn vị/giờ
+* **Bước 3:** Tính tổng số đơn vị công việc cả hai thợ làm trong 1 giờ.
+    * Tổng: 2 + 3 = 5 đơn vị/giờ
+* **Bước 4:** Tính thời gian hoàn thành công việc.
+    * Thời gian = 12 đơn vị / 5 đơn vị/giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 3: Sử dụng tỉ lệ nghịch**
+
+* **Bước 1:**  Thời gian của thợ A là 6 giờ, thời gian của thợ B là 4 giờ.
+* **Bước 2:** Tính tổng thời gian làm việc nếu chỉ có một người làm (giả sử là A): 6 giờ.
+* **Bước 3:** Tính tỷ lệ thời gian của thợ B so với thợ A: 4/6 = 2/3
+* **Bước 4:** Áp dụng công thức tỉ lệ nghịch: Thời gian chung = Thời gian của A / (1 + tỷ lệ thời gian của B so với A) = 6 / (1 + 2/3) = 6 / (5/3) = 18/5 giờ = 3.6 giờ. **(Sai, cách này không chính xác cho bài toán này)**
+
+**Cách 4: Sử dụng phương trình**
+
+* **Bước 1:** Gọi x là thời gian hoàn thành công việc khi cả hai cùng làm.
+* **Bước 2:**  Lập phương trình: (x/6) + (x/4) = 1 (phân số công việc mỗi người làm được trong x giờ cộng lại bằng 1 công việc hoàn chỉnh)
+* **Bước 3:** Giải phương trình: 2x + 3x = 12 => 5x = 12 => x = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 5:  Sử dụng quy tắc ba**
+
+* **Bước 1:**  Thợ A làm 1/6 công việc trong 1 giờ.
+* **Bước 2:** Thợ B làm 1/4 công việc trong 1 giờ.
+* **Bước 3:** Cả hai làm (1/6 + 1/4) = 5/12 công việc trong 1 giờ.
+* **Bước 4:**  Thời gian để làm xong 1 công việc: 1 / (5/12) = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 6:  Phân tích thành phần công việc**
+
+* **Bước 1:** Chia công việc thành 12 phần (BSCNN của 6 và 4)
+* **Bước 2:** Thợ A làm được 2 phần/giờ (12/6)
+* **Bước 3:** Thợ B làm được 3 phần/giờ (12/4)
+* **Bước 4:** Cả hai làm được 5 phần/giờ (2+3)
+* **Bước 5:** Thời gian hoàn thành: 12 phần / 5 phần","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,6.7453999519348145,2025-04-16T23:08:23.988511,5.0,5.0,5.0,4.0,5.0,4.8,"{""accuracy"": 5.0, ""reasoning"": 5.0, ""completeness"": 5.0, ""explanation"": 4.0, ""cultural_context"": 5.0, ""average"": 4.8}",,,,0.09715639810426539,0.2723636051986812,0.6746671199798584
+gemini,react,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Suy nghĩ 1: Bài toán yêu cầu tính thời gian hoàn thành công việc khi hai thợ cùng làm.  Để giải quyết, ta cần tìm năng suất làm việc của mỗi thợ, sau đó cộng năng suất lại và tính thời gian.
+
+Hành động 1: Tính năng suất làm việc của mỗi thợ.
+
+* Năng suất của thợ A: 1 công việc / 6 giờ = 1/6 công việc/giờ
+* Năng suất của thợ B: 1 công việc / 4 giờ = 1/4 công việc/giờ
+
+Kết quả 1: Năng suất của thợ A là 1/6 công việc/giờ, năng suất của thợ B là 1/4 công việc/giờ.
+
+Suy nghĩ 2:  Tổng năng suất của hai thợ khi cùng làm việc là tổng năng suất của từng người.
+
+Hành động 2: Tính tổng năng suất của hai thợ.
+
+* Tổng năng suất = Năng suất của thợ A + Năng suất của thợ B = 1/6 + 1/4 = (2+3)/12 = 5/12 công việc/giờ
+
+Kết quả 2: Tổng năng suất của hai thợ là 5/12 công việc/giờ.
+
+Suy nghĩ 3: Thời gian hoàn thành công việc khi cả hai cùng làm bằng lượng công việc chia cho tổng năng suất.
+
+Hành động 3: Tính thời gian hoàn thành công việc khi cả hai cùng làm.
+
+* Thời gian = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2,4 giờ = 2 giờ 24 phút
+
+Kết quả 3: Thời gian hoàn thành công việc khi cả hai cùng làm là 12/5 giờ hoặc 2 giờ 24 phút.
+
+Đáp án cuối cùng: 2 giờ 24 phút","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,3.0730092525482178,2025-04-16T23:08:28.547049,5.0,5.0,5.0,5.0,5.0,5.0,"{""accuracy"": 5.0, ""reasoning"": 5.0, ""completeness"": 5.0, ""explanation"": 5.0, ""cultural_context"": 5.0, ""average"": 5.0}",,,,0.21364985163204747,0.38013868251609717,0.7207033038139343

@@ -18,7 +18,11 @@ Framework này cung cấp một bộ công cụ để đánh giá hiệu suất 
     *   **Đánh Giá Suy Luận (Reasoning)**: Sử dụng LLM (mặc định là Groq `llama3-70b`) để đánh giá chất lượng suy luận logic, toán học, độ rõ ràng, đầy đủ và liên quan của câu trả lời (có thể cấu hình).
     *   **Đánh Giá Tính Nhất Quán (Consistency)**: Phân tích sự nhất quán trong các câu trả lời của mô hình khi sử dụng kỹ thuật self-consistency.
     *   **Đánh Giá Tính Đầy Đủ (Completeness)**: Đánh giá xem câu trả lời có bao phủ hết các khía cạnh của câu hỏi không.
-    *   **Đánh Giá Độ Tương Đồng (Similarity)**: Tính toán ROUGE, BLEU và tùy chọn cosine similarity của embeddings (nếu cung cấp mô hình) để so sánh câu trả lời với đáp án chuẩn.
+    *   **Đánh Giá Độ Tương Đồng (Similarity)**: 
+        * **Text Similarity**: Tính toán ROUGE và BLEU scores để so sánh câu trả lời với đáp án chuẩn.
+        * **Semantic Similarity**: Sử dụng embedding từ sentence-transformers để tính cosine similarity, đo lường tương đồng về mặt ngữ nghĩa giữa câu trả lời và đáp án chuẩn (không chỉ dựa vào từ vựng trùng khớp).
+        * **Model Đa Ngôn Ngữ**: Hỗ trợ các model embedding đặc biệt cho tiếng Việt (BERT-based) và tiếng Anh.
+        * **Efficient Caching**: Lưu cache embeddings để tối ưu hóa quá trình tính toán với nhiều mô hình và prompt khác nhau.
     *   **Phân Tích Lỗi (Error Analysis)**: Tự động phân loại các câu trả lời sai vào các nhóm lỗi (Kiến thức, Suy luận, Tính toán, Lạc đề, v.v.) sử dụng LLM.
 *   **Tối Ưu Hóa Hiệu Suất**:
     *   **Quantization**: Tự động áp dụng quantization 4-bit (BitsAndBytes) cho model cục bộ để giảm yêu cầu bộ nhớ GPU.

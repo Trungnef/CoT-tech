@@ -4072,13 +4072,26 @@ def generate_model_response(model_name, prompt, tokenizer=None, model=None, gpu_
             
             while retry_count < max_retries:
                 try:
-                    gemini_model = load_gemini_model()
-                    if gemini_model is None:
+                    genai_client = genai
+                    
+                    # Get API key from environment variables
+                    api_key = os.getenv("GEMINI_API_KEY")
+                    
+                    if not api_key:
+                        raise ValueError("Gemini API key not found in environment variables")
+                    
+                    # Configure API key before creating model
+                    genai_client.configure(api_key=api_key)
+                    
+                    model = genai_client.GenerativeModel(
+                        model_name=os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash")
+                    )
+                    if model is None:
                         return "[Error: Failed to load Gemini model]"
                     
-                    response = gemini_model.generate_content(
+                    response = model.generate_content(
                         prompt,
-                        generation_config=genai.GenerationConfig(
+                        generation_config=genai_client.GenerationConfig(
                             temperature=temperature,
                             top_p=top_p,
                             max_output_tokens=max_tokens,
@@ -4554,7 +4567,8 @@ def generate_batch_responses_api(model_name, prompts, prompt_type=None):
     
     # Set up Gemini model
     try:
-        model = genai.GenerativeModel(
+        genai_client = genai
+        model = genai_client.GenerativeModel(
             model_name=os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash")
         )
     except Exception as model_error:

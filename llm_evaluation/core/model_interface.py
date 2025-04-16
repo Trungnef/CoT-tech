@@ -263,70 +263,109 @@ class ModelInterface:
         Returns:
             tuple: (text, stats)
         """
-        # Thực hiện rate limiting
-        self._apply_rate_limiting("gemini")
-        
         start_time = time.time()
         
         try:
-            # Lấy client
-            model = self._get_gemini_client()
+            # Áp dụng rate limiting
+            self._apply_rate_limiting("gemini")
+            
+            # Lấy Gemini client
+            genai_client = self._get_gemini_client()
+            if genai_client is None:
+                error_msg = "Không thể kết nối tới Gemini API. Vui lòng kiểm tra API key."
+                logger.error(error_msg)
+                return f"[Error: {error_msg}]", {
+                    "has_error": True,
+                    "error_message": error_msg,
+                    "error_type": "API_CONNECTION_ERROR",
+                    "elapsed_time": time.time() - start_time
+                }
             
             # Lấy tham số generation
-            temperature = gen_config.get("temperature", 0.7)
             max_tokens = gen_config.get("max_tokens", 1024)
+            temperature = gen_config.get("temperature", 0.7)
             top_p = gen_config.get("top_p", 0.95)
             top_k = gen_config.get("top_k", 40)
             
+            # Get model to use
+            model_name = gen_config.get("model", "gemini-1.5-flash")
+            
             # Log tham số
-            logger.debug(f"Tham số sinh cho Gemini: max_tokens={max_tokens}, "
+            logger.debug(f"Tham số sinh cho Gemini: model={model_name}, max_tokens={max_tokens}, "
                         f"temp={temperature}, top_p={top_p}, top_k={top_k}")
             
-            # Xử lý timeout
-            timeout = config.API_CONFIGS["gemini"].get("timeout", 30)
-            
-            # Sinh văn bản
+            # Cấu hình generation
             generation_config = {
+                "max_output_tokens": max_tokens,
                 "temperature": temperature,
                 "top_p": top_p,
-                "top_k": top_k,
-                "max_output_tokens": max_tokens,
+                "top_k": top_k
             }
             
+            # Tạo model instance từ genai client
+            model = genai_client.GenerativeModel(model_name=model_name)
+            
+            # Sinh văn bản
             start_generate = time.time()
+            
+            # Set a timeout
+            timeout = gen_config.get("timeout", 30)  # 30 seconds default
             response = model.generate_content(
-                prompt,
+                prompt, 
                 generation_config=generation_config
             )
             
-            # Trích xuất văn bản và thống kê
-            text = response.text
+            generated_text = response.text
             
-            # Tính metrics
+            # Tính thời gian và tốc độ
             end_time = time.time()
             generation_time = end_time - start_time
             decoding_time = end_time - start_generate
+            output_length = len(generated_text.split())
+            
+            tokens_per_second = output_length / decoding_time if decoding_time > 0 else 0
             
             # Trả về văn bản và thống kê
             stats = {
-                "token_count": len(text.split()),
+                "token_count": output_length,
                 "elapsed_time": generation_time,
-                "api_latency": decoding_time,
-                "has_error": False
+                "decoding_time": decoding_time,
+                "tokens_per_second": tokens_per_second,
+                "has_error": False,
+                "model": model_name
             }
             
-            return text.strip(), stats
+            return generated_text.strip(), stats
             
         except Exception as e:
+            error_type = type(e).__name__
             error_msg = f"Lỗi khi sinh văn bản với Gemini API: {str(e)}"
             logger.error(error_msg)
+            if hasattr(e, 'status_code'):
+                logger.error(f"Status code: {e.status_code}")
+            logger.debug(traceback.format_exc())
             
-            # Nếu là lỗi cuối cùng sau khi retry hết, trả về lỗi
-            return f"[Error: {error_msg}]", {
-                "has_error": True,
-                "error_message": error_msg,
-                "elapsed_time": time.time() - start_time
-            }
+            # Customized error message based on error type
+            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower():
+                detail_msg = "Đã vượt quá giới hạn tỷ lệ của API. Đang thử lại với backoff..."
+                error_type = "RATE_LIMIT_ERROR"
+            elif 'invalid api key' in str(e).lower():
+                detail_msg = "API key không hợp lệ. Vui lòng kiểm tra GEMINI_API_KEY trong .env"
+                error_type = "INVALID_API_KEY_ERROR"
+            elif 'timeout' in str(e).lower():
+                detail_msg = "Request bị timeout. Đang thử lại..."
+                error_type = "TIMEOUT_ERROR"
+            elif 'block' in str(e).lower() or 'content filter' in str(e).lower():
+                detail_msg = "Nội dung bị chặn bởi bộ lọc nội dung của Gemini. Thử điều chỉnh prompt."
+                error_type = "CONTENT_FILTER_ERROR"
+            else:
+                detail_msg = "Lỗi không rõ. Đang thử lại..."
+                error_type = "UNKNOWN_ERROR"
+            
+            logger.warning(f"Gemini API error: {detail_msg}")
+            
+            # Raise để retry được kích hoạt
+            raise Exception(f"{error_type}: {detail_msg}. Original error: {str(e)}")
     
     @retry(
         stop=stop_after_attempt(8),  # Tăng số lần thử từ 5 lên 8
@@ -344,135 +383,118 @@ class ModelInterface:
         Returns:
             tuple: (text, stats)
         """
-        # Thực hiện rate limiting
-        self._apply_rate_limiting("groq")
-        
         start_time = time.time()
         
         try:
-            # Lấy client
-            client = self._get_groq_client()
+            # Áp dụng rate limiting
+            self._apply_rate_limiting("groq")
             
+            # Lấy Groq client
+            client = self._get_groq_client()
             if client is None:
-                error_msg = "Groq client không được khởi tạo"
+                error_msg = "Không thể kết nối tới Groq API. Vui lòng kiểm tra API key."
                 logger.error(error_msg)
                 return f"[Error: {error_msg}]", {
                     "has_error": True,
                     "error_message": error_msg,
-                    "elapsed_time": 0
+                    "error_type": "API_CONNECTION_ERROR",
+                    "elapsed_time": time.time() - start_time
                 }
             
             # Lấy tham số generation
-            temperature = gen_config.get("temperature", 0.7)
             max_tokens = gen_config.get("max_tokens", 1024)
+            temperature = gen_config.get("temperature", 0.7)
             top_p = gen_config.get("top_p", 0.95)
-            model = gen_config.get("model", "llama3-8b-8192")
-            language = gen_config.get("language", "vietnamese")  # Mặc định là tiếng Việt
-            
-            # Xử lý tên model nếu bắt đầu bằng "groq/"
-            if model.startswith("groq/"):
-                model = model.replace("groq/", "")
-                logger.debug(f"Đã xử lý tên model Groq: {model}")
+            model_name = gen_config.get("model", "llama3-70b-8192")
             
             # Log tham số
-            logger.debug(f"Tham số sinh cho Groq: model={model}, max_tokens={max_tokens}, "
-                        f"temp={temperature}, top_p={top_p}, language={language}")
-            
-            # Xử lý timeout
-            timeout = config.API_CONFIGS["groq"].get("timeout", 60)  # Tăng timeout mặc định từ 30s lên 60s
-            
-            # Chuẩn bị messages với system message phù hợp
-            messages = []
-            
-            # Thêm system message nếu ngôn ngữ là tiếng Việt
-            if language.lower() == "vietnamese":
-                system_message = "Bạn là một trợ lý AI thông minh và hữu ích. Hãy trả lời câu hỏi bằng tiếng Việt một cách đầy đủ và chính xác."
-                messages.append({"role": "system", "content": system_message})
-            elif language.lower() == "english":
-                system_message = "You are a helpful, smart AI assistant. Answer the questions in English clearly and accurately."
-                messages.append({"role": "system", "content": system_message})
-            
-            # Thêm user message
-            messages.append({"role": "user", "content": prompt})
+            logger.debug(f"Tham số sinh cho Groq: model={model_name}, max_tokens={max_tokens}, "
+                        f"temp={temperature}, top_p={top_p}")
             
             # Sinh văn bản
             start_generate = time.time()
-            try:
-                completion = client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    temperature=temperature,
-                    top_p=top_p,
-                    max_tokens=max_tokens,
-                    timeout=timeout
-                )
-                
-                # Trích xuất văn bản
-                text = completion.choices[0].message.content
-                
-                # Tính metrics
-                end_time = time.time()
-                generation_time = end_time - start_time
-                decoding_time = end_time - start_generate
-                
-                # Trả về văn bản và thống kê
-                stats = {
-                    "token_count": len(text.split()),
-                    "elapsed_time": generation_time,
-                    "api_latency": decoding_time,
-                    "has_error": False
-                }
-                
-                return text.strip(), stats
-                
-            except Exception as api_error:
-                error_str = str(api_error).lower()
-                status_code = getattr(api_error, 'status_code', None)
-                
-                # Xử lý lỗi 429 - Too Many Requests
-                if status_code == 429 or "too many requests" in error_str or "rate limit" in error_str:
-                    # Tăng thời gian chờ cho rate limiter
-                    with _RATE_LIMITERS["groq"]["lock"]:
-                        current_wait = _RATE_LIMITERS["groq"]["min_interval"]
-                        # Tạm thời tăng gấp đôi thời gian chờ giữa các request
-                        _RATE_LIMITERS["groq"]["min_interval"] = min(current_wait * 2, 15)  # Tối đa 15 giây
-                        logger.warning(f"Rate limiting tăng: {current_wait:.2f}s -> {_RATE_LIMITERS['groq']['min_interval']:.2f}s")
-                    
-                    # Log chi tiết
-                    retry_after = getattr(api_error, 'retry_after', None)
-                    if retry_after:
-                        logger.warning(f"Groq API yêu cầu chờ {retry_after}s do vượt rate limit")
-                    else:
-                        logger.warning(f"Groq API rate limit bị vượt. Thử lại sau thời gian backoff.")
-                    
-                    # Propagate lỗi để retry decorator xử lý
-                    raise api_error
-                
-                # Các lỗi khác
-                raise api_error
             
-        except Exception as e:
-            error_msg = f"Lỗi khi sinh văn bản với Groq API: {str(e)}"
-            logger.error(error_msg)
-            logger.debug(traceback.format_exc())
+            # Set a timeout for the request
+            timeout = gen_config.get("timeout", 30)  # 30 seconds default
             
-            # Sau khi retry hết, reset lại rate limiter về giá trị ban đầu
-            try:
-                with _RATE_LIMITERS["groq"]["lock"]:
-                    if _RATE_LIMITERS["groq"]["min_interval"] > config.API_CONFIGS["groq"].get("requests_per_minute", 60) / 60.0:
-                        original_interval = 60.0 / config.API_CONFIGS["groq"].get("requests_per_minute", 60)
-                        logger.info(f"Reset rate limiting về giá trị mặc định: {_RATE_LIMITERS['groq']['min_interval']:.2f}s -> {original_interval:.2f}s")
-                        _RATE_LIMITERS["groq"]["min_interval"] = original_interval
-            except Exception as reset_error:
-                logger.error(f"Lỗi khi reset rate limiter: {str(reset_error)}")
+            # Gọi Groq API
+            completion = client.chat.completions.create(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": "Bạn là một trợ lý AI hữu ích."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=max_tokens,
+                temperature=temperature,
+                top_p=top_p,
+                timeout=timeout
+            )
             
-            # Nếu là lỗi cuối cùng sau khi retry hết, trả về lỗi
-            return f"[Error: {error_msg}]", {
-                "has_error": True,
-                "error_message": error_msg,
-                "elapsed_time": time.time() - start_time
+            # Trích xuất phản hồi
+            generated_text = completion.choices[0].message.content
+            
+            # Tính thời gian và tốc độ
+            end_time = time.time()
+            generation_time = end_time - start_time
+            decoding_time = end_time - start_generate
+            output_length = len(generated_text.split())
+            
+            tokens_per_second = output_length / decoding_time if decoding_time > 0 else 0
+            
+            # Trả về văn bản và thống kê
+            stats = {
+                "token_count": output_length,
+                "elapsed_time": generation_time,
+                "decoding_time": decoding_time,
+                "tokens_per_second": tokens_per_second,
+                "has_error": False,
+                "model": model_name,
+                "input_tokens": completion.usage.prompt_tokens,
+                "output_tokens": completion.usage.completion_tokens,
+                "total_tokens": completion.usage.total_tokens
             }
             
+            return generated_text.strip(), stats
+            
+        except Exception as e:
+            error_type = type(e).__name__
+            error_msg = f"Lỗi khi sinh văn bản với Groq API: {str(e)}"
+            logger.error(error_msg)
+            if hasattr(e, 'status_code'):
+                logger.error(f"Status code: {e.status_code}")
+            logger.debug(traceback.format_exc())
+            
+            # Customized error message based on error type
+            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower():
+                detail_msg = "Đã vượt quá giới hạn tỷ lệ của API Groq. Đang thử lại với backoff..."
+                error_type = "RATE_LIMIT_ERROR"
+            elif 'invalid api key' in str(e).lower() or 'authentication' in str(e).lower():
+                detail_msg = "API key không hợp lệ. Vui lòng kiểm tra GROQ_API_KEY trong .env"
+                error_type = "INVALID_API_KEY_ERROR"
+            elif 'timeout' in str(e).lower():
+                detail_msg = "Request bị timeout. Đang thử lại..."
+                error_type = "TIMEOUT_ERROR"
+            elif 'not found' in str(e).lower() and 'model' in str(e).lower():
+                detail_msg = f"Model {model_name} không tồn tại hoặc không khả dụng."
+                error_type = "MODEL_NOT_FOUND_ERROR"
+            else:
+                detail_msg = "Lỗi không rõ. Đang thử lại..."
+                error_type = "UNKNOWN_ERROR"
+                
+            logger.warning(f"Groq API error: {detail_msg}")
+            
+            # Đối với một số lỗi nghiêm trọng, trả về ngay lập tức thay vì retry
+            if error_type in ["INVALID_API_KEY_ERROR", "MODEL_NOT_FOUND_ERROR"]:
+                return f"[Error: {detail_msg}]", {
+                    "has_error": True,
+                    "error_message": detail_msg,
+                    "error_type": error_type,
+                    "elapsed_time": time.time() - start_time
+                }
+            
+            # Raise để retry được kích hoạt
+            raise Exception(f"{error_type}: {detail_msg}. Original error: {str(e)}")
+    
     def _apply_rate_limiting(self, api_name):
         """
         Áp dụng rate limiting cho API.
@@ -1005,7 +1027,7 @@ class ModelInterface:
         Lấy hoặc tạo Gemini API client.
         
         Returns:
-            GenerativeModel: Gemini client
+            Client: Gemini API client
         """
         if "gemini" in _API_CLIENTS:
             return _API_CLIENTS["gemini"]
@@ -1013,14 +1035,10 @@ class ModelInterface:
         # Cấu hình Gemini API
         genai.configure(api_key=config.GEMINI_API_KEY)
         
-        # Lấy tên model từ cấu hình
-        model_name = config.API_CONFIGS.get("gemini", {}).get("models", {}).get("general", "gemini-1.5-flash")
+        # Lưu client để tái sử dụng
+        _API_CLIENTS["gemini"] = genai
         
-        # Tạo client
-        model = genai.GenerativeModel(model_name)
-        _API_CLIENTS["gemini"] = model
-        
-        return model
+        return genai
     
     def _get_groq_client(self):
         """

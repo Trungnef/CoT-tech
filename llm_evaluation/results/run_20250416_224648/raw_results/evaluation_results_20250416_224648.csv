@@ -1,0 +1,198 @@
+model_name,prompt_type,question_id,question_text,question_type,difficulty,response,expected_answer,is_correct,latency,timestamp,reasoning_accuracy,reasoning_reasoning,reasoning_completeness,reasoning_explanation,reasoning_cultural_context,reasoning_average,reasoning_scores_str
+gemini,zero_shot,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Trong 1 giờ, thợ A làm được 1/6 công việc.
+Trong 1 giờ, thợ B làm được 1/4 công việc.
+
+Nếu cả hai thợ cùng làm, trong 1 giờ họ làm được:
+
+1/6 + 1/4 = 2/12 + 3/12 = 5/12 công việc.
+
+Thời gian để cả hai thợ cùng làm xong công việc là:
+
+1 / (5/12) = 12/5 = 2,4 giờ = 2 giờ 24 phút.
+
+**Đáp án: 2 giờ 24 phút**","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,1.5055365562438965,2025-04-16T22:46:52.165292,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,zero_shot,244,"Có 73 quả cam ngon,
+Chia đều cho 6 người em.
+Mỗi người được mấy quả?
+Còn dư mấy quả cam?",Thơ toán học,Dễ,"73 quả cam chia đều cho 6 người, ta thực hiện phép chia:
+
+73 ÷ 6 = 12 (dư 1)
+
+Đáp án:
+
+* Mỗi người được 12 quả cam.
+* Còn dư 1 quả cam.","Số cam chia được: 73 ÷ 6 = 12 quả mỗi người.
+Số cam còn dư: 73 - (6 × 12) = 1 quả.",True,0.8119397163391113,2025-04-16T22:46:54.313219,5.0,5.0,5.0,4.0,5.0,4.8,
+gemini,cot_self_consistency_7,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Bài toán này yêu cầu tìm thời gian hoàn thành công việc khi hai thợ cùng làm.  Chúng ta có thể giải bằng nhiều cách tiếp cận khác nhau:
+
+**Cách 1: Sử dụng tỷ lệ công việc**
+
+* **Bước 1:** Tính năng suất của mỗi thợ.
+    * Thợ A: 1 công việc / 6 giờ = 1/6 công việc/giờ
+    * Thợ B: 1 công việc / 4 giờ = 1/4 công việc/giờ
+* **Bước 2:** Tính tổng năng suất của hai thợ khi cùng làm.
+    * Năng suất chung = 1/6 + 1/4 = (2+3)/12 = 5/12 công việc/giờ
+* **Bước 3:** Tính thời gian hoàn thành công việc khi cả hai cùng làm.
+    * Thời gian = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 2: Sử dụng phương pháp công việc chung**
+
+* **Bước 1:** Tìm mẫu số chung của 6 và 4 là 12.
+* **Bước 2:**  Trong 12 giờ, thợ A làm được 12/6 = 2 công việc, thợ B làm được 12/4 = 3 công việc.
+* **Bước 3:** Cả hai cùng làm trong 12 giờ sẽ hoàn thành 2 + 3 = 5 công việc.
+* **Bước 4:** Thời gian hoàn thành 1 công việc khi cả hai cùng làm là 12 giờ / 5 = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 3: Sử dụng tỷ lệ nghịch**
+
+* **Bước 1:**  Nếu thợ A làm 1 mình mất 6 giờ, thì trong 1 giờ A làm được 1/6 công việc.
+* **Bước 2:** Nếu thợ B làm 1 mình mất 4 giờ, thì trong 1 giờ B làm được 1/4 công việc.
+* **Bước 3:**  Cùng làm trong 1 giờ, cả hai làm được 1/6 + 1/4 = 5/12 công việc.
+* **Bước 4:** Thời gian để hoàn thành công việc là 1 / (5/12) = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 4: Sử dụng công thức tổng quát**
+
+Công thức chung cho hai người cùng làm một công việc:  Thời gian = (Thời gian người 1 * Thời gian người 2) / (Thời gian người 1 + Thời gian người 2)
+
+Thời gian = (6 * 4) / (6 + 4) = 24 / 10 = 2.4 giờ = 2 giờ 24 phút
+
+
+**Cách 5:  Sử dụng giả thiết (phương pháp ước lượng)**
+
+Giả sử công việc là 12 đơn vị (bội chung nhỏ nhất của 6 và 4).
+
+* Thợ A làm 2 đơn vị/giờ (12 đơn vị / 6 giờ)
+* Thợ B làm 3 đơn vị/giờ (12 đơn vị / 4 giờ)
+* Cùng làm, họ làm được 5 đơn vị/giờ.
+* Thời gian hoàn thành: 12 đơn vị / 5 đơn vị/giờ = 2.4 giờ = 2 giờ 24 phút
+
+
+**Cách 6:  Biểu đồ Gantt (phương pháp trực quan - không chính xác tuyệt đối)**
+
+Vẽ biểu đồ Gantt minh họa tiến độ công việc của mỗi người, sau đó ước lượng thời gian hoàn thành khi cả hai cùng làm. Phương pháp này không chính xác bằng các phương pháp tính toán nhưng cho phép hình dung quá trình.  Kết quả ước lượng sẽ xấp xỉ 2.4 giờ.
+
+
+**Cách 7:  Giải bằng lập phương trình**
+
+Gọi x là thời gian hoàn thành công việc khi cả hai cùng làm.
+
+* Trong 1 giờ, thợ A làm được 1/6 công việc.
+* Trong 1 giờ, thợ B làm được 1/4 công việc.
+* Trong x giờ, cả hai làm được (1/6 + 1/4)x = 5x/12 công việc.
+
+Vì hoàn thành công việc nên: 5x/12 = 1  => x = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,6.889832019805908,2025-04-16T22:47:02.521773,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,cot_self_consistency_7,244,"Có 73 quả cam ngon,
+Chia đều cho 6 người em.
+Mỗi người được mấy quả?
+Còn dư mấy quả cam?",Thơ toán học,Dễ,"Bài toán chia 73 quả cam cho 6 người em có thể được giải bằng nhiều cách khác nhau. Dưới đây là 7 cách tiếp cận, mỗi cách đều trình bày từng bước logic và kết quả cuối cùng:
+
+
+**Cách 1: Phép chia có dư thông thường**
+
+* **Bước 1:** Thực hiện phép chia 73 cho 6:  73 ÷ 6 = 12 (thương) dư 1 (số dư)
+* **Bước 2:** Thương là số quả cam mỗi người nhận được (12 quả).
+* **Bước 3:** Số dư là số quả cam còn lại (1 quả).
+* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.
+
+
+**Cách 2: Phép chia lặp**
+
+* **Bước 1:** Trừ đi 6 quả cam cho mỗi người, lặp lại cho đến khi số cam còn lại nhỏ hơn 6.
+73 - 6 = 67
+67 - 6 = 61
+61 - 6 = 55
+55 - 6 = 49
+49 - 6 = 43
+43 - 6 = 37
+37 - 6 = 31
+31 - 6 = 25
+25 - 6 = 19
+19 - 6 = 13
+13 - 6 = 7
+7 - 6 = 1
+* **Bước 2:** Đếm số lần trừ được 6 (12 lần), đây là số quả cam mỗi người nhận được.
+* **Bước 3:** Số cam còn lại sau khi trừ là 1 quả.
+* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.
+
+
+**Cách 3: Sử dụng bảng cửu chương**
+
+* **Bước 1:** Tìm số lớn nhất trong bảng cửu chương 6 nhỏ hơn hoặc bằng 73.  6 x 12 = 72
+* **Bước 2:** Số quả cam mỗi người nhận được là 12.
+* **Bước 3:** Số cam còn lại là 73 - 72 = 1 quả.
+* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.
+
+
+**Cách 4:  Phân phối từng quả cam**
+
+(Cách này khá tốn thời gian, không khuyến khích cho số lượng lớn)
+
+* **Bước 1:** Chia lần lượt từng quả cam cho 6 người, cho đến khi hết 72 quả.  Mỗi người nhận được 12 quả.
+* **Bước 2:** Còn lại 1 quả cam.
+* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.
+
+
+**Cách 5:  Sử dụng máy tính**
+
+* **Bước 1:** Sử dụng chức năng phép chia trên máy tính: 73 ÷ 6
+* **Bước 2:** Máy tính sẽ hiển thị kết quả là 12.1666...  Phần nguyên (12) là số quả cam mỗi người nhận được.
+* **Bước 3:**  Nhân 12 với 6 để tìm tổng số cam đã chia: 12 x 6 = 72.  Số cam còn lại là 73 - 72 = 1 quả.
+* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.
+
+
+**Cách 6: Biểu diễn bằng hình ảnh (sơ đồ)**
+
+Vẽ 73 hình tròn (quả cam) và chia chúng thành 6 nhóm bằng nhau,  sẽ thấy mỗi nhóm có 12 hình tròn và còn dư 1 hình tròn.
+
+
+**Cách 7:  Tách số bị chia**
+
+* **Bước 1:** Tách 73 thành 72 + 1 (vì 72 chia hết cho 6)
+* **Bước 2:** 72 ÷ 6 = 12
+* **Bước 3:**  Số dư là 1
+* **Kết quả:** Mỗi người được 12 quả cam, còn dư 1 quả.
+
+
+Tất cả các cách trên đều cho cùng một kết quả: **Mỗi người được 12 quả cam, còn dư 1 quả.**  Điều này chứng tỏ tính nhất quán của kết quả.","Số cam chia được: 73 ÷ 6 = 12 quả mỗi người.
+Số cam còn dư: 73 - (6 × 12) = 1 quả.",True,6.706136703491211,2025-04-16T22:47:11.123278,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,react,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Suy nghĩ 1: Bài toán yêu cầu tìm thời gian hoàn thành công việc khi hai thợ cùng làm.  Tôi cần tìm năng suất của mỗi thợ rồi cộng lại để tìm năng suất chung, sau đó tính thời gian.
+
+Hành động 1: Tính năng suất của mỗi thợ. Năng suất được tính bằng phần công việc hoàn thành trong 1 giờ.
+
+Kết quả 1: Năng suất của thợ A là 1/6 công việc/giờ. Năng suất của thợ B là 1/4 công việc/giờ.
+
+Suy nghĩ 2:  Tôi cần cộng năng suất của hai thợ lại để tìm năng suất chung khi cả hai cùng làm.
+
+Hành động 2: Cộng năng suất của thợ A và thợ B.
+
+Kết quả 2: Năng suất chung là 1/6 + 1/4 = 2/12 + 3/12 = 5/12 công việc/giờ.
+
+Suy nghĩ 3:  Tôi có năng suất chung, bây giờ cần tính thời gian hoàn thành công việc.  Thời gian bằng tổng công việc chia cho năng suất.
+
+Hành động 3: Tính thời gian hoàn thành công việc khi cả hai cùng làm.  Tổng công việc là 1 (toàn bộ công việc).
+
+Kết quả 3: Thời gian = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2.4 giờ.
+
+Suy nghĩ 4:  Tôi cần chuyển đổi kết quả từ giờ sang giờ và phút để dễ hiểu hơn.
+
+Hành động 4: Chuyển 0.4 giờ sang phút: 0.4 giờ * 60 phút/giờ = 24 phút.
+
+Kết quả 4: Thời gian hoàn thành công việc là 2 giờ 24 phút.
+
+Đáp án cuối cùng: Nếu hai thợ cùng làm, họ sẽ hoàn thành công việc trong 2 giờ 24 phút.","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,3.118854284286499,2025-04-16T22:47:15.613977,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,react,244,"Có 73 quả cam ngon,
+Chia đều cho 6 người em.
+Mỗi người được mấy quả?
+Còn dư mấy quả cam?",Thơ toán học,Dễ,"Suy nghĩ 1: Bài toán yêu cầu chia 73 quả cam cho 6 người và tìm số cam mỗi người nhận được và số cam còn dư.  Tôi cần thực hiện phép chia để giải quyết.
+
+Hành động 1: Thực hiện phép chia 73 chia cho 6.
+
+Kết quả 1: 73 ÷ 6 = 12 dư 1
+
+Suy nghĩ 2: Kết quả phép chia cho thấy 73 chia 6 được 12 và dư 1.
+
+Hành động 2:  Ghi nhận kết quả phép chia.
+
+Kết quả 2:  Mỗi người được 12 quả cam và còn dư 1 quả cam.
+
+Đáp án cuối cùng: Mỗi người được 12 quả cam và còn dư 1 quả cam.","Số cam chia được: 73 ÷ 6 = 12 quả mỗi người.
+Số cam còn dư: 73 - (6 × 12) = 1 quả.",True,1.494828701019287,2025-04-16T22:47:20.813890,5.0,5.0,5.0,5.0,5.0,5.0,
