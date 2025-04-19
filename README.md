@@ -91,10 +91,13 @@ Framework này cung cấp một bộ công cụ để đánh giá hiệu suất 
     *   Điền các thông tin cần thiết:
         ```dotenv
         # --- API Keys ---
-        # Bắt buộc nếu sử dụng model tương ứng
-        GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-        GROQ_API_KEY="YOUR_GROQ_API_KEY"
-        # OPENAI_API_KEY="YOUR_OPENAI_API_KEY" # Nếu tích hợp OpenAI
+        # Cấu hình API keys trong file .env
+        # Hỗ trợ nhiều API keys để tự động chuyển đổi khi gặp lỗi hết quota
+
+        # Định dạng: danh sách các API keys phân tách bằng dấu phẩy
+        GEMINI_API_KEYS="KEY1,KEY2,KEY3"
+        GROQ_API_KEYS="KEY1,KEY2,KEY3"
+        OPENAI_API_KEYS="KEY1,KEY2,KEY3"
 
         # --- Local Model Paths ---
         # Đường dẫn tuyệt đối hoặc tương đối đến thư mục chứa model và tokenizer đã tải về

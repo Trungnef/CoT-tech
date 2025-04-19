@@ -151,8 +151,13 @@ class CheckpointManager:
             logger.warning(f"Không tìm thấy checkpoint trong {self.checkpoint_dir}")
             return None
         
-        # Kiểm tra thư mục chính
+        # Checkpoint gần nhất
         latest_checkpoint = checkpoint_files[-1]  # Đã được sắp xếp tăng dần
+        
+        # Log chi tiết hơn về checkpoint sắp được tải
+        run_dir = os.path.basename(os.path.dirname(os.path.dirname(latest_checkpoint))) if "run_" in latest_checkpoint else "unknown"
+        logger.info(f"Tải checkpoint từ thư mục chạy: {run_dir}")
+        logger.info(f"Đường dẫn checkpoint: {latest_checkpoint}")
         
         # Kiểm tra thử thư mục cha (nếu đang ở trong thư mục con run_TIMESTAMP)
         parent_dir = os.path.dirname(os.path.dirname(self.checkpoint_dir))
@@ -193,6 +198,20 @@ class CheckpointManager:
         emergency_files = glob.glob(emergency_pattern)
         checkpoint_files.extend(emergency_files)
         
+        # Nếu đang ở thư mục run cụ thể mà --resume được sử dụng, ưu tiên checkpoint ở thư mục hiện tại
+        run_dir_match = None
+        if "run_" in self.checkpoint_dir:
+            run_dir_match = os.path.basename(os.path.dirname(self.checkpoint_dir))
+            if checkpoint_files:
+                logger.info(f"Tìm thấy checkpoint trong thư mục chạy {run_dir_match}")
+                # Sắp xếp checkpoint trong thư mục hiện tại theo thời gian (tăng dần)
+                checkpoint_files.sort(key=lambda x: os.path.getmtime(x))
+                # Lọc ra các file thực sự tồn tại
+                checkpoint_files = [f for f in checkpoint_files if os.path.exists(f)]
+                logger.debug(f"Tìm thấy {len(checkpoint_files)} checkpoint files trong {run_dir_match}.")
+                return checkpoint_files
+        
+        # Chỉ khi không tìm thấy checkpoint trong thư mục hiện tại, kiểm tra các thư mục khác
         # Kiểm tra thư mục results nếu đang ở trong thư mục con
         # Đây là để tìm các checkpoint từ các lần chạy trước
         root_dir = os.path.dirname(os.path.dirname(self.checkpoint_dir))

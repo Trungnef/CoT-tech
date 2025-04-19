@@ -1,7 +1,19 @@
 """
-Model Interface quản lý tương tác với các mô hình LLM.
-Hỗ trợ cả model local (Llama, Qwen) và API (Gemini, Groq).
-Cung cấp interface thống nhất, caching và xử lý lỗi.
+Giao diện thống nhất để tương tác với các model LLM khác nhau bao gồm cả model local và API.
+
+Chức năng:
+- Tạo ra giao diện thống nhất cho cả model local (Llama, Qwen) và API (Gemini, Groq)
+- Quản lý bộ nhớ và cache model để tránh OOM
+- Xử lý rate limiting và error handling với circuit breaker
+- Quản lý inference trên nhiều GPU
+
+Cải tiến:
+- [2025-04-19] Thêm cơ chế retry thông minh với backoff thích ứng:
+  * Jitter ngẫu nhiên để tránh thundering herd
+  * Học từ lịch sử lỗi và điều chỉnh chiến lược retry
+  * Xác định thời gian retry dựa trên header và nội dung lỗi
+  * Circuit breaker cải tiến với phát hiện cách mở/đóng thông minh
+  * Rate limiting thích ứng dựa trên thành công/thất bại liên tiếp
 """
 
 import os
@@ -19,13 +31,15 @@ import hashlib
 import pickle
 import shutil
 import json
+import random
+from datetime import datetime
 
 # Thêm thư mục gốc vào sys.path để import các module
 sys.path.append(str(Path(__file__).parents[1].absolute()))
 
 # Import các module cần thiết
 import config
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, wait_fixed, retry_if_result
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import huggingface_hub
 
@@ -50,6 +64,71 @@ _LAST_USED = {}  # Theo dõi lần cuối cùng model được sử dụng
 _API_CLIENTS = {}  # Cache cho API clients
 _RATE_LIMITERS = {}
 _DISK_CACHE_INDEX = {}  # Lưu trữ thông tin về model cache trên disk
+_CIRCUIT_BREAKERS = {}  # Theo dõi lỗi rate limit để tạm dừng API khi cần
+
+def create_smart_retry(api_name):
+    """
+    Tạo một retry decorator thông minh với các tính năng nâng cao:
+    - Jitter ngẫu nhiên để tránh thundering herd
+    - Chỉ retry cho các mã lỗi cụ thể
+    - Tích hợp với circuit breaker
+    - Backoff thích ứng dựa trên kiểu lỗi
+    
+    Args:
+        api_name (str): Tên của API ('gemini', 'groq', etc.)
+        
+    Returns:
+        Function: Retry decorator tùy chỉnh
+    """
+    # Lấy cấu hình từ config.py
+    cfg = config.API_CONFIGS.get(api_name, {})
+    max_retries = cfg.get("max_retries", 5)
+    base_delay = cfg.get("retry_base_delay", 2)
+    max_delay = cfg.get("max_retry_delay", 60)
+    jitter_factor = cfg.get("jitter_factor", 0.25)
+    error_codes = cfg.get("error_codes_to_retry", [429, 500, 502, 503, 504])
+    
+    def should_retry_exception(exception):
+        """Kiểm tra xem có nên retry cho exception này không"""
+        # Nếu là lỗi rate limit hoặc server error, retry
+        if any(str(code) in str(exception) for code in error_codes):
+            return True
+            
+        # Kiểm tra các mẫu chuỗi lỗi phổ biến
+        error_patterns = [
+            'rate limit', 'quota', 'timeout', 'connection error', 
+            'server error', 'overloaded', 'temporarily unavailable',
+            'circuit breaker', 'try again'
+        ]
+        return any(pattern in str(exception).lower() for pattern in error_patterns)
+    
+    def wait_with_jitter(retry_state):
+        """Hàm chờ đợi có jitter để tránh thundering herd"""
+        # Tính toán thời gian chờ cơ bản
+        wait_time = min(base_delay * (2 ** (retry_state.attempt_number - 1)), max_delay)
+        
+        # Thêm jitter ngẫu nhiên
+        jitter = random.uniform(-jitter_factor, jitter_factor) * wait_time
+        wait_time = max(base_delay, wait_time + jitter)
+        
+        # Nếu là lỗi rate limit (429), tăng thời gian chờ thêm
+        if hasattr(retry_state, 'outcome') and retry_state.outcome is not None:
+            exception = retry_state.outcome.exception()
+            if exception and '429' in str(exception):
+                wait_time *= 1.5  # Tăng 50% thời gian chờ cho lỗi rate limit
+                
+        logger.info(f"Thử lại lần {retry_state.attempt_number} sau {wait_time:.1f}s (có jitter)")
+        return wait_time
+    
+    # Tạo decorator tùy chỉnh
+    retry_decorator = retry(
+        stop=stop_after_attempt(max_retries),
+        wait=wait_with_jitter,
+        retry=retry_if_exception_type((Exception,)) & retry_if_result(should_retry_exception),
+        before_sleep=lambda retry_state: logger.info(f"Đang chờ {retry_state.next_action.sleep} giây trước khi thử lại...")
+    )
+    
+    return retry_decorator
 
 class ModelInterface:
     """
@@ -66,10 +145,37 @@ class ModelInterface:
             use_disk_cache (bool): Có sử dụng disk cache không, mặc định theo cấu hình
         """
         self.use_cache = use_cache
-        self.use_disk_cache = config.DISK_CACHE_CONFIG["enabled"] if use_disk_cache is None else use_disk_cache
-        self._setup_rate_limiters()
-        self._init_disk_cache()
         
+        # Đọc cấu hình disk cache từ .env thông qua config
+        self.use_disk_cache = config.DISK_CACHE_CONFIG["enabled"] if use_disk_cache is None else use_disk_cache
+        
+        # Log trạng thái disk cache
+        if self.use_disk_cache:
+            logger.info("Disk cache đang được BẬT. Các model sẽ được lưu và tải từ disk cache khi cần.")
+        else:
+            logger.info("Disk cache đang TẮT. Model sẽ được tải trực tiếp từ đường dẫn đã cấu hình.")
+            
+        # Khởi tạo quản lý API keys
+        self.current_gemini_key_index = 0
+        self.current_groq_key_index = 0
+        
+        # Thay thế set bằng dict để lưu thông tin hết hạn
+        # Key: API key, Value: Dictionary {timestamp: thời gian hết hạn, reason: lý do}
+        self.exhausted_gemini_keys = {}
+        self.exhausted_groq_keys = {}
+        
+        # Tần suất kiểm tra key hết hạn (giây)
+        self.key_refresh_interval = 3600  # 1 giờ
+        self.last_key_refresh_time = time.time()
+        
+        self._setup_rate_limiters()
+        
+        # Chỉ khởi tạo disk cache nếu được bật
+        if self.use_disk_cache:
+            self._init_disk_cache()
+        else:
+            logger.debug("Bỏ qua việc khởi tạo disk cache vì đã tắt")
+    
     def _init_disk_cache(self):
         """Khởi tạo disk cache nếu được bật."""
         if not self.use_disk_cache:
@@ -97,21 +203,70 @@ class ModelInterface:
             self._cleanup_disk_cache()
             
     def _setup_rate_limiters(self):
-        """Thiết lập rate limiters cho các API."""
-        global _RATE_LIMITERS
+        """Thiết lập rate limiters cho các API với khả năng thích ứng động."""
+        global _RATE_LIMITERS, _CIRCUIT_BREAKERS
         
         for api_name, api_config in config.API_CONFIGS.items():
             requests_per_minute = api_config.get("requests_per_minute", 60)
             min_interval = 60.0 / requests_per_minute  # Khoảng thời gian tối thiểu giữa các request (giây)
+            adaptive_mode = api_config.get("adaptive_rate_limiting", False)
             
             if api_name not in _RATE_LIMITERS:
                 _RATE_LIMITERS[api_name] = {
                     "min_interval": min_interval,
                     "last_request_time": 0,
-                    "lock": threading.Lock()
+                    "lock": threading.Lock(),
+                    "adaptive_interval": min_interval,  # Khoảng thời gian tự động điều chỉnh
+                    "backoff_factor": 1.0,  # Hệ số tăng interval khi gặp rate limit
+                    "success_counter": 0,   # Đếm số lần thành công liên tiếp
+                    "failure_counter": 0,   # Đếm số lần thất bại liên tiếp
+                    "adaptive_mode": adaptive_mode,  # Có sử dụng chế độ thích ứng không
+                    "last_rate_limit_time": 0, # Thời điểm gặp rate limit gần nhất
+                    "retry_delay_history": [],  # Lịch sử các thời gian retry để học
+                    "recovery_factor": 0.95,  # Hệ số giảm interval sau mỗi lần thành công (95%)
+                    "base_interval": min_interval  # Lưu trữ interval ban đầu
                 }
+                logger.info(f"Đã thiết lập rate limiter cho {api_name} với {requests_per_minute} RPM " +
+                           f"(interval: {min_interval:.2f}s, adaptive mode: {adaptive_mode})")
+            else:
+                # Cập nhật cấu hình nếu rate limiter đã tồn tại
+                with _RATE_LIMITERS[api_name]["lock"]:
+                    _RATE_LIMITERS[api_name]["min_interval"] = min_interval
+                    _RATE_LIMITERS[api_name]["base_interval"] = min_interval
+                    _RATE_LIMITERS[api_name]["adaptive_mode"] = adaptive_mode
+                    # Nếu interval hiện tại nhỏ hơn min_interval mới, điều chỉnh lên
+                    if _RATE_LIMITERS[api_name]["adaptive_interval"] < min_interval:
+                        _RATE_LIMITERS[api_name]["adaptive_interval"] = min_interval
+            
+            # Đọc cấu hình circuit breaker từ config
+            circuit_breaker_config = api_config.get("circuit_breaker", {})
+            failure_threshold = circuit_breaker_config.get("failure_threshold", 5)
+            cooldown_period = circuit_breaker_config.get("cooldown_period", 60.0)
+            half_open_timeout = circuit_breaker_config.get("half_open_timeout", 30.0)
+            consecutive_success_threshold = circuit_breaker_config.get("consecutive_success_threshold", 2)
+            
+            if api_name not in _CIRCUIT_BREAKERS:
+                _CIRCUIT_BREAKERS[api_name] = {
+                    "failures": 0,  # Số lần lỗi rate limit liên tiếp
+                    "last_failure_time": 0,  # Thời điểm lỗi rate limit gần nhất
+                    "is_open": False,  # Circuit breaker có đang mở không (tạm dừng API)
+                    "cooldown_period": cooldown_period,  # Thời gian cooldown (giây)
+                    "failure_threshold": failure_threshold,  # Ngưỡng lỗi để mở circuit breaker
+                    "half_open_time": 0,  # Thời điểm circuit breaker chuyển sang half-open
+                    "half_open_timeout": half_open_timeout,  # Thời gian timeout cho trạng thái half-open
+                    "consecutive_successes": 0,  # Số lần thành công liên tiếp trong trạng thái half-open
+                    "consecutive_success_threshold": consecutive_success_threshold,  # Ngưỡng để đóng circuit breaker
+                    "lock": threading.Lock()  # Lock để đồng bộ hóa
+                }
+            else:
+                # Cập nhật cấu hình nếu circuit breaker đã tồn tại
+                with _CIRCUIT_BREAKERS[api_name]["lock"]:
+                    _CIRCUIT_BREAKERS[api_name]["cooldown_period"] = cooldown_period
+                    _CIRCUIT_BREAKERS[api_name]["failure_threshold"] = failure_threshold
+                    _CIRCUIT_BREAKERS[api_name]["half_open_timeout"] = half_open_timeout
+                    _CIRCUIT_BREAKERS[api_name]["consecutive_success_threshold"] = consecutive_success_threshold
         
-        logger.debug("Đã thiết lập rate limiters cho các API.")
+        logger.debug("Đã thiết lập rate limiters và circuit breakers cho các API.")
     
     def generate_text(self, model_name, prompt, config=None):
         """
@@ -247,11 +402,11 @@ class ModelInterface:
                 "elapsed_time": time.time() - start_time
             }
     
-    @retry(
-        stop=stop_after_attempt(5),
-        wait=wait_exponential(multiplier=1, min=2, max=60),
-        retry=retry_if_exception_type((Exception,))
-    )
+    @property
+    def gemini_retry_decorator(self):
+        """Tạo decorator retry cho Gemini tại runtime để đọc cấu hình mới nhất"""
+        return create_smart_retry("gemini")
+        
     def _generate_with_gemini(self, prompt, gen_config):
         """
         Sinh văn bản sử dụng Gemini API.
@@ -263,11 +418,22 @@ class ModelInterface:
         Returns:
             tuple: (text, stats)
         """
+        # Áp dụng decorator tại runtime để đảm bảo cấu hình mới nhất
+        decorated_function = self.gemini_retry_decorator(self._generate_with_gemini_impl)
+        return decorated_function(prompt, gen_config)
+        
+    def _generate_with_gemini_impl(self, prompt, gen_config):
+        """
+        Triển khai thực tế của việc gọi Gemini API.
+        """
         start_time = time.time()
+        api_name = "gemini"
         
         try:
-            # Áp dụng rate limiting
-            self._apply_rate_limiting("gemini")
+            # Áp dụng rate limiting với circuit breaker
+            if not self._apply_rate_limiting(api_name):
+                # Circuit breaker đang mở, raise exception để trigger retry
+                raise Exception("Circuit breaker đang mở, đang chờ cooldown")
             
             # Lấy Gemini client
             genai_client = self._get_gemini_client()
@@ -315,6 +481,9 @@ class ModelInterface:
                 generation_config=generation_config
             )
             
+            # Đặt lại circuit breaker sau khi request thành công
+            self._reset_circuit_breaker(api_name)
+            
             generated_text = response.text
             
             # Tính thời gian và tốc độ
@@ -345,33 +514,121 @@ class ModelInterface:
                 logger.error(f"Status code: {e.status_code}")
             logger.debug(traceback.format_exc())
             
+            # Trích xuất retry-after header nếu có
+            retry_after = None
+            if hasattr(e, 'headers') and e.headers and 'retry-after' in e.headers:
+                try:
+                    retry_after = float(e.headers['retry-after'])
+                    logger.info(f"Tìm thấy header Retry-After: {retry_after}s")
+                except (ValueError, TypeError):
+                    pass
+            
             # Customized error message based on error type
-            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower():
-                detail_msg = "Đã vượt quá giới hạn tỷ lệ của API. Đang thử lại với backoff..."
-                error_type = "RATE_LIMIT_ERROR"
+            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower() or hasattr(e, 'status_code') and getattr(e, 'status_code') == 429:
+                # Đánh dấu key hiện tại đã hết quota
+                current_key = config.GEMINI_API_KEYS[self.current_gemini_key_index]
+                
+                # Xác định loại lỗi quota: hết quota theo ngày hay chỉ là rate limit tạm thời
+                is_daily_quota = False
+                reason = "rate_limit_exceeded"
+                
+                # Phân tích lỗi để xác định đúng loại lỗi quota
+                error_str = str(e).lower()
+                if 'daily' in error_str and 'quota' in error_str:
+                    is_daily_quota = True
+                    reason = "daily_quota_exceeded"
+                elif 'quota exceeded' in error_str or 'quota limit' in error_str:
+                    is_daily_quota = True
+                    reason = "daily_quota_exceeded"
+                
+                # Lưu thông tin hết hạn với timestamp hiện tại
+                self.exhausted_gemini_keys[current_key] = {
+                    'timestamp': time.time(),
+                    'reason': reason,
+                    'error': str(e)
+                }
+                
+                # Chuyển sang key tiếp theo
+                old_index = self.current_gemini_key_index
+                self.current_gemini_key_index = (self.current_gemini_key_index + 1) % len(config.GEMINI_API_KEYS)
+                
+                # Kiểm tra xem còn key khả dụng không
+                if len(self.exhausted_gemini_keys) >= len(config.GEMINI_API_KEYS):
+                    detail_msg = "Tất cả Gemini API keys đều đã vượt quá quota. Vui lòng thử lại sau."
+                    logger.error(detail_msg)
+                else:
+                    # Nếu còn key khả dụng, thử lại với key mới
+                    quota_type = "theo ngày" if is_daily_quota else "tạm thời"
+                    detail_msg = f"Key #{old_index + 1} đã hết quota {quota_type}. Chuyển sang key #{self.current_gemini_key_index + 1}/{len(config.GEMINI_API_KEYS)}"
+                    logger.warning(detail_msg)
+                    
+                    # Khởi tạo lại client với key mới
+                    self._get_gemini_client()
+                    
+                    # Giảm thời gian chờ vì chúng ta đã đổi key
+                    wait_time = 1.0  # 1 second để đảm bảo không quá nhanh
+                
+                error_type = "QUOTA_LIMIT_ERROR"
+                
+                # Thực hiện sleep ngay tại đây để đảm bảo chờ đủ thời gian
+                time.sleep(min(wait_time, 5))  # Giới hạn tối đa 5s khi đổi key
+                
             elif 'invalid api key' in str(e).lower():
-                detail_msg = "API key không hợp lệ. Vui lòng kiểm tra GEMINI_API_KEY trong .env"
+                # Đánh dấu key hiện tại không hợp lệ
+                current_key = config.GEMINI_API_KEYS[self.current_gemini_key_index]
+                
+                # Lưu thông tin lỗi với timestamp hiện tại
+                self.exhausted_gemini_keys[current_key] = {
+                    'timestamp': time.time(),
+                    'reason': "invalid_api_key",
+                    'error': str(e)
+                }
+                
+                # Chuyển sang key tiếp theo
+                self.current_gemini_key_index = (self.current_gemini_key_index + 1) % len(config.GEMINI_API_KEYS)
+                
+                # Kiểm tra xem còn key khả dụng không
+                if len(self.exhausted_gemini_keys) >= len(config.GEMINI_API_KEYS):
+                    detail_msg = "Tất cả Gemini API keys đều không hợp lệ. Vui lòng kiểm tra cấu hình."
+                else:
+                    detail_msg = f"Key không hợp lệ. Chuyển sang key #{self.current_gemini_key_index + 1}/{len(config.GEMINI_API_KEYS)}"
+                    
+                    # Khởi tạo lại client với key mới
+                    self._get_gemini_client()
+                
                 error_type = "INVALID_API_KEY_ERROR"
             elif 'timeout' in str(e).lower():
                 detail_msg = "Request bị timeout. Đang thử lại..."
                 error_type = "TIMEOUT_ERROR"
-            elif 'block' in str(e).lower() or 'content filter' in str(e).lower():
+            elif 'block' in str(e).lower() or 'content filter' in str(e).lower() or 'safety' in str(e).lower():
                 detail_msg = "Nội dung bị chặn bởi bộ lọc nội dung của Gemini. Thử điều chỉnh prompt."
                 error_type = "CONTENT_FILTER_ERROR"
+            elif 'circuit breaker' in str(e).lower():
+                detail_msg = "Circuit breaker đang mở, đang chờ cooldown"
+                error_type = "CIRCUIT_BREAKER_OPEN"
             else:
                 detail_msg = "Lỗi không rõ. Đang thử lại..."
                 error_type = "UNKNOWN_ERROR"
             
             logger.warning(f"Gemini API error: {detail_msg}")
             
+            # Đối với một số lỗi nghiêm trọng, trả về ngay lập tức thay vì retry
+            if error_type in ["INVALID_API_KEY_ERROR", "CONTENT_FILTER_ERROR"]:
+                return f"[Error: {detail_msg}]", {
+                    "has_error": True,
+                    "error_message": detail_msg,
+                    "error_type": error_type,
+                    "elapsed_time": time.time() - start_time
+                }
+            
             # Raise để retry được kích hoạt
             raise Exception(f"{error_type}: {detail_msg}. Original error: {str(e)}")
     
-    @retry(
-        stop=stop_after_attempt(8),  # Tăng số lần thử từ 5 lên 8
-        wait=wait_exponential(multiplier=1, min=4, max=120),  # Tăng thời gian chờ tối đa từ 60s lên 120s và min từ 2s lên 4s
-        retry=retry_if_exception_type((Exception,))
-    )
+    @property
+    def groq_retry_decorator(self):
+        """Tạo decorator retry cho Groq tại runtime để đọc cấu hình mới nhất"""
+        return create_smart_retry("groq")
+        
     def _generate_with_groq(self, prompt, gen_config):
         """
         Sinh văn bản sử dụng Groq API.
@@ -383,11 +640,22 @@ class ModelInterface:
         Returns:
             tuple: (text, stats)
         """
+        # Áp dụng decorator tại runtime để đảm bảo cấu hình mới nhất
+        decorated_function = self.groq_retry_decorator(self._generate_with_groq_impl)
+        return decorated_function(prompt, gen_config)
+    
+    def _generate_with_groq_impl(self, prompt, gen_config):
+        """
+        Triển khai thực tế của việc gọi Groq API.
+        """
         start_time = time.time()
+        api_name = "groq"
         
         try:
-            # Áp dụng rate limiting
-            self._apply_rate_limiting("groq")
+            # Áp dụng rate limiting với circuit breaker
+            if not self._apply_rate_limiting(api_name):
+                # Circuit breaker đang mở, raise exception để trigger retry
+                raise Exception("Circuit breaker đang mở, đang chờ cooldown")
             
             # Lấy Groq client
             client = self._get_groq_client()
@@ -415,7 +683,7 @@ class ModelInterface:
             start_generate = time.time()
             
             # Set a timeout for the request
-            timeout = gen_config.get("timeout", 30)  # 30 seconds default
+            timeout = gen_config.get("timeout", 30)
             
             # Gọi Groq API
             completion = client.chat.completions.create(
@@ -429,6 +697,9 @@ class ModelInterface:
                 top_p=top_p,
                 timeout=timeout
             )
+            
+            # Đặt lại circuit breaker sau khi request thành công
+            self._reset_circuit_breaker(api_name)
             
             # Trích xuất phản hồi
             generated_text = completion.choices[0].message.content
@@ -448,10 +719,7 @@ class ModelInterface:
                 "decoding_time": decoding_time,
                 "tokens_per_second": tokens_per_second,
                 "has_error": False,
-                "model": model_name,
-                "input_tokens": completion.usage.prompt_tokens,
-                "output_tokens": completion.usage.completion_tokens,
-                "total_tokens": completion.usage.total_tokens
+                "model": model_name
             }
             
             return generated_text.strip(), stats
@@ -464,12 +732,93 @@ class ModelInterface:
                 logger.error(f"Status code: {e.status_code}")
             logger.debug(traceback.format_exc())
             
+            # Trích xuất retry-after header nếu có
+            retry_after = None
+            if hasattr(e, 'headers') and e.headers and 'retry-after' in e.headers:
+                try:
+                    retry_after = float(e.headers['retry-after'])
+                    logger.info(f"Tìm thấy header Retry-After: {retry_after}s")
+                except (ValueError, TypeError):
+                    pass
+            
             # Customized error message based on error type
-            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower():
-                detail_msg = "Đã vượt quá giới hạn tỷ lệ của API Groq. Đang thử lại với backoff..."
-                error_type = "RATE_LIMIT_ERROR"
+            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower() or hasattr(e, 'status_code') and getattr(e, 'status_code') == 429:
+                # Đánh dấu key hiện tại đã hết quota
+                current_key = config.GROQ_API_KEYS[self.current_groq_key_index]
+                
+                # Xác định loại lỗi quota: hết quota theo ngày hay chỉ là rate limit tạm thời
+                is_daily_quota = False
+                reason = "rate_limit_exceeded"
+                wait_time = 0
+                
+                # Phân tích lỗi để xác định đúng loại lỗi quota
+                error_str = str(e).lower()
+                if 'daily' in error_str and 'quota' in error_str:
+                    is_daily_quota = True
+                    reason = "daily_quota_exceeded"
+                elif 'quota exceeded' in error_str or 'quota limit' in error_str:
+                    is_daily_quota = True
+                    reason = "daily_quota_exceeded"
+                
+                # Lưu thông tin hết hạn với timestamp hiện tại
+                self.exhausted_groq_keys[current_key] = {
+                    'timestamp': time.time(),
+                    'reason': reason,
+                    'error': str(e)
+                }
+                
+                # Chuyển sang key tiếp theo
+                old_index = self.current_groq_key_index
+                self.current_groq_key_index = (self.current_groq_key_index + 1) % len(config.GROQ_API_KEYS)
+                
+                # Kiểm tra xem còn key khả dụng không
+                if len(self.exhausted_groq_keys) >= len(config.GROQ_API_KEYS):
+                    detail_msg = "Tất cả Groq API keys đều đã vượt quá quota. Vui lòng thử lại sau."
+                    logger.error(detail_msg)
+                    
+                    # Vẫn tạm thời reset rate limiters để ngăn circuit breaker nếu đó là lỗi tạm thời
+                    if not is_daily_quota:
+                        wait_time = self._handle_rate_limit_error(api_name, e, retry_after)
+                else:
+                    # Nếu còn key khả dụng, thử lại với key mới
+                    quota_type = "theo ngày" if is_daily_quota else "tạm thời"
+                    detail_msg = f"Key #{old_index + 1} đã hết quota {quota_type}. Chuyển sang key #{self.current_groq_key_index + 1}/{len(config.GROQ_API_KEYS)}"
+                    logger.warning(detail_msg)
+                    
+                    # Khởi tạo lại client với key mới
+                    self._get_groq_client()
+                    
+                    # Giảm thời gian chờ vì chúng ta đã đổi key
+                    wait_time = 1.0  # 1 second để đảm bảo không quá nhanh
+                
+                error_type = "QUOTA_LIMIT_ERROR"
+                
+                # Thực hiện sleep ngay tại đây để đảm bảo chờ đủ thời gian
+                time.sleep(min(wait_time, 5))  # Giới hạn tối đa 5s khi đổi key
+                
             elif 'invalid api key' in str(e).lower() or 'authentication' in str(e).lower():
-                detail_msg = "API key không hợp lệ. Vui lòng kiểm tra GROQ_API_KEY trong .env"
+                # Đánh dấu key hiện tại không hợp lệ
+                current_key = config.GROQ_API_KEYS[self.current_groq_key_index]
+                
+                # Lưu thông tin lỗi với timestamp hiện tại
+                self.exhausted_groq_keys[current_key] = {
+                    'timestamp': time.time(),
+                    'reason': "invalid_api_key",
+                    'error': str(e)
+                }
+                
+                # Chuyển sang key tiếp theo
+                self.current_groq_key_index = (self.current_groq_key_index + 1) % len(config.GROQ_API_KEYS)
+                
+                # Kiểm tra xem còn key khả dụng không
+                if len(self.exhausted_groq_keys) >= len(config.GROQ_API_KEYS):
+                    detail_msg = "Tất cả Groq API keys đều không hợp lệ. Vui lòng kiểm tra cấu hình."
+                else:
+                    detail_msg = f"Key không hợp lệ. Chuyển sang key #{self.current_groq_key_index + 1}/{len(config.GROQ_API_KEYS)}"
+                    
+                    # Khởi tạo lại client với key mới
+                    self._get_groq_client()
+                
                 error_type = "INVALID_API_KEY_ERROR"
             elif 'timeout' in str(e).lower():
                 detail_msg = "Request bị timeout. Đang thử lại..."
@@ -477,6 +826,9 @@ class ModelInterface:
             elif 'not found' in str(e).lower() and 'model' in str(e).lower():
                 detail_msg = f"Model {model_name} không tồn tại hoặc không khả dụng."
                 error_type = "MODEL_NOT_FOUND_ERROR"
+            elif 'circuit breaker' in str(e).lower():
+                detail_msg = "Circuit breaker đang mở, đang chờ cooldown"
+                error_type = "CIRCUIT_BREAKER_OPEN"
             else:
                 detail_msg = "Lỗi không rõ. Đang thử lại..."
                 error_type = "UNKNOWN_ERROR"
@@ -497,191 +849,520 @@ class ModelInterface:
     
     def _apply_rate_limiting(self, api_name):
         """
-        Áp dụng rate limiting cho API.
+        Áp dụng rate limiting cho API với cơ chế circuit breaker và khả năng thích ứng.
+        
+        Args:
+            api_name (str): Tên API ('gemini', 'groq', etc.)
+        
+        Returns:
+            bool: True nếu có thể gửi request, False nếu cần chờ thêm
+        """
+        if api_name not in _RATE_LIMITERS or api_name not in _CIRCUIT_BREAKERS:
+            return True
+        
+        rate_limiter = _RATE_LIMITERS[api_name]
+        circuit_breaker = _CIRCUIT_BREAKERS[api_name]
+        
+        # Kiểm tra circuit breaker trước
+        with circuit_breaker["lock"]:
+            current_time = time.time()
+            
+            # Nếu circuit breaker đang mở (đã vượt quá ngưỡng lỗi)
+            if circuit_breaker["is_open"]:
+                # Kiểm tra xem đã qua thời gian cooldown chưa
+                elapsed_since_failure = current_time - circuit_breaker["last_failure_time"]
+                
+                if elapsed_since_failure > circuit_breaker["cooldown_period"]:
+                    # Chuyển sang trạng thái half-open để thử
+                    circuit_breaker["is_open"] = False
+                    circuit_breaker["half_open_time"] = current_time
+                    circuit_breaker["consecutive_successes"] = 0
+                    logger.info(f"Circuit breaker cho {api_name} chuyển sang trạng thái half-open sau {elapsed_since_failure:.1f}s cooldown")
+                    
+                    # Khi chuyển sang half-open, giảm interval một chút để thử lại
+                    if rate_limiter["adaptive_mode"]:
+                        with rate_limiter["lock"]:
+                            # Giảm interval đi một nửa so với lần gặp lỗi, nhưng không nhỏ hơn base_interval
+                            current_interval = rate_limiter["adaptive_interval"]
+                            base_interval = rate_limiter["base_interval"]
+                            new_interval = max(base_interval, current_interval * 0.5)
+                            rate_limiter["adaptive_interval"] = new_interval
+                            logger.info(f"Giảm interval cho {api_name} từ {current_interval:.2f}s xuống {new_interval:.2f}s")
+                else:
+                    # Circuit breaker vẫn đang mở
+                    logger.debug(f"Circuit breaker cho {api_name} vẫn đang mở. Còn {circuit_breaker['cooldown_period'] - elapsed_since_failure:.1f}s nữa để cooldown")
+                    return False
+            
+            # Kiểm tra trạng thái half-open
+            if circuit_breaker["half_open_time"] > 0:
+                elapsed_since_half_open = current_time - circuit_breaker["half_open_time"]
+                
+                # Nếu ở trạng thái half-open quá lâu và chưa đạt đủ successes, mở lại circuit breaker
+                if elapsed_since_half_open > circuit_breaker["half_open_timeout"] and circuit_breaker["consecutive_successes"] < circuit_breaker["consecutive_success_threshold"]:
+                    circuit_breaker["is_open"] = True
+                    circuit_breaker["last_failure_time"] = current_time
+                    logger.warning(f"Quá thời gian half-open cho {api_name}, mở lại circuit breaker")
+                    return False
+        
+        # Áp dụng rate limiting sau khi kiểm tra circuit breaker
+        with rate_limiter["lock"]:
+            current_time = time.time()
+            elapsed = current_time - rate_limiter["last_request_time"]
+            interval = rate_limiter["adaptive_interval"] if rate_limiter["adaptive_mode"] else rate_limiter["min_interval"]
+            
+            if elapsed < interval:
+                # Cần đợi thêm
+                wait_time = interval - elapsed
+                if wait_time > 0.1:  # Nếu thời gian chờ > 100ms
+                    logger.debug(f"Rate limiting cho {api_name}: đợi thêm {wait_time:.2f}s")
+                    time.sleep(wait_time)
+            
+            # Cập nhật thời gian request cuối cùng
+            rate_limiter["last_request_time"] = time.time()
+            
+            # Trong chế độ thích ứng, nếu đã có nhiều request thành công liên tiếp, giảm dần interval
+            if rate_limiter["adaptive_mode"] and rate_limiter["success_counter"] >= 5:
+                # Giảm interval dần dần (nhưng không dưới mức cơ bản)
+                current_interval = rate_limiter["adaptive_interval"]
+                base_interval = rate_limiter["base_interval"]
+                recovery_factor = rate_limiter["recovery_factor"]
+                
+                # Giảm 5% interval sau mỗi 5 lần thành công liên tiếp
+                new_interval = max(base_interval, current_interval * recovery_factor)
+                
+                if new_interval < current_interval:
+                    rate_limiter["adaptive_interval"] = new_interval
+                    logger.debug(f"Giảm interval cho {api_name} từ {current_interval:.2f}s xuống {new_interval:.2f}s sau {rate_limiter['success_counter']} lần thành công")
+                    rate_limiter["success_counter"] = 0  # Reset counter
+            
+            return True
+    
+    def _handle_rate_limit_error(self, api_name, error, retry_after=None):
+        """
+        Xử lý lỗi rate limit và cập nhật cấu hình rate limiting với chiến lược thông minh.
+        Sử dụng học máy từ lịch sử lỗi và các header từ API để tối ưu thời gian retry.
+        
+        Args:
+            api_name (str): Tên API ('gemini', 'groq', etc.)
+            error: Lỗi được trả về
+            retry_after (float, optional): Thời gian được đề xuất chờ từ API (seconds)
+        
+        Returns:
+            float: Thời gian đề xuất chờ trước khi thử lại (seconds)
+        """
+        if api_name not in _RATE_LIMITERS or api_name not in _CIRCUIT_BREAKERS:
+            return 10.0  # Giá trị mặc định nếu không tìm thấy cấu hình
+        
+        rate_limiter = _RATE_LIMITERS[api_name]
+        circuit_breaker = _CIRCUIT_BREAKERS[api_name]
+        current_time = time.time()
+        
+        # Lưu thời điểm gặp rate limit để phân tích mẫu
+        rate_limiter["last_rate_limit_time"] = current_time
+        
+        # Tăng bộ đếm thất bại và reset bộ đếm thành công
+        rate_limiter["failure_counter"] += 1
+        rate_limiter["success_counter"] = 0
+        
+        # Cập nhật circuit breaker
+        with circuit_breaker["lock"]:
+            # Tăng số lỗi rate limit liên tiếp
+            circuit_breaker["failures"] += 1
+            circuit_breaker["last_failure_time"] = current_time
+            
+            # Log thông tin về lỗi
+            logger.warning(f"Rate limit error #{circuit_breaker['failures']} cho {api_name}")
+            
+            # Kiểm tra nếu cần mở circuit breaker
+            if circuit_breaker["failures"] >= circuit_breaker["failure_threshold"]:
+                if not circuit_breaker["is_open"]:
+                    circuit_breaker["is_open"] = True
+                    logger.warning(f"Circuit breaker cho {api_name} đã mở sau {circuit_breaker['failures']} lỗi liên tiếp")
+                    logger.warning(f"Tạm dừng gọi {api_name} trong {circuit_breaker['cooldown_period']}s")
+            
+            # Trích xuất thời gian retry từ lỗi
+            extracted_retry_after = None
+            error_str = str(error).lower()
+            
+            # Trích xuất từ nhiều định dạng thông báo lỗi khác nhau
+            retry_patterns = [
+                r"try again in ([0-9.]+)s",  # Groq: try again in 20s
+                r"retry after ([0-9.]+)",    # Gemini: retry after 10 
+                r"wait ([0-9.]+) seconds",   # Generic: wait 30 seconds
+                r"available in ([0-9.]+)",   # Available in 15 seconds
+                r"retry-after: ([0-9.]+)"    # Header format in string
+            ]
+            
+            for pattern in retry_patterns:
+                try:
+                    import re
+                    matches = re.findall(pattern, error_str)
+                    if matches:
+                        extracted_retry_after = float(matches[0])
+                        logger.info(f"Trích xuất thời gian retry từ lỗi: {extracted_retry_after}s (pattern: {pattern})")
+                        break
+                except Exception as e:
+                    logger.debug(f"Không thể trích xuất thời gian retry với pattern '{pattern}': {e}")
+            
+            # Xác định thời gian retry thực tế
+            if retry_after is not None:
+                actual_retry_after = retry_after
+                logger.info(f"Sử dụng retry-after từ header: {actual_retry_after}s")
+            elif extracted_retry_after is not None:
+                actual_retry_after = extracted_retry_after
+                logger.info(f"Sử dụng retry-after từ nội dung lỗi: {actual_retry_after}s")
+            else:
+                # Sử dụng thuật toán backoff thông minh dựa trên lịch sử
+                base_wait = rate_limiter["adaptive_interval"] * 2
+                jitter = random.uniform(0.8, 1.2)  # Thêm 20% jitter
+                
+                # Nếu đây là lỗi nghiêm trọng (nhiều lần thất bại liên tiếp), tăng thời gian chờ nhanh hơn
+                severity_multiplier = min(5, circuit_breaker["failures"] ** 1.5)
+                
+                # Tính toán thời gian retry với mô hình backoff động
+                actual_retry_after = min(60, base_wait * severity_multiplier * jitter)
+                logger.info(f"Tính toán thời gian retry: {actual_retry_after:.2f}s (base: {base_wait:.2f}s, severity: {severity_multiplier:.1f}, jitter: {jitter:.2f})")
+            
+            # Thêm vào lịch sử retry để học
+            rate_limiter["retry_delay_history"].append({
+                "time": current_time,
+                "delay": actual_retry_after,
+                "failures": circuit_breaker["failures"]
+            })
+            
+            # Giữ lịch sử gọn (tối đa 10 mục)
+            if len(rate_limiter["retry_delay_history"]) > 10:
+                rate_limiter["retry_delay_history"] = rate_limiter["retry_delay_history"][-10:]
+            
+            # Điều chỉnh cấu hình rate limiting dựa trên adaptive mode
+            with rate_limiter["lock"]:
+                if rate_limiter["adaptive_mode"]:
+                    # Phân tích mẫu lỗi để điều chỉnh thông minh hơn
+                    current_interval = rate_limiter["adaptive_interval"]
+                    base_interval = rate_limiter["base_interval"]
+                    failure_count = circuit_breaker["failures"]
+                    
+                    if failure_count == 1:
+                        # Lỗi đầu tiên, tăng nhẹ
+                        new_interval = current_interval * 1.5
+                    elif failure_count == 2:
+                        # Lỗi thứ hai, tăng vừa
+                        new_interval = current_interval * 1.75
+                    elif failure_count >= 3:
+                        # Nhiều lỗi liên tiếp, tăng mạnh
+                        new_interval = current_interval * 2.0
+                    
+                    # Phân tích mô hình thời gian để điều chỉnh thông minh
+                    history = rate_limiter["retry_delay_history"]
+                    if len(history) >= 3:
+                        # Tính toán thời gian trung bình giữa các lỗi gần đây
+                        recent_errors = sorted(history, key=lambda x: x["time"], reverse=True)[:3]
+                        avg_time_between_errors = 0
+                        
+                        if len(recent_errors) >= 2:
+                            times = [error["time"] for error in recent_errors]
+                            intervals = [times[i] - times[i+1] for i in range(len(times)-1)]
+                            if intervals:
+                                avg_time_between_errors = sum(intervals) / len(intervals)
+                        
+                        # Nếu lỗi xảy ra rất nhanh sau nhau, cần tăng interval mạnh hơn
+                        if 0 < avg_time_between_errors < 5:  # Lỗi trong vòng 5 giây
+                            new_interval *= 2.5  # Tăng nhanh hơn
+                            logger.warning(f"Lỗi xảy ra nhanh (avg {avg_time_between_errors:.1f}s), tăng mạnh interval")
+                    
+                    # Áp dụng giới hạn để tránh interval quá lớn
+                    max_interval = 60.0  # Tối đa 60s giữa các request
+                    rate_limiter["adaptive_interval"] = min(new_interval, max_interval)
+                    
+                    logger.info(f"Đã điều chỉnh interval cho {api_name} từ {current_interval:.2f}s lên {rate_limiter['adaptive_interval']:.2f}s (lỗi #{failure_count})")
+                else:
+                    # Chế độ không thích ứng, chỉ tăng dần theo cấp số nhân
+                    rate_limiter["adaptive_interval"] *= 1.5
+            
+            # Nếu lỗi quá nhiều, hãy thêm vào actual_retry_after một khoảng thời gian ngẫu nhiên
+            if circuit_breaker["failures"] > 5:
+                actual_retry_after += random.uniform(0, 5)  # Thêm tối đa 5s để tránh thundering herd
+            
+            return actual_retry_after
+    
+    def _reset_circuit_breaker(self, api_name):
+        """
+        Đặt lại circuit breaker sau khi request thành công.
+        Cập nhật các counter thành công liên tiếp và điều chỉnh adaptive interval.
         
         Args:
             api_name (str): Tên API ('gemini', 'groq', etc.)
         """
-        if api_name not in _RATE_LIMITERS:
+        if api_name not in _CIRCUIT_BREAKERS:
             return
         
-        rate_limiter = _RATE_LIMITERS[api_name]
-        min_interval = rate_limiter["min_interval"]
+        circuit_breaker = _CIRCUIT_BREAKERS[api_name]
         
-        with rate_limiter["lock"]:
-            # Tính thời gian cần chờ
-            current_time = time.time()
-            elapsed = current_time - rate_limiter["last_request_time"]
-            wait_time = max(0, min_interval - elapsed)
+        with circuit_breaker["lock"]:
+            # Nếu đã có lỗi trước đó, đặt lại số lỗi
+            if circuit_breaker["failures"] > 0:
+                prev_failures = circuit_breaker["failures"]
+                circuit_breaker["failures"] = 0
+                circuit_breaker["is_open"] = False
+                logger.info(f"Đã đặt lại circuit breaker cho {api_name} sau {prev_failures} lỗi")
             
-            if wait_time > 0:
-                logger.debug(f"Rate limiting: chờ {wait_time:.2f}s cho API {api_name}")
-                time.sleep(wait_time)
+            # Tăng số lần thành công liên tiếp trong trạng thái half-open
+            if circuit_breaker["half_open_time"] > 0:
+                circuit_breaker["consecutive_successes"] += 1
+                logger.debug(f"Thành công liên tiếp lần {circuit_breaker['consecutive_successes']} trong half-open cho {api_name}")
+                
+                # Nếu đạt đủ số lần thành công liên tiếp, đóng hoàn toàn circuit breaker
+                if circuit_breaker["consecutive_successes"] >= circuit_breaker["consecutive_success_threshold"]:
+                    circuit_breaker["half_open_time"] = 0
+                    circuit_breaker["is_open"] = False
+                    circuit_breaker["failures"] = 0
+                    logger.info(f"Đóng hoàn toàn circuit breaker cho {api_name} sau {circuit_breaker['consecutive_successes']} lần thành công liên tiếp")
+        
+        # Cập nhật rate limiter nếu có
+        if api_name in _RATE_LIMITERS:
+            rate_limiter = _RATE_LIMITERS[api_name]
             
-            # Cập nhật thời gian gọi
-            rate_limiter["last_request_time"] = time.time()
+            with rate_limiter["lock"]:
+                # Đánh dấu thành công và đặt lại bộ đếm thất bại
+                rate_limiter["success_counter"] += 1
+                rate_limiter["failure_counter"] = 0
+                
+                # Trong chế độ thích ứng và circuit breaker đã đóng hoàn toàn
+                if rate_limiter["adaptive_mode"] and circuit_breaker["half_open_time"] == 0:
+                    # Điều chỉnh interval theo tình trạng mạng
+                    current_time = time.time()
+                    last_rate_limit_time = rate_limiter["last_rate_limit_time"]
+                    
+                    # Nếu đã lâu không gặp rate limit (> 10 phút), có thể giảm interval
+                    if last_rate_limit_time > 0 and (current_time - last_rate_limit_time) > 600:
+                        current_interval = rate_limiter["adaptive_interval"]
+                        base_interval = rate_limiter["base_interval"]
+                        
+                        # Giảm từ từ, tiến dần về interval cơ bản
+                        if current_interval > base_interval:
+                            new_interval = max(base_interval, current_interval * 0.95)  # Giảm 5%
+                            
+                            if current_interval - new_interval > 0.01:  # Nếu sự thay đổi đáng kể
+                                rate_limiter["adaptive_interval"] = new_interval
+                                logger.debug(f"Giảm interval cho {api_name} về {new_interval:.2f}s (base: {base_interval:.2f}s)")
+                    
+                    # Lưu lại số lượng thành công liên tiếp để xem xét giảm interval sau này
+                    if rate_limiter["success_counter"] >= 20:
+                        logger.debug(f"Đạt {rate_limiter['success_counter']} request thành công liên tiếp cho {api_name}")
+                        
+                        # Có thể giảm interval hơn nữa nếu ổn định trong thời gian dài
+                        current_interval = rate_limiter["adaptive_interval"]
+                        base_interval = rate_limiter["base_interval"]
+                        
+                        if current_interval > base_interval * 1.2:  # Nếu interval vẫn cao hơn 20% so với cơ bản
+                            new_interval = max(base_interval, current_interval * 0.9)  # Giảm mạnh hơn (10%)
+                            rate_limiter["adaptive_interval"] = new_interval
+                            logger.info(f"Giảm mạnh interval cho {api_name} từ {current_interval:.2f}s xuống {new_interval:.2f}s sau nhiều lần thành công")
+                        
+                        # Reset lại counter sau khi đã xử lý
+                        rate_limiter["success_counter"] = 0
     
     def _load_model(self, model_name):
         """
-        Tải model local (Llama hoặc Qwen).
+        Tải model và tokenizer cho model được chỉ định.
         
         Args:
-            model_name (str): Tên model ('llama' hoặc 'qwen')
+            model_name (str): Tên của model để tải (llama, qwen)
             
         Returns:
-            tuple: (tokenizer, model)
+            tuple: (tokenizer, model) hoặc (None, None) nếu lỗi
         """
-        model_name = model_name.lower()
-        cache_key = f"{model_name}_model"
+        global _MODEL_CACHE, _TOKENIZER_CACHE, _LAST_USED
         
         # Nếu cache được bật và model đã được tải vào memory
-        if self.use_cache and cache_key in _MODEL_CACHE:
+        if self.use_cache and model_name in _MODEL_CACHE and model_name in _TOKENIZER_CACHE:
             logger.debug(f"Sử dụng {model_name} từ memory cache")
-            _LAST_USED[cache_key] = time.time()
-            return _TOKENIZER_CACHE.get(f"{model_name}_tokenizer"), _MODEL_CACHE.get(cache_key)
-        
-        # Giải phóng bộ nhớ trước khi tải model mới
+            _LAST_USED[model_name] = time.time()
+            return _TOKENIZER_CACHE[model_name], _MODEL_CACHE[model_name]
+            
+        # Dọn dẹp cache để làm không gian cho model mới
         self._clear_memory()
+        self._manage_model_cache()
         
-        # Lấy đường dẫn cho model
-        if model_name == "llama":
-            model_path = config.LLAMA_MODEL_PATH
-            tokenizer_path = config.LLAMA_TOKENIZER_PATH
-        elif model_name == "qwen":
-            model_path = config.QWEN_MODEL_PATH
-            tokenizer_path = config.QWEN_TOKENIZER_PATH
+        # Kiểm tra xem đã có đường dẫn trực tiếp đến model trong .env chưa
+        if model_name.lower() == "llama":
+            direct_model_path = config.LLAMA_MODEL_PATH
+            direct_tokenizer_path = config.LLAMA_TOKENIZER_PATH
+        elif model_name.lower() == "qwen":
+            direct_model_path = config.QWEN_MODEL_PATH  
+            direct_tokenizer_path = config.QWEN_TOKENIZER_PATH
         else:
-            logger.error(f"Model không hợp lệ: {model_name}")
-            return None, None
+            direct_model_path = ""
+            direct_tokenizer_path = ""
+            
+        has_direct_paths = direct_model_path and direct_tokenizer_path
         
-        # Kiểm tra đường dẫn
-        if not model_path or not tokenizer_path:
-            logger.error(f"Đường dẫn cho {model_name} không được cấu hình trong .env")
-            return None, None
+        # Tải model từ disk cache nếu được bật, KHÔNG có đường dẫn trực tiếp, và model có trong cache
+        if self.use_disk_cache and not has_direct_paths and model_name in _DISK_CACHE_INDEX:
+            logger.info(f"Tìm thấy {model_name} trong disk cache, cố gắng tải...")
+            
+            try:
+                result = self._load_model_from_disk(model_name)
+                if result is None:
+                    logger.warning(f"Không thể tải {model_name} từ disk cache: Kết quả trả về None")
+                    # Tiếp tục với việc tải model từ đường dẫn trực tiếp
+                else:
+                    tokenizer, model = result
+                    if tokenizer is not None and model is not None:
+                        # Lưu vào memory cache
+                        if self.use_cache:
+                            _TOKENIZER_CACHE[model_name] = tokenizer
+                            _MODEL_CACHE[model_name] = model
+                            _LAST_USED[model_name] = time.time()
+                        
+                        logger.info(f"Đã tải thành công {model_name} từ disk cache")
+                        return tokenizer, model
+                    
+            except Exception as e:
+                logger.error(f"Lỗi khi tải {model_name} từ disk cache: {str(e)}")
+                logger.error(traceback.format_exc())
+                # Tiếp tục với việc tải model từ đường dẫn trực tiếp
+        elif has_direct_paths:
+            logger.info(f"Sử dụng đường dẫn trực tiếp cho {model_name} thay vì disk cache")
         
-        logger.info(f"Tải model {model_name} từ {model_path}")
+        # Thiết lập CUDA_VISIBLE_DEVICES để sử dụng cả 3 GPU
+        if torch.cuda.is_available():
+            gpu_count = torch.cuda.device_count()
+            if gpu_count >= 3:
+                gpu_ids = ",".join(str(i) for i in range(3))  # Sử dụng 3 GPU đầu tiên
+                logger.info(f"Thiết lập CUDA_VISIBLE_DEVICES={gpu_ids} để sử dụng tất cả GPU cho model {model_name}")
+                os.environ["CUDA_VISIBLE_DEVICES"] = gpu_ids
         
         # Biến để kiểm soát fallback sang CPU nếu GPU không đủ bộ nhớ
         use_gpu = torch.cuda.is_available()
+        tried_8bit = False
         tried_cpu_fallback = False
         
-        try:
-            # Quản lý cache model để tránh OOM
-            self._manage_model_cache()
+        # Tải model từ HuggingFace
+        # Quản lý cache model để tránh OOM
+        if model_name.lower() in ["llama", "qwen"]:
+            if model_name.lower() == "llama":
+                model_path = config.LLAMA_MODEL_PATH
+                tokenizer_path = config.LLAMA_TOKENIZER_PATH
+            else:  # qwen
+                model_path = config.QWEN_MODEL_PATH
+                tokenizer_path = config.QWEN_TOKENIZER_PATH
             
-            # Tải tokenizer
-            logger.debug(f"Tải tokenizer từ {tokenizer_path}")
-            tokenizer = AutoTokenizer.from_pretrained(
-                tokenizer_path,
-                trust_remote_code=True
-            )
-            
-            # Xử lý pad_token nếu cần
-            if tokenizer.pad_token is None:
-                if tokenizer.eos_token is not None:
-                    tokenizer.pad_token = tokenizer.eos_token
-                else:
-                    tokenizer.pad_token = tokenizer.unk_token
-            
-            # THÊM: Tải model với vòng lặp thử các mức quantization khác nhau
+            # Kiểm tra đường dẫn model và tokenizer
+            if not model_path or not tokenizer_path:
+                error_msg = f"Đường dẫn cho model {model_name} không được thiết lập trong file .env"
+                logger.error(error_msg)
+                return None, None
+                
             for attempt in range(3):  # 3 nỗ lực: 4-bit trên GPU -> 8-bit trên GPU -> CPU fallback
                 try:
-                    # Thiết lập các tham số dựa trên nỗ lực hiện tại
                     if attempt == 0:
                         # Nỗ lực đầu tiên: 4-bit trên GPU (nhẹ nhất)
-                        use_4bit = True
-                        use_8bit = False
+                        tried_8bit = False
+                        tried_cpu_fallback = False
                         use_gpu = torch.cuda.is_available()
                         logger.info(f"Nỗ lực tải model {model_name} với 4-bit quantization trên GPU")
                     elif attempt == 1:
                         # Nỗ lực thứ hai: 8-bit trên GPU (sử dụng nhiều bộ nhớ hơn)
-                        use_4bit = False
-                        use_8bit = True
+                        tried_8bit = True
+                        tried_cpu_fallback = False
                         use_gpu = torch.cuda.is_available()
                         logger.info(f"Thử lại: Tải model {model_name} với 8-bit quantization trên GPU")
                     else:
-                        # Nỗ lực cuối: CPU fallback (chậm nhưng ít bộ nhớ)
-                        use_4bit = False
-                        use_8bit = False
+                        # Nỗ lực cuối cùng: CPU fallback (chậm nhưng đáng tin cậy nhất)
+                        tried_8bit = False
+                        tried_cpu_fallback = True
                         use_gpu = False
-                        logger.warning(f"Fallback: Tải model {model_name} trên CPU (sẽ chậm đáng kể)")
+                        logger.info(f"Nỗ lực cuối cùng: Tải model {model_name} trên CPU")
                     
-                    # Đảm bảo thư mục offload tồn tại
-                    offload_folder = Path(config.MODEL_CACHE_DIR) / "offload_folder"
-                    offload_folder.mkdir(exist_ok=True, parents=True)
+                    tokenizer = None
+                    model = None
+                    
+                    # Tải tokenizer trước
+                    logger.debug(f"Tải tokenizer từ {tokenizer_path}...")
+                    tokenizer = AutoTokenizer.from_pretrained(
+                        tokenizer_path,
+                        use_fast=True,
+                    )
                     
                     # Cấu hình quantization nếu sử dụng GPU
                     quantization_config = None
                     if use_gpu:
-                        if use_4bit:
-                            quantization_config = BitsAndBytesConfig(
-                                load_in_4bit=True,
-                                load_in_8bit=False,
-                                bnb_4bit_quant_type="nf4",
-                                bnb_4bit_compute_dtype=torch.bfloat16,
-                                bnb_4bit_use_double_quant=True,
-                                bnb_4bit_use_cpu_offload=True,
-                                offload_folder=str(offload_folder)
-                            )
-                            logger.info(f"Sử dụng 4-bit quantization cho model {model_name}")
-                        elif use_8bit:
-                            quantization_config = BitsAndBytesConfig(
-                                load_in_4bit=False,
-                                load_in_8bit=True,
-                                llm_int8_skip_modules=["lm_head"] if model_name.lower() == "qwen" else None,
-                                llm_int8_threshold=6.0,
-                                llm_int8_has_fp16_weight=True,
-                                offload_folder=str(offload_folder)
-                            )
-                            logger.info(f"Sử dụng 8-bit quantization cho model {model_name}")
+                        nf4_config = BitsAndBytesConfig(
+                            load_in_4bit=True,
+                            bnb_4bit_quant_type="nf4",
+                            bnb_4bit_use_double_quant=True,
+                            bnb_4bit_compute_dtype=torch.bfloat16
+                        )
+                        
+                        int8_config = BitsAndBytesConfig(
+                            load_in_8bit=True,
+                            llm_int8_threshold=6.0,
+                            llm_int8_skip_modules=None,
+                            llm_int8_enable_fp32_cpu_offload=True
+                        )
+                        
+                        quantization_config = nf4_config if not tried_8bit else int8_config
                     
                     # Tạo device map & memory config
                     device_map = "auto" if use_gpu else "cpu"
                     max_memory = self._get_max_memory_config() if use_gpu else None
                     
-                    # Cấu hình dựa trên model cụ thể
+                    # Xây dựng model kwargs
                     model_kwargs = {
+                        "pretrained_model_name_or_path": model_path,
                         "device_map": device_map,
-                        "torch_dtype": torch.bfloat16 if use_gpu else torch.float32
+                        "torch_dtype": torch.bfloat16 if use_gpu else torch.float32,
+                        "low_cpu_mem_usage": True,
+                        "trust_remote_code": True,
                     }
-                    
-                    # Thêm cấu hình cho quantization nếu có
-                    if quantization_config:
-                        model_kwargs["quantization_config"] = quantization_config
                     
                     # Thêm cấu hình bộ nhớ nếu sử dụng GPU
                     if use_gpu and max_memory:
                         model_kwargs["max_memory"] = max_memory
                     
-                    # Thêm cấu hình cho model cụ thể
-                    if model_name == "llama":
-                        model_kwargs["attn_implementation"] = "eager"
-                    elif model_name == "qwen":
-                        model_kwargs["attn_implementation"] = "eager"
-                        model_kwargs["use_flash_attention_2"] = False
-                        model_kwargs["trust_remote_code"] = True
-                        
-                        # Tắt cảnh báo về sliding window attention trong eager mode
-                        if config.MODEL_CONFIGS["qwen"].get("disable_attention_warnings", False):
-                            import transformers
-                            transformers.logging.set_verbosity_error()
-                            # Vô hiệu hóa cảnh báo cụ thể từ PyTorch
-                            import warnings
-                            warnings.filterwarnings("ignore", message=".*Sliding window attention is currently only supported.*")
+                    # Thêm cấu hình quantization nếu sử dụng GPU
+                    if use_gpu and quantization_config:
+                        model_kwargs["quantization_config"] = quantization_config
                     
-                    # Tải model
+                    # Thêm bất kỳ cấu hình model cụ thể nào
+                    if model_name.lower() == "qwen" and "disable_attention_warnings" in config.MODEL_CONFIGS.get("qwen", {}):
+                        # Cách an toàn để tắt cảnh báo attention
+                        try:
+                            # Tắt cảnh báo từ logging thay vì truy cập _DEFAULT_LOGGERS trực tiếp
+                            logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
+                            logging.getLogger("transformers").setLevel(logging.ERROR)
+                            logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+                            logger.info(f"Đã tắt cảnh báo attention cho model {model_name}")
+                        except Exception as warning_error:
+                            logger.warning(f"Không thể tắt cảnh báo attention: {warning_error}")
+                    
+                    # Tải model weights
                     logger.debug(f"Tải model weights từ {model_path} vào {'GPU' if use_gpu else 'CPU'}...")
-                    model = AutoModelForCausalLM.from_pretrained(
-                        model_path,
-                        **model_kwargs
-                    )
+                    model = AutoModelForCausalLM.from_pretrained(**model_kwargs)
+                    
+                    # Sử dụng torch.compile() để tăng tốc inference nếu phiên bản Torch hỗ trợ
+                    if torch.__version__ >= "2.0" and use_gpu:
+                        try:
+                            original_model = model
+                            model = torch.compile(model)
+                            logger.info(f"Đã kích hoạt torch.compile() để tăng tốc inference cho model {model_name}")
+                        except Exception as e:
+                            logger.warning(f"Không thể kích hoạt torch.compile(): {e}")
+                            # Khôi phục model gốc nếu compile thất bại
+                            model = original_model
                     
                     # Lưu vào memory cache
-                    _TOKENIZER_CACHE[f"{model_name}_tokenizer"] = tokenizer
-                    _MODEL_CACHE[cache_key] = model
-                    _LAST_USED[cache_key] = time.time()
+                    if self.use_cache:
+                        _TOKENIZER_CACHE[model_name] = tokenizer
+                        _MODEL_CACHE[model_name] = model
+                        _LAST_USED[model_name] = time.time()
                     
                     logger.info(f"Đã tải thành công model {model_name} vào {'GPU' if use_gpu else 'CPU'}")
+                    
+                    # Lưu vào disk cache nếu được bật
+                    if self.use_disk_cache and model_name in config.DISK_CACHE_CONFIG.get("models_to_cache", []):
+                        self._save_model_to_disk(model_name, tokenizer, model)
                     
                     return tokenizer, model
                     
@@ -691,256 +1372,220 @@ class ModelInterface:
                     logger.info("Giải phóng bộ nhớ GPU và thử lại với cấu hình nhẹ hơn")
                     self._clear_memory()  # Giải phóng bộ nhớ GPU
                     
-                    # Nếu đây là lần thử cuối, ghi log và cho phép chuyển sang exception handler bên ngoài
-                    if attempt == 2:
-                        logger.error("Đã thử tất cả các cấu hình, không thể tải model")
+                    # Nếu đã thử tất cả các phương pháp, ném ra ngoại lệ
+                    if tried_8bit and tried_cpu_fallback:
                         raise oom_error
-                    
+                        
                 except Exception as e:
-                    # Lỗi khác
-                    logger.error(f"Lỗi khi tải model {model_name} (nỗ lực {attempt+1}/3): {str(e)}")
+                    # Xử lý các lỗi khác
+                    logger.error(f"Lỗi khi tải model {model_name}: {str(e)}")
+                    
                     if "CUDA out of memory" in str(e):
-                        logger.info("Phát hiện lỗi hết bộ nhớ CUDA, thử lại với cấu hình khác")
+                        logger.error("Phát hiện lỗi OOM trong ngoại lệ chung")
                         self._clear_memory()
                     else:
                         # Nếu không phải lỗi OOM, không cần thử lại
-                        raise e
+                        logger.error("Không phải lỗi OOM, không thử lại")
+                        logger.debug(f"Chi tiết lỗi: {traceback.format_exc()}")
+                        return None, None
+                    
+                    # Nếu chưa thử fallback sang CPU và đây là lỗi OOM, thử lại trên CPU
+                    if use_gpu and not tried_cpu_fallback and ("CUDA out of memory" in str(e) or isinstance(e, torch.cuda.OutOfMemoryError)):
+                        logger.info("Thử lại với CPU fallback")
+                        tried_cpu_fallback = True
+                        use_gpu = False
+                        
+                        # Giải phóng bộ nhớ GPU
+                        self._clear_memory()
+                    elif tried_8bit and not tried_cpu_fallback:
+                        logger.info("Thử lại với CPU fallback")
+                        tried_cpu_fallback = True
+                        use_gpu = False
+                    else:
+                        logger.error(f"Đã thử tất cả các phương pháp, không thể tải model {model_name}")
+                        return None, None
         
-        except Exception as e:
-            logger.error(f"Lỗi khi tải model {model_name}: {str(e)}")
-            logger.error(traceback.format_exc())
-            
-            # Nếu chưa thử fallback sang CPU và đây là lỗi OOM, thử lại trên CPU
-            if use_gpu and not tried_cpu_fallback and ("CUDA out of memory" in str(e) or isinstance(e, torch.cuda.OutOfMemoryError)):
-                logger.warning(f"Thử fallback sang CPU cho model {model_name}")
-                tried_cpu_fallback = True
-                use_gpu = False
-                
-                try:
-                    # Giải phóng bộ nhớ GPU
-                    self._clear_memory()
-                    
-                    # Tải model trên CPU (không quantization)
-                    model = AutoModelForCausalLM.from_pretrained(
-                        model_path,
-                        device_map="cpu",
-                        torch_dtype=torch.float32,
-                        trust_remote_code=True if model_name == "qwen" else False
-                    )
-                    
-                    # Lưu vào memory cache
-                    _TOKENIZER_CACHE[f"{model_name}_tokenizer"] = tokenizer
-                    _MODEL_CACHE[cache_key] = model
-                    _LAST_USED[cache_key] = time.time()
-                    
-                    logger.info(f"Đã tải thành công model {model_name} vào CPU (fallback)")
-                    return tokenizer, model
-                    
-                except Exception as cpu_error:
-                    logger.error(f"Fallback CPU cũng thất bại cho model {model_name}: {str(cpu_error)}")
-            
+            # Nếu chạy đến đây mà vẫn chưa return, có nghĩa là tất cả các nỗ lực đều thất bại
+            logger.error(f"Không thể tải model {model_name} sau tất cả các nỗ lực")
             return None, None
     
     def _load_model_from_disk(self, model_name):
         """
-        Tải model từ disk cache.
+        Tải model và tokenizer từ disk cache.
         
         Args:
-            model_name (str): Tên model
+            model_name (str): Tên của model cần tải
             
         Returns:
-            tuple: (tokenizer, model) hoặc None nếu không tìm thấy trong cache
+            tuple: (tokenizer, model) hoặc None nếu không tìm thấy hoặc hết hạn
         """
-        cache_dir = Path(config.DISK_CACHE_CONFIG["cache_dir"])
-        
-        # Kiểm tra xem model có trong index không
-        if model_name not in _DISK_CACHE_INDEX:
+        if not self.use_disk_cache or model_name not in _DISK_CACHE_INDEX:
+            logger.warning(f"Model {model_name} không có trong disk cache index hoặc disk cache bị tắt")
             return None
-        
-        cache_info = _DISK_CACHE_INDEX[model_name]
-        tokenizer_path = cache_dir / f"{model_name}_tokenizer.pkl"
-        model_config_path = cache_dir / f"{model_name}_config.json"
-        model_state_path = cache_dir / f"{model_name}_state.pkl"
-        
-        # Kiểm tra các file tồn tại
-        if not tokenizer_path.exists() or not model_config_path.exists() or not model_state_path.exists():
-            logger.warning(f"Thiếu file cache cho {model_name}, xóa khỏi index")
-            if model_name in _DISK_CACHE_INDEX:
-                del _DISK_CACHE_INDEX[model_name]
-            self._save_cache_index()
-            return None
-        
-        # Kiểm tra thời gian cache nếu quá hạn TTL
-        ttl = config.DISK_CACHE_CONFIG.get("ttl", 24 * 60 * 60)  # Mặc định: 24 giờ
-        cache_age = time.time() - cache_info.get("timestamp", 0)
-        if cache_age > ttl:
-            logger.info(f"Cache cho {model_name} đã hết hạn (TTL: {ttl}s), tải lại")
-            return None
-        
+
         try:
-            logger.info(f"Tải model {model_name} từ disk cache")
+            cache_info = _DISK_CACHE_INDEX[model_name]
+            cache_dir = Path(config.DISK_CACHE_CONFIG["cache_dir"])
+            model_dir = cache_dir / f"{model_name}_model"
+            tokenizer_dir = cache_dir / f"{model_name}_tokenizer"
             
-            # Quyết định sử dụng 4-bit hay 8-bit dựa trên cấu hình
-            use_4bit = True  # Mặc định là 4-bit cho hiệu suất tốt nhất
-            use_8bit = False
+            # Kiểm tra xem thư mục cache có tồn tại không
+            if not model_dir.exists() or not tokenizer_dir.exists():
+                logger.warning(f"Thư mục cache cho {model_name} không tồn tại, mặc dù có trong index")
+                return None
             
-            # Kiểm tra thông tin GPU
-            gpu_memory_total = 0
-            if torch.cuda.is_available():
-                gpu_count = torch.cuda.device_count()
-                for i in range(gpu_count):
-                    gpu_memory = torch.cuda.get_device_properties(i).total_memory / (1024**3)  # Convert to GB
-                    gpu_memory_total += gpu_memory
-                logger.info(f"Tổng bộ nhớ GPU: {gpu_memory_total:.2f} GB trên {gpu_count} GPU")
+            # Kiểm tra TTL (time-to-live)
+            ttl = config.DISK_CACHE_CONFIG.get("ttl", 24 * 60 * 60)  # Mặc định 24 giờ
+            current_time = time.time()
+            if current_time - cache_info.get("timestamp", 0) > ttl:
+                logger.info(f"Cache cho {model_name} đã hết hạn (TTL: {ttl}s), tải lại")
+                return None
+            
+            # Tải model và tokenizer
+            import torch
+            from transformers import AutoTokenizer, AutoModelForCausalLM
+            
+            try:
+                # Tải tokenizer trước vì nhẹ hơn
+                logger.info(f"Tải tokenizer từ disk cache: {tokenizer_dir}")
+                tokenizer = AutoTokenizer.from_pretrained(
+                    str(tokenizer_dir),
+                    trust_remote_code=True,
+                    use_fast=True
+                )
                 
-                # Đối với các model lớn (> 30B tham số), nếu tổng bộ nhớ > 80GB, sử dụng 8-bit để cải thiện chất lượng
-                if model_name.lower() == "llama" and gpu_memory_total > 80:
-                    use_8bit = True
-                    use_4bit = False
-                    logger.info(f"Sử dụng 8-bit quantization cho model {model_name} từ disk cache (GPU memory: {gpu_memory_total:.2f} GB)")
-            
-            # Đảm bảo thư mục offload tồn tại
-            offload_folder = Path(config.MODEL_CACHE_DIR) / "offload_folder"
-            offload_folder.mkdir(exist_ok=True, parents=True)
-            
-            # Cấu hình quantization
-            if use_4bit:
-                quantization_config = BitsAndBytesConfig(
-                    load_in_4bit=True,
-                    load_in_8bit=False,
-                    bnb_4bit_quant_type="nf4",
-                    bnb_4bit_compute_dtype=torch.bfloat16,
-                    bnb_4bit_use_double_quant=True,
-                    bnb_4bit_use_cpu_offload=True,
-                    offload_folder=str(offload_folder)
-                )
-                logger.info(f"Sử dụng 4-bit quantization cho model {model_name} từ disk cache")
-            elif use_8bit:
-                quantization_config = BitsAndBytesConfig(
-                    load_in_4bit=False,
-                    load_in_8bit=True,
-                    llm_int8_skip_modules=["lm_head"] if model_name.lower() == "qwen" else None,
-                    llm_int8_threshold=6.0,
-                    llm_int8_has_fp16_weight=True,
-                    offload_folder=str(offload_folder)
-                )
-                logger.info(f"Sử dụng 8-bit quantization cho model {model_name} từ disk cache")
-            
-            # Tạo device map & memory config
-            device_map = "auto"
-            max_memory = self._get_max_memory_config()
-            
-            # Tải tokenizer từ pickle
-            with open(tokenizer_path, 'rb') as f:
-                tokenizer = pickle.load(f)
-            
-            # Tải cấu hình model
-            with open(model_config_path, 'r') as f:
-                model_config = json.load(f)
-            
-            # Tạo model từ cấu hình
-            model_class = model_config.get("class", "AutoModelForCausalLM")
-            model_constructor = getattr(sys.modules["transformers"], model_class)
-            
-            # Tải model với cấu hình
-            model_init_args = {
-                "device_map": device_map,
-                "max_memory": max_memory,
-                "quantization_config": quantization_config,
-                "torch_dtype": torch.bfloat16
-            }
-            
-            # Thêm cấu hình cho model cụ thể
-            if model_name == "llama":
-                model_init_args["attn_implementation"] = "eager"
-            elif model_name == "qwen":
-                model_init_args["attn_implementation"] = "eager"
-                model_init_args["use_flash_attention_2"] = False
-                model_init_args["trust_remote_code"] = True
-            
-            # Tải model weights
-            with open(model_state_path, 'rb') as f:
-                model_state = pickle.load(f)
-            
-            # Tạo model
-            model = model_constructor.from_pretrained(model_config.get("pretrained_path"), **model_init_args)
-            
-            # Load state dict
-            model.load_state_dict(model_state)
-            
-            # Cập nhật thời gian truy cập
-            _DISK_CACHE_INDEX[model_name]["last_accessed"] = time.time()
-            self._save_cache_index()
-            
-            return tokenizer, model
-            
+                # Kiểm tra xem tokenizer có được tải thành công không
+                if tokenizer is None:
+                    logger.error(f"Không thể tải tokenizer cho {model_name} từ disk cache")
+                    return None
+                
+                # Cấu hình device map
+                use_gpu = torch.cuda.is_available()
+                device_map = "auto" if use_gpu else "cpu"
+                
+                # Tải model
+                logger.info(f"Tải model từ disk cache: {model_dir}")
+                
+                # Kiểm tra xem model có bị nén không
+                is_compressed = cache_info.get("compressed", False)
+                
+                # Cấu hình bộ nhớ
+                max_memory = self._get_max_memory_config() if use_gpu else None
+                
+                # Xây dựng model kwargs
+                model_kwargs = {
+                    "pretrained_model_name_or_path": str(model_dir),
+                    "device_map": device_map,
+                    "trust_remote_code": True,
+                    "torch_dtype": torch.bfloat16 if use_gpu else torch.float32,
+                }
+                
+                # Thêm cấu hình bộ nhớ nếu sử dụng GPU
+                if use_gpu and max_memory:
+                    model_kwargs["max_memory"] = max_memory
+                
+                # Tải model
+                model = AutoModelForCausalLM.from_pretrained(**model_kwargs)
+                
+                # Kiểm tra xem model có được tải thành công không
+                if model is None:
+                    logger.error(f"Không thể tải model {model_name} từ disk cache")
+                    return None
+                
+                logger.info(f"Đã tải thành công {model_name} từ disk cache")
+                
+                # Cập nhật timestamp trong index
+                _DISK_CACHE_INDEX[model_name]["last_used"] = current_time
+                self._save_cache_index()
+                
+                return tokenizer, model
+                
+            except Exception as e:
+                logger.error(f"Lỗi khi tải {model_name} từ disk cache: {str(e)}")
+                logger.error(traceback.format_exc())
+                return None
+                
         except Exception as e:
-            logger.error(f"Lỗi khi tải model {model_name} từ disk cache: {str(e)}")
+            logger.error(f"Lỗi không mong đợi khi tải {model_name} từ disk cache: {str(e)}")
             logger.error(traceback.format_exc())
             return None
     
     def _save_model_to_disk(self, model_name, tokenizer, model):
         """
-        Lưu model vào disk cache.
+        Lưu model và tokenizer vào disk cache.
         
         Args:
-            model_name (str): Tên model
-            tokenizer: Tokenizer
-            model: Model
+            model_name (str): Tên của model
+            tokenizer: Tokenizer object
+            model: Model object
             
         Returns:
-            bool: True nếu lưu thành công
+            bool: True nếu lưu thành công, False nếu không
         """
+        if not self.use_disk_cache:
+            logger.info("Disk cache bị tắt, không lưu model")
+            return False
+            
+        # Kiểm tra xem đã có đường dẫn trực tiếp đến model chưa
+        if model_name.lower() == "llama":
+            direct_path = config.LLAMA_MODEL_PATH
+        elif model_name.lower() == "qwen":
+            direct_path = config.QWEN_MODEL_PATH
+        else:
+            direct_path = ""
+            
+        if direct_path:
+            logger.info(f"Đã có đường dẫn trực tiếp đến {model_name} trong .env, không lưu vào disk cache")
+            return False
+        
         try:
             cache_dir = Path(config.DISK_CACHE_CONFIG["cache_dir"])
-            cache_dir.mkdir(exist_ok=True, parents=True)
+            model_dir = cache_dir / f"{model_name}_model"
+            tokenizer_dir = cache_dir / f"{model_name}_tokenizer"
             
+            # Xóa thư mục cũ nếu tồn tại
+            if model_dir.exists():
+                logger.info(f"Xóa thư mục model cũ: {model_dir}")
+                shutil.rmtree(model_dir, ignore_errors=True)
+                
+            if tokenizer_dir.exists():
+                logger.info(f"Xóa thư mục tokenizer cũ: {tokenizer_dir}")
+                shutil.rmtree(tokenizer_dir, ignore_errors=True)
+            
+            # Tạo thư mục mới
+            model_dir.mkdir(parents=True, exist_ok=True)
+            tokenizer_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Lưu model và tokenizer
             logger.info(f"Lưu model {model_name} vào disk cache")
             
             # Lưu tokenizer
-            tokenizer_path = cache_dir / f"{model_name}_tokenizer.pkl"
-            with open(tokenizer_path, 'wb') as f:
-                pickle.dump(tokenizer, f)
+            tokenizer.save_pretrained(str(tokenizer_dir))
             
-            # Lưu cấu hình model
-            model_config = {
-                "class": model.__class__.__name__,
-                "config": {
-                    k: v for k, v in model.config.to_dict().items() 
-                    if not k.startswith('_') and not callable(v)
-                },
-                "pretrained_path": model.name_or_path
-            }
-            
-            model_config_path = cache_dir / f"{model_name}_config.json"
-            with open(model_config_path, 'w') as f:
-                json.dump(model_config, f)
-            
-            # Lưu state dict model
-            model_state_path = cache_dir / f"{model_name}_state.pkl"
-            with open(model_state_path, 'wb') as f:
-                pickle.dump(model.state_dict(), f)
+            # Lưu model
+            model.save_pretrained(str(model_dir))
             
             # Cập nhật index
             _DISK_CACHE_INDEX[model_name] = {
                 "timestamp": time.time(),
-                "last_accessed": time.time(),
-                "tokenizer_path": str(tokenizer_path),
-                "model_config_path": str(model_config_path),
-                "model_state_path": str(model_state_path)
+                "last_used": time.time(),
+                "model_dir": str(model_dir),
+                "tokenizer_dir": str(tokenizer_dir),
+                "compressed": False
             }
             
             # Lưu index
             self._save_cache_index()
             
-            # Quản lý số lượng model trong cache
+            logger.info(f"Đã lưu {model_name} vào disk cache thành công")
+            
+            # Quản lý disk cache nếu cần
             self._manage_disk_cache()
             
-            logger.info(f"Đã lưu model {model_name} vào disk cache")
             return True
             
         except Exception as e:
-            logger.error(f"Lỗi khi lưu model {model_name} vào disk cache: {str(e)}")
+            logger.error(f"Lỗi khi lưu {model_name} vào disk cache: {str(e)}")
             logger.error(traceback.format_exc())
             return False
     
@@ -1024,16 +1669,44 @@ class ModelInterface:
     
     def _get_gemini_client(self):
         """
-        Lấy hoặc tạo Gemini API client.
+        Lấy hoặc tạo Gemini API client với key hiện tại.
         
         Returns:
             Client: Gemini API client
         """
-        if "gemini" in _API_CLIENTS:
-            return _API_CLIENTS["gemini"]
+        # Trước tiên kiểm tra và làm mới danh sách keys đã hết hạn
+        self._refresh_exhausted_keys()
         
-        # Cấu hình Gemini API
-        genai.configure(api_key=config.GEMINI_API_KEY)
+        # Xóa client cũ nếu có để cấu hình lại với key mới
+        if "gemini" in _API_CLIENTS:
+            del _API_CLIENTS["gemini"]
+        
+        # Lấy key hiện tại
+        keys = config.GEMINI_API_KEYS
+        if not keys:
+            logger.error("Không có Gemini API key nào được cấu hình")
+            return None
+        
+        # Nếu tất cả các key đều đã hết quota, reset danh sách key đã thử
+        if len(self.exhausted_gemini_keys) >= len(keys):
+            logger.warning("Tất cả Gemini API keys đều đã hết quota. Reset danh sách và thử lại.")
+            self.exhausted_gemini_keys.clear()
+        
+        # Đảm bảo key_index nằm trong phạm vi hợp lệ
+        self.current_gemini_key_index = self.current_gemini_key_index % len(keys)
+        
+        # Lấy key hiện tại
+        current_key = keys[self.current_gemini_key_index]
+        
+        # Nếu key hiện tại đã hết quota, tìm key tiếp theo
+        while self._is_key_exhausted(current_key, self.exhausted_gemini_keys) and len(self.exhausted_gemini_keys) < len(keys):
+            self.current_gemini_key_index = (self.current_gemini_key_index + 1) % len(keys)
+            current_key = keys[self.current_gemini_key_index]
+        
+        logger.debug(f"Sử dụng Gemini API key #{self.current_gemini_key_index + 1}/{len(keys)}")
+        
+        # Cấu hình Gemini API với key hiện tại
+        genai.configure(api_key=current_key)
         
         # Lưu client để tái sử dụng
         _API_CLIENTS["gemini"] = genai
@@ -1042,21 +1715,49 @@ class ModelInterface:
     
     def _get_groq_client(self):
         """
-        Lấy hoặc tạo Groq API client.
+        Lấy hoặc tạo Groq API client với key hiện tại.
         
         Returns:
             groq.Client: Groq client
         """
+        # Trước tiên kiểm tra và làm mới danh sách keys đã hết hạn
+        self._refresh_exhausted_keys()
+        
+        # Xóa client cũ nếu có để cấu hình lại với key mới
         if "groq" in _API_CLIENTS:
-            return _API_CLIENTS["groq"]
+            del _API_CLIENTS["groq"]
         
         # Đảm bảo thư viện groq được cài đặt
         if 'groq' not in sys.modules:
             logger.error("Thư viện groq không được cài đặt")
             return None
         
-        # Tạo client
-        client = groq.Client(api_key=config.GROQ_API_KEY)
+        # Lấy key hiện tại
+        keys = config.GROQ_API_KEYS
+        if not keys:
+            logger.error("Không có Groq API key nào được cấu hình")
+            return None
+        
+        # Nếu tất cả các key đều đã hết quota, reset danh sách key đã thử
+        if len(self.exhausted_groq_keys) >= len(keys):
+            logger.warning("Tất cả Groq API keys đều đã hết quota. Reset danh sách và thử lại.")
+            self.exhausted_groq_keys.clear()
+        
+        # Đảm bảo key_index nằm trong phạm vi hợp lệ
+        self.current_groq_key_index = self.current_groq_key_index % len(keys)
+        
+        # Lấy key hiện tại
+        current_key = keys[self.current_groq_key_index]
+        
+        # Nếu key hiện tại đã hết quota, tìm key tiếp theo
+        while self._is_key_exhausted(current_key, self.exhausted_groq_keys) and len(self.exhausted_groq_keys) < len(keys):
+            self.current_groq_key_index = (self.current_groq_key_index + 1) % len(keys)
+            current_key = keys[self.current_groq_key_index]
+        
+        logger.debug(f"Sử dụng Groq API key #{self.current_groq_key_index + 1}/{len(keys)}")
+        
+        # Tạo client mới với key hiện tại
+        client = groq.Client(api_key=current_key)
         _API_CLIENTS["groq"] = client
         
         return client
@@ -1140,8 +1841,27 @@ class ModelInterface:
                     logger.info(f"GPU {i}: {gpu['name']}, {gpu['total_memory']:.2f} GB tổng, {gpu['free_memory']:.2f} GB trống")
                 
                 # Chiến lược phân bổ bộ nhớ
-                if num_gpus >= 3:
-                    # Đối với hệ thống nhiều GPU (3+), phân bổ nhiều bộ nhớ hơn cho GPU đầu tiên
+                if num_gpus == 3:
+                    # Tối ưu cụ thể cho 3 GPU RTX 6000 Ada 48GB
+                    # Phân bổ bộ nhớ cân đối hơn để tận dụng toàn bộ 3 GPU cho một mô hình
+                    for i in range(num_gpus):
+                        reserved_memory = config.SYSTEM_RESERVE_MEMORY_GB
+                        
+                        if i == 0:
+                            # GPU đầu tiên: để lại nhiều bộ nhớ hơn cho hệ thống
+                            reserved_memory += 1.0
+                            usable_memory = max(1, int(gpu_info[i]['total_memory'] - reserved_memory))
+                            # Phân bổ 32% cho GPU đầu tiên - chứa lớp embedding và đầu ra
+                            max_memory[i] = f"{usable_memory}GiB"
+                        else:
+                            # GPU còn lại chia đều phần còn lại
+                            usable_memory = max(1, int(gpu_info[i]['total_memory'] - reserved_memory))
+                            max_memory[i] = f"{usable_memory}GiB"
+                            
+                    logger.info(f"Cấu hình phân bổ bộ nhớ cho 3 GPU: {max_memory}")
+                
+                elif num_gpus >= 4:
+                    # Đối với hệ thống nhiều GPU (4+), phân bổ nhiều bộ nhớ hơn cho GPU đầu tiên
                     # vì nó thường phải xử lý các lớp đầu vào và đầu ra cộng với một số lớp ẩn
                     for i in range(num_gpus):
                         reserved_memory = config.SYSTEM_RESERVE_MEMORY_GB
@@ -1168,8 +1888,11 @@ class ModelInterface:
                 
                 # Bộ nhớ CPU cho offload - tăng lên dựa trên số lượng GPU
                 # Với nhiều GPU, chúng ta có thể giảm offload CPU
-                if num_gpus >= 3:
-                    cpu_offload = max(8, int(config.CPU_OFFLOAD_GB * 0.6))  # Giảm offload với 3+ GPU
+                if num_gpus == 3:
+                    # Cho trường hợp 3 GPU, giảm offload CPU vì đã có đủ VRAM
+                    cpu_offload = max(8, int(config.CPU_OFFLOAD_GB * 0.5))
+                elif num_gpus >= 4:
+                    cpu_offload = max(8, int(config.CPU_OFFLOAD_GB * 0.6))  # Giảm offload với 4+ GPU
                 elif num_gpus == 2:
                     cpu_offload = max(12, int(config.CPU_OFFLOAD_GB * 0.8))  # Giảm nhẹ với 2 GPU
                 else:
@@ -1230,6 +1953,141 @@ class ModelInterface:
             return f"Error: {stats.get('error_message', 'Unknown error')}"
             
         return response
+
+    def _is_key_exhausted(self, key, exhausted_keys):
+        """
+        Kiểm tra xem key có đang bị hết hạn không, có tính đến việc sang ngày mới.
+        
+        Args:
+            key (str): API key cần kiểm tra
+            exhausted_keys (dict): Dictionary lưu thông tin keys đã hết hạn
+            
+        Returns:
+            bool: True nếu key vẫn đang hết hạn, False nếu có thể sử dụng
+        """
+        if key not in exhausted_keys:
+            return False
+            
+        # Lấy thông tin hết hạn
+        exhaustion_info = exhausted_keys[key]
+        exhaustion_time = exhaustion_info.get('timestamp', 0)
+        reason = exhaustion_info.get('reason', 'unknown')
+        
+        # Nếu lý do hết hạn không phải quota theo ngày, luôn coi là exhausted
+        if reason != 'daily_quota_exceeded':
+            return True
+            
+        # Kiểm tra xem key có reset theo ngày không
+        current_time = time.time()
+        
+        # Tính toán thời điểm reset quota (giả sử reset lúc 00:00 UTC)
+        exhaustion_date = datetime.datetime.fromtimestamp(exhaustion_time).date()
+        current_date = datetime.datetime.fromtimestamp(current_time).date()
+        
+        # Nếu đã sang ngày mới, key có thể sử dụng lại
+        if current_date > exhaustion_date:
+            logger.info(f"Key {key[:10]}... đã sang ngày mới, có thể sử dụng lại")
+            return False
+            
+        return True
+        
+    def _refresh_exhausted_keys(self):
+        """
+        Kiểm tra và làm mới danh sách keys đã hết hạn, loại bỏ các keys đã có thể sử dụng lại.
+        Gọi định kỳ hoặc khi tất cả keys đều đã hết hạn.
+        """
+        current_time = time.time()
+        
+        # Kiểm tra xem có cần refresh không, chỉ refresh định kỳ theo interval
+        if current_time - self.last_key_refresh_time < self.key_refresh_interval:
+            return
+            
+        self.last_key_refresh_time = current_time
+        logger.info("Đang làm mới danh sách API keys hết hạn...")
+        
+        # Kiểm tra keys Gemini
+        refreshed_keys = []
+        for key in list(self.exhausted_gemini_keys.keys()):
+            if not self._is_key_exhausted(key, self.exhausted_gemini_keys):
+                del self.exhausted_gemini_keys[key]
+                refreshed_keys.append(key[:10] + "...")
+                
+        if refreshed_keys:
+            logger.info(f"Đã làm mới {len(refreshed_keys)} Gemini API keys: {', '.join(refreshed_keys)}")
+        
+        # Kiểm tra keys Groq
+        refreshed_keys = []
+        for key in list(self.exhausted_groq_keys.keys()):
+            if not self._is_key_exhausted(key, self.exhausted_groq_keys):
+                del self.exhausted_groq_keys[key]
+                refreshed_keys.append(key[:10] + "...")
+                
+        if refreshed_keys:
+            logger.info(f"Đã làm mới {len(refreshed_keys)} Groq API keys: {', '.join(refreshed_keys)}")
+
+    def batch_generate_text(self, model_name, prompts, config=None):
+        """
+        Sinh văn bản cho nhiều prompt cùng lúc, tận dụng khả năng xử lý batch của model.
+        
+        Args:
+            model_name (str): Tên của model (llama, qwen, gemini, groq)
+            prompts (list): Danh sách các prompt đầu vào
+            config (dict): Cấu hình generation (temperature, max_tokens, etc.)
+            
+        Returns:
+            list: Danh sách các văn bản được sinh
+        """
+        logger.info(f"Đang xử lý batch với {len(prompts)} prompt trên model {model_name}")
+        
+        # Chuẩn bị cấu hình mặc định từ config module
+        import config as app_config
+        model_config = app_config.MODEL_CONFIGS.get(model_name, {}).copy()
+        
+        # Ghi đè cấu hình nếu được cung cấp
+        if config:
+            model_config.update(config)
+            
+        # Xác định phương thức sinh phù hợp theo loại model
+        responses = []
+        
+        if model_name.lower() in ["llama", "qwen"]:
+            # Để tận dụng GPU cache, chúng ta xử lý cùng lúc nhiều prompt
+            try:
+                # Tải model nếu chưa có trong cache
+                tokenizer, model = self._load_model(model_name)
+                
+                if tokenizer is None or model is None:
+                    error_msg = f"Không thể tải model {model_name}"
+                    logger.error(error_msg)
+                    return [f"[Error: {error_msg}]"] * len(prompts)
+                
+                # Xử lý từng prompt nhưng tận dụng model đã load vào GPU
+                for prompt in prompts:
+                    response, _ = self._generate_with_local_model(model_name, prompt, model_config)
+                    responses.append(response)
+                
+                return responses
+                
+            except Exception as e:
+                logger.error(f"Lỗi khi xử lý batch với model {model_name}: {str(e)}")
+                logger.debug(traceback.format_exc())
+                return [f"[Error: {str(e)}]"] * len(prompts)
+            
+        elif model_name.lower() in ["gemini", "groq"]:
+            # API models không xử lý được batch thực sự, nên xử lý tuần tự
+            for prompt in prompts:
+                if model_name.lower() == "gemini":
+                    response, _ = self._generate_with_gemini(prompt, model_config)
+                else:
+                    response, _ = self._generate_with_groq(prompt, model_config)
+                responses.append(response)
+                
+            return responses
+            
+        else:
+            error_msg = f"Model không được hỗ trợ: {model_name}"
+            logger.error(error_msg)
+            return [f"[Error: {error_msg}]"] * len(prompts)
 
 # Singleton để sử dụng từ bên ngoài
 _model_interface = None
@@ -1310,16 +2168,18 @@ def get_available_models():
         }
     
     # Model API
-    if config.GEMINI_API_KEY:
+    if config.GEMINI_API_KEYS:
         models["gemini"] = {
             "type": "api",
-            "api": "gemini"
+            "api": "gemini",
+            "keys_count": len(config.GEMINI_API_KEYS)
         }
     
-    if config.GROQ_API_KEY:
+    if config.GROQ_API_KEYS:
         models["groq"] = {
             "type": "api",
-            "api": "groq"
+            "api": "groq",
+            "keys_count": len(config.GROQ_API_KEYS)
         }
     
     return models

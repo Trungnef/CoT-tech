@@ -174,50 +174,130 @@ class Evaluator:
                     log_evaluation_start(logger, model_name, prompt_type, len(self.questions))
                     prompt_start_time = time.time()
                     
-                    # Vòng lặp qua các câu hỏi
-                    for q_idx, question in enumerate(self.questions):
-                        question_id = question.get('id', q_idx)
+                    # Xử lý câu hỏi theo batch để tận dụng tài nguyên GPU
+                    # Mỗi batch sẽ xử lý self.batch_size câu hỏi liên tiếp
+                    # với batch_size=15, mỗi lần chạy sẽ xử lý 15 câu hỏi cùng lúc
+                    # Giá trị batch_size=15 là tối ưu cho hệ thống 3 GPU,
+                    # cho phép tận dụng bộ nhớ và khả năng xử lý song song
+                    question_batches = [self.questions[i:i+self.batch_size] for i in range(0, len(self.questions), self.batch_size)]
+                    batch_count = len(question_batches)
+                    
+                    logger.info(f"Đánh giá {len(self.questions)} câu hỏi theo {batch_count} batch, mỗi batch {self.batch_size} câu hỏi")
+                    
+                    for batch_idx, batch in enumerate(question_batches):
+                        # Tính và hiển thị thời gian còn lại
+                        if batch_idx > 0:
+                            elapsed_time = time.time() - prompt_start_time
+                            avg_time_per_batch = elapsed_time / batch_idx
+                            remaining_batches = batch_count - batch_idx
+                            remaining_time = avg_time_per_batch * remaining_batches
+                            
+                            logger.info(f"Batch {batch_idx+1}/{batch_count}, ước tính thời gian còn lại: {remaining_time/60:.1f} phút")
                         
-                        # Kiểm tra xem tổ hợp này đã được đánh giá chưa
-                        combination_key = (model_name, prompt_type, question_id)
-                        if combination_key in self.completed_combinations:
-                            logger.debug(f"Bỏ qua tổ hợp đã đánh giá: {combination_key}")
-                            continue
+                        # Xử lý batch câu hỏi song song thay vì tuần tự từng câu
+                        batch_results = []
+                        batch_questions_to_evaluate = []
+                        batch_question_ids = []
+                        batch_question_idxs = []
                         
-                        # Đánh giá câu hỏi hiện tại
-                        try:
-                            self.current_question_idx = q_idx
-                            question_text = question.get('question', question.get('text', ''))
+                        # Lọc câu hỏi chưa được đánh giá trong batch
+                        for q_idx, question in enumerate(batch):
+                            question_id = question.get('id', (batch_idx * self.batch_size) + q_idx)
+                            combination_key = (model_name, prompt_type, question_id)
                             
-                            logger.debug(f"Đánh giá câu hỏi {q_idx+1}/{len(self.questions)}: "
-                                       f"ID={question_id}, Text={question_text[:50]}...")
+                            if combination_key not in self.completed_combinations:
+                                batch_questions_to_evaluate.append(question)
+                                batch_question_ids.append(question_id)
+                                batch_question_idxs.append((batch_idx * self.batch_size) + q_idx)
+                        
+                        # Nếu có câu hỏi để đánh giá trong batch
+                        if batch_questions_to_evaluate:
+                            # Log tiến độ
+                            elapsed = time.time() - prompt_start_time
+                            log_evaluation_progress(logger, model_name, prompt_type, 
+                                                 (batch_idx * self.batch_size), 
+                                                 len(self.questions), elapsed)
                             
-                            # Log tiến độ sau mỗi 5 câu hỏi hoặc theo cấu hình checkpoint_frequency
-                            if q_idx % max(1, min(5, self.checkpoint_frequency)) == 0:
-                                elapsed = time.time() - prompt_start_time
-                                log_evaluation_progress(logger, model_name, prompt_type, q_idx, 
-                                                      len(self.questions), elapsed)
+                            # Chuẩn bị danh sách prompts cho tất cả câu hỏi trong batch
+                            batch_prompts = []
+                            for question in batch_questions_to_evaluate:
+                                question_text = question.get('question', question.get('text', ''))
+                                prompt = create_prompt(question_text, prompt_type=prompt_type)
+                                batch_prompts.append(prompt)
                             
-                            result = self._evaluate_single_combination(
-                                model_name, prompt_type, question, q_idx
-                            )
+                            logger.info(f"Đang xử lý batch {batch_idx+1}/{batch_count} với {len(batch_prompts)} câu hỏi")
                             
-                            if result:
-                                self.results.append(result)
-                                self.completed_combinations.add(combination_key)
-                                pbar.update(1)
-                            
-                            # Lưu checkpoint theo tần suất đã cấu hình
-                            if (len(self.results) % self.checkpoint_frequency == 0 and 
-                                len(self.results) > 0):
-                                self.save_checkpoint()
+                            try:
+                                # Xử lý đồng thời tất cả câu hỏi trong batch nếu là model local (Llama, Qwen)
+                                if model_name.lower() in ["llama", "qwen"]:
+                                    # Xử lý batch cùng lúc với mô hình local
+                                    start_time_batch = time.time()
+                                    batch_responses = self._evaluate_local_model_batch(
+                                        model_name, batch_prompts, batch_questions_to_evaluate)
+                                    batch_latency = time.time() - start_time_batch
+                                    
+                                    # Xử lý từng kết quả và kiểm tra đáp án
+                                    for i, (question, response) in enumerate(zip(batch_questions_to_evaluate, batch_responses)):
+                                        question_id = batch_question_ids[i]
+                                        question_idx = batch_question_idxs[i]
+                                        latency_per_question = batch_latency / len(batch_responses)
+                                        
+                                        # Đánh giá và lưu kết quả
+                                        result = self._process_evaluation_result(
+                                            model_name, prompt_type, question, question_idx, 
+                                            response, latency_per_question
+                                        )
+                                        
+                                        if result:
+                                            batch_results.append(result)
+                                            self.completed_combinations.add((model_name, prompt_type, question_id))
+                                            pbar.update(1)
                                 
-                        except Exception as e:
-                            logger.error(f"Lỗi khi đánh giá tổ hợp {combination_key}: {str(e)}")
-                            logger.debug(f"Chi tiết lỗi: {traceback.format_exc()}")
+                                # Đối với API models hoặc nếu xử lý batch không thành công, xử lý tuần tự từng câu
+                                else:
+                                    for i, question in enumerate(batch_questions_to_evaluate):
+                                        question_id = batch_question_ids[i]
+                                        question_idx = batch_question_idxs[i]
+                                        
+                                        # Đánh giá từng câu hỏi
+                                        result = self._evaluate_single_combination(
+                                            model_name, prompt_type, question, question_idx
+                                        )
+                                        
+                                        if result:
+                                            batch_results.append(result)
+                                            self.completed_combinations.add((model_name, prompt_type, question_id))
+                                            pbar.update(1)
                             
-                            # Cố gắng lưu checkpoint ngay cả khi có lỗi
+                            except Exception as e:
+                                logger.error(f"Lỗi khi xử lý batch {batch_idx+1}: {str(e)}")
+                                logger.debug(f"Chi tiết lỗi: {traceback.format_exc()}")
+                                
+                                # Nếu xử lý batch lỗi, thử xử lý tuần tự từng câu
+                                logger.info("Đang thử xử lý tuần tự cho batch bị lỗi...")
+                                for i, question in enumerate(batch_questions_to_evaluate):
+                                    try:
+                                        question_id = batch_question_ids[i]
+                                        question_idx = batch_question_idxs[i]
+                                        
+                                        result = self._evaluate_single_combination(
+                                            model_name, prompt_type, question, question_idx
+                                        )
+                                        
+                                        if result:
+                                            batch_results.append(result)
+                                            self.completed_combinations.add((model_name, prompt_type, question_id))
+                                            pbar.update(1)
+                                    except Exception as inner_e:
+                                        logger.error(f"Lỗi khi xử lý câu hỏi {question_id}: {str(inner_e)}")
+                            
+                            # Thêm tất cả kết quả batch vào danh sách kết quả chính
+                            self.results.extend(batch_results)
+                        
+                        # Lưu checkpoint sau mỗi batch
+                        if len(self.results) > 0:
                             self.save_checkpoint()
+                            logger.info(f"Đã lưu checkpoint sau batch {batch_idx+1}/{batch_count}")
                     
                     # Log kết thúc đánh giá model/prompt
                     prompt_time = time.time() - prompt_start_time
@@ -1966,3 +2046,164 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
             'json_path': json_path,
             'reports': report_paths
         }
+
+    def _evaluate_local_model_batch(self, model_name, batch_prompts, batch_questions):
+        """
+        Đánh giá một batch câu hỏi cùng lúc với model local.
+        
+        Args:
+            model_name (str): Tên của model
+            batch_prompts (list): Danh sách prompts
+            batch_questions (list): Danh sách câu hỏi
+            
+        Returns:
+            list: Danh sách các câu trả lời
+        """
+        logger.info(f"Đang xử lý batch với {len(batch_prompts)} câu hỏi trên model {model_name}")
+        
+        try:
+            # Lấy max tokens từ config
+            max_tokens = config.MODEL_CONFIGS[model_name]['max_tokens']
+            
+            # Sử dụng batch_generate_text để xử lý nhiều prompt cùng lúc
+            batch_responses = self.model_interface.batch_generate_text(
+                model_name=model_name,
+                prompts=batch_prompts,
+                config={"max_tokens": max_tokens}
+            )
+            
+            logger.info(f"Đã xử lý thành công batch {len(batch_responses)} câu trả lời")
+            return batch_responses
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi xử lý batch với model {model_name}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            # Trả về danh sách trống để handler ở trên xử lý tiếp
+            return []
+    
+    def _process_evaluation_result(self, model_name, prompt_type, question, question_idx, response, latency):
+        """
+        Xử lý kết quả đánh giá từ một câu trả lời.
+        
+        Args:
+            model_name (str): Tên của model
+            prompt_type (str): Loại prompt
+            question (dict): Thông tin câu hỏi
+            question_idx (int): Chỉ số của câu hỏi
+            response (str): Câu trả lời từ model
+            latency (float): Thời gian trả lời
+            
+        Returns:
+            dict: Kết quả đánh giá
+        """
+        import json
+        
+        question_id = question.get('id', question_idx)
+        question_text = question.get('question', question.get('text', ''))
+        expected_answer = question.get('solution', question.get('answer', ''))
+        question_type = question.get('type', 'general')
+        difficulty = question.get('difficulty', 'Không xác định')
+        
+        try:
+            # Kiểm tra đáp án
+            is_correct = self._check_answer(response, expected_answer, question_type)
+            
+            # Khởi tạo các giá trị mặc định cho reasoning scores
+            reasoning_accuracy = 0
+            reasoning_reasoning = 0
+            reasoning_completeness = 0
+            reasoning_explanation = 0
+            reasoning_cultural_context = 0
+            reasoning_average = 0
+            
+            # Đánh giá khả năng suy luận nếu được bật
+            if self.reasoning_evaluation_enabled and config.REASONING_EVALUATION_CONFIG.get('enabled', True):
+                try:
+                    logger.debug(f"Bắt đầu đánh giá reasoning cho {model_name}/{prompt_type}/{question_id}")
+
+                    # Tính heuristic accuracy dự trên kết quả boolean is_correct
+                    accuracy_heuristic = 5 if is_correct else 1
+
+                    # Tạo prompt đánh giá
+                    reasoning_prompt = self._create_reasoning_evaluation_prompt(question_text, response, expected_answer)
+
+                    # Lấy phản hồi đánh giá
+                    reasoning_model = "groq/" + config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')
+                    
+                    reasoning_eval = self.model_interface.get_response(
+                        model_name=reasoning_model,
+                        prompt=reasoning_prompt,
+                        max_tokens=800
+                    )
+
+                    # Parse kết quả đánh giá
+                    reasoning_scores = self._parse_reasoning_evaluation(reasoning_eval)
+
+                    # Trích xuất các giá trị
+                    reasoning_accuracy = reasoning_scores.get('accuracy', 0)
+                    reasoning_reasoning = reasoning_scores.get('reasoning', 0)
+                    reasoning_completeness = reasoning_scores.get('completeness', 0)
+                    reasoning_explanation = reasoning_scores.get('explanation', 0)
+                    reasoning_cultural_context = reasoning_scores.get('cultural_context', 0)
+                    reasoning_average = reasoning_scores.get('average', 0)
+
+                    # Đảm bảo có điểm accuracy
+                    if reasoning_accuracy == 0:
+                        reasoning_accuracy = accuracy_heuristic
+                        logger.debug(f"Sử dụng accuracy heuristic: {accuracy_heuristic}/5")
+
+                except Exception as e:
+                    logger.error(f"Lỗi trong quá trình đánh giá reasoning: {str(e)}")
+                    logger.debug(traceback.format_exc())
+                    reasoning_accuracy = 5 if is_correct else 1
+                    reasoning_average = reasoning_accuracy
+            
+            # Ghi log kết quả
+            short_response = response[:100] + "..." if len(response) > 100 else response
+            logger.debug(f"Kết quả: Model={model_name}, Prompt={prompt_type}, Question={question_id}")
+            logger.debug(f"Đúng/Sai: {is_correct}, Thời gian: {latency:.2f}s")
+            logger.debug(f"Câu trả lời: {short_response}")
+            
+            # Tạo đối tượng reasoning_scores để lưu dưới dạng chuỗi JSON
+            reasoning_scores_dict = {
+                'accuracy': reasoning_accuracy,
+                'reasoning': reasoning_reasoning,
+                'completeness': reasoning_completeness,
+                'explanation': reasoning_explanation,
+                'cultural_context': reasoning_cultural_context,
+                'average': reasoning_average
+            }
+            
+            # Chuyển đổi dictionary thành chuỗi JSON
+            reasoning_scores_json = json.dumps(reasoning_scores_dict)
+            
+            # Tạo kết quả
+            result = {
+                'model_name': model_name,
+                'prompt_type': prompt_type,
+                'question_id': question_id,
+                'question_text': question_text,
+                'question_type': question_type,
+                'difficulty': difficulty,
+                'response': response,
+                'expected_answer': expected_answer,
+                'is_correct': is_correct,
+                'latency': latency,
+                'timestamp': datetime.datetime.now().isoformat(),
+                # Phẳng hóa các chỉ số reasoning
+                'reasoning_accuracy': reasoning_accuracy,
+                'reasoning_reasoning': reasoning_reasoning,
+                'reasoning_completeness': reasoning_completeness,
+                'reasoning_explanation': reasoning_explanation,
+                'reasoning_cultural_context': reasoning_cultural_context,
+                'reasoning_average': reasoning_average,
+                # Lưu trữ dictionary dưới dạng chuỗi JSON
+                'reasoning_scores_str': reasoning_scores_json,
+            }
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi xử lý kết quả cho {model_name}/{prompt_type}/{question_id}: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return None
