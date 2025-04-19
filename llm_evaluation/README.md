@@ -41,7 +41,7 @@ Framework này cung cấp một bộ công cụ để đánh giá hiệu suất 
 
 1.  **Clone Repository**:
     ```bash
-    git clone <URL_repository_cua_ban>
+    git clone https://github.com/Trungnef/CoT-tech.git
     cd llm_evaluation
     ```
 
@@ -215,8 +215,8 @@ Chào mừng các đóng góp! Vui lòng tạo Pull Request hoặc Issue trên r
 
 ## Tác Giả
 
-[Tên của bạn hoặc tổ chức]
+TRUNE
 
 ## Giấy Phép
 
-[Thông tin giấy phép, ví dụ: MIT License] 
+ALONEE
