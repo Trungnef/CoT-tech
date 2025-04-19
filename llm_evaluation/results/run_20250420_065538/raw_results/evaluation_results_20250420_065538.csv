@@ -1,0 +1,247 @@
+model_name,prompt_type,question_id,question_text,question_type,difficulty,response,expected_answer,is_correct,latency,timestamp,reasoning_accuracy,reasoning_reasoning,reasoning_completeness,reasoning_explanation,reasoning_cultural_context,reasoning_average,reasoning_scores_str
+gemini,zero_shot,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Trong 1 giờ, thợ A làm được 1/6 công việc.
+
+Trong 1 giờ, thợ B làm được 1/4 công việc.
+
+Nếu hai thợ cùng làm, trong 1 giờ họ làm được: 1/6 + 1/4 = 5/12 công việc.
+
+Thời gian để hai thợ cùng làm xong công việc là: 1 / (5/12) = 12/5 giờ = 2 giờ 24 phút.
+
+**Đáp án: 2 giờ 24 phút**","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,2.2353227138519287,2025-04-20T06:55:42.337103,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,few_shot_3,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc.
+
+Nếu hai thợ cùng làm, trong 1 giờ họ làm được: 1/6 + 1/4 = 5/12 công việc.
+
+Thời gian để hai thợ cùng làm xong công việc là: 1 / (5/12) = 12/5 = 2,4 giờ = 2 giờ 24 phút.","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,2.076359987258911,2025-04-20T06:55:45.742570,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,few_shot_5,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Thợ A làm 1 giờ được 1/6 công việc.
+Thợ B làm 1 giờ được 1/4 công việc.
+Cả hai thợ cùng làm 1 giờ được 1/6 + 1/4 = 5/12 công việc.
+Thời gian để cả hai thợ cùng làm xong công việc là 1/(5/12) = 12/5 = 2,4 giờ = 2 giờ 24 phút.","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,2.0432863235473633,2025-04-20T06:55:49.177671,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,few_shot_7,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Đáp án bài toán cuối cùng (lặp lại):
+
+Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 = 5/12 công việc. Thời gian cần: 1 ÷ (5/12) = 12/5 = 2.4 giờ.  Hay 2 giờ 24 phút.","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,2.063697576522827,2025-04-20T06:55:52.778336,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,cot,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"**Bước 1: Tìm năng suất của mỗi thợ.**
+
+* Năng suất của thợ A: 1 công việc / 6 giờ = 1/6 công việc/giờ
+* Năng suất của thợ B: 1 công việc / 4 giờ = 1/4 công việc/giờ
+
+**Bước 2: Tính năng suất chung của hai thợ khi cùng làm.**
+
+Khi hai thợ cùng làm, năng suất chung của họ là tổng năng suất của từng người:
+
+Năng suất chung = Năng suất của thợ A + Năng suất của thợ B = 1/6 + 1/4
+
+Để cộng hai phân số này, ta cần tìm mẫu số chung, đó là 12:
+
+Năng suất chung = (1/6) * (2/2) + (1/4) * (3/3) = 2/12 + 3/12 = 5/12 công việc/giờ
+
+**Bước 3: Tính thời gian hoàn thành công việc khi hai thợ cùng làm.**
+
+Thời gian hoàn thành = Tổng công việc / Năng suất chung = 1 công việc / (5/12 công việc/giờ)
+
+Để chia cho một phân số, ta nhân với nghịch đảo của nó:
+
+Thời gian hoàn thành = 1 * (12/5) = 12/5 giờ
+
+**Bước 4: Chuyển đổi kết quả sang giờ và phút (nếu cần).**
+
+12/5 giờ = 2 giờ và (2/5) * 60 phút = 2 giờ và 24 phút
+
+**Kết luận:**
+
+Nếu hai thợ cùng làm, họ sẽ hoàn thành công việc trong 12/5 giờ, hay 2 giờ 24 phút.","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,2.9802377223968506,2025-04-20T06:55:57.327980,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,cot_self_consistency_3,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Bài toán này hỏi thời gian hoàn thành công việc khi hai thợ cùng làm.  Chúng ta có thể giải bằng ba cách sau:
+
+**Cách 1: Sử dụng năng suất**
+
+* **Bước 1: Tính năng suất của mỗi thợ:**
+
+    * Năng suất của thợ A: 1 công việc / 6 giờ = 1/6 công việc/giờ
+    * Năng suất của thợ B: 1 công việc / 4 giờ = 1/4 công việc/giờ
+
+* **Bước 2: Tính năng suất chung của hai thợ:**
+
+    * Năng suất chung = Năng suất của thợ A + Năng suất của thợ B = 1/6 + 1/4 = (2+3)/12 = 5/12 công việc/giờ
+
+* **Bước 3: Tính thời gian hoàn thành công việc khi hai thợ cùng làm:**
+
+    * Thời gian = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2,4 giờ = 2 giờ 24 phút
+
+**Kết quả:** Nếu hai thợ cùng làm, họ sẽ hoàn thành công việc trong 2 giờ 24 phút.
+
+
+**Cách 2: Sử dụng tỉ lệ nghịch**
+
+* **Bước 1: Tìm công việc chung:**  Giả sử công việc có tổng lượng là 12 đơn vị (bội chung nhỏ nhất của 6 và 4).
+
+* **Bước 2: Tính số đơn vị công việc mỗi thợ làm trong 1 giờ:**
+
+    * Thợ A làm được 12 đơn vị / 6 giờ = 2 đơn vị/giờ
+    * Thợ B làm được 12 đơn vị / 4 giờ = 3 đơn vị/giờ
+
+* **Bước 3: Tính tổng số đơn vị công việc hai thợ làm được trong 1 giờ:**
+
+    * Tổng số đơn vị/giờ = 2 + 3 = 5 đơn vị/giờ
+
+* **Bước 4: Tính thời gian hoàn thành công việc:**
+
+    * Thời gian = 12 đơn vị / 5 đơn vị/giờ = 2,4 giờ = 2 giờ 24 phút
+
+**Kết quả:** Nếu hai thợ cùng làm, họ sẽ hoàn thành công việc trong 2 giờ 24 phút.
+
+
+**Cách 3: Sử dụng công thức tổng quát**
+
+Nếu người thứ nhất làm một công việc trong a giờ và người thứ hai làm cùng công việc đó trong b giờ, thì khi cả hai cùng làm, thời gian hoàn thành công việc (t) được tính theo công thức:
+
+t = (a * b) / (a + b)
+
+Trong trường hợp này:
+
+* a = 6 giờ
+* b = 4 giờ
+
+t = (6 * 4) / (6 + 4) = 24 / 10 = 2,4 giờ = 2 giờ 24 phút
+
+**Kết quả:** Nếu hai thợ cùng làm, họ sẽ hoàn thành công việc trong 2 giờ 24 phút.
+
+
+Cả ba cách đều cho cùng một kết quả, chứng tỏ tính nhất quán của bài toán.","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,5.7345969676971436,2025-04-20T06:56:04.534515,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,cot_self_consistency_5,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Bài toán này yêu cầu tính thời gian hoàn thành công việc khi hai thợ cùng làm. Dưới đây là 5 cách giải khác nhau:
+
+**Cách 1: Sử dụng năng suất**
+
+* **Bước 1: Tính năng suất của mỗi thợ:**
+    * Năng suất của thợ A: 1 công việc / 6 giờ = 1/6 công việc/giờ
+    * Năng suất của thợ B: 1 công việc / 4 giờ = 1/4 công việc/giờ
+
+* **Bước 2: Tính năng suất chung:**
+    * Năng suất chung của cả hai thợ: (1/6) + (1/4) = 5/12 công việc/giờ
+
+* **Bước 3: Tính thời gian hoàn thành:**
+    * Thời gian hoàn thành = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2,4 giờ = 2 giờ 24 phút
+
+**Cách 2: Sử dụng tỷ lệ thuận nghịch**
+
+* **Bước 1:  Tìm công việc chung:** Giả sử công việc có tổng cộng 12 đơn vị (bội chung nhỏ nhất của 6 và 4).
+
+* **Bước 2: Tính số đơn vị công việc mỗi người làm trong 1 giờ:**
+    * Thợ A làm được 12/6 = 2 đơn vị/giờ
+    * Thợ B làm được 12/4 = 3 đơn vị/giờ
+
+* **Bước 3: Tính số đơn vị công việc cả hai làm trong 1 giờ:**
+    * Cả hai làm được 2 + 3 = 5 đơn vị/giờ
+
+* **Bước 4: Tính thời gian hoàn thành:**
+    * Thời gian hoàn thành = 12 đơn vị / 5 đơn vị/giờ = 2,4 giờ = 2 giờ 24 phút
+
+**Cách 3: Sử dụng phương trình**
+
+* **Bước 1: Gọi x là thời gian hoàn thành khi cả hai cùng làm.**
+
+* **Bước 2: Lập phương trình:**  (x/6) + (x/4) = 1  (phần công việc thợ A làm + phần công việc thợ B làm = 1 công việc hoàn chỉnh)
+
+* **Bước 3: Giải phương trình:**
+    * Nhân cả hai vế với 12 (bội chung nhỏ nhất của 6 và 4): 2x + 3x = 12
+    * 5x = 12
+    * x = 12/5 giờ = 2,4 giờ = 2 giờ 24 phút
+
+**Cách 4: Sử dụng công thức tổng hợp công việc**
+
+Công thức:  1/t = 1/t1 + 1/t2,  với t là thời gian hoàn thành khi cả hai cùng làm, t1 là thời gian thợ A làm, t2 là thời gian thợ B làm.
+
+* **Bước 1: Áp dụng công thức:** 1/t = 1/6 + 1/4
+
+* **Bước 2: Tính toán:** 1/t = (4 + 6) / 24 = 10/24 = 5/12
+
+* **Bước 3: Tìm t:** t = 12/5 giờ = 2,4 giờ = 2 giờ 24 phút
+
+**Cách 5:  Sử dụng quy tắc ba**
+
+* **Bước 1:  Thợ A làm 1/6 công việc trong 1 giờ.**
+* **Bước 2: Thợ B làm 1/4 công việc trong 1 giờ.**
+* **Bước 3: Trong 1 giờ, cả hai làm được 1/6 + 1/4 = 5/12 công việc.**
+* **Bước 4:  Để làm xong 1 công việc, cần thời gian:** (1 công việc) / (5/12 công việc/giờ) = 12/5 giờ = 2,4 giờ = 2 giờ 24 phút
+
+
+**Kết luận:**  Tất cả 5 cách giải đều cho kết quả là 2 giờ 24 phút, chứng tỏ tính nhất quán của kết quả.  Đây là một bài toán đơn giản nhưng việc giải bằng nhiều cách khác nhau giúp củng cố hiểu biết và làm quen với nhiều phương pháp giải toán.","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,7.403926372528076,2025-04-20T06:56:15.944755,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,cot_self_consistency_7,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Bài toán yêu cầu tính thời gian hoàn thành công việc khi cả hai thợ A và B cùng làm.  Đây là bài toán công việc, có nhiều cách tiếp cận khác nhau. Dưới đây là 7 cách giải:
+
+**Cách 1: Sử dụng tỉ lệ công việc**
+
+* **Bước 1:** Tính năng suất của mỗi thợ.
+    * Năng suất của thợ A: 1/6 công việc/giờ
+    * Năng suất của thợ B: 1/4 công việc/giờ
+* **Bước 2:** Tính năng suất chung của cả hai thợ:
+    * Năng suất chung = Năng suất A + Năng suất B = 1/6 + 1/4 = 5/12 công việc/giờ
+* **Bước 3:** Tính thời gian hoàn thành công việc khi cả hai cùng làm:
+    * Thời gian = 1 công việc / (5/12 công việc/giờ) = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 2: Sử dụng phương pháp tìm công việc chung**
+
+* **Bước 1:**  Tìm bội số chung nhỏ nhất (BCNN) của 6 và 4 là 12.  Giả sử công việc có 12 đơn vị.
+* **Bước 2:** Tính số đơn vị công việc mỗi người làm trong 1 giờ:
+    * Thợ A làm được 12/6 = 2 đơn vị/giờ
+    * Thợ B làm được 12/4 = 3 đơn vị/giờ
+* **Bước 3:** Tính tổng số đơn vị công việc cả hai làm được trong 1 giờ: 2 + 3 = 5 đơn vị/giờ
+* **Bước 4:** Tính thời gian hoàn thành: 12 đơn vị / 5 đơn vị/giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 3: Sử dụng quy tắc ba**
+
+* Nếu thợ A làm 1 mình thì mất 6 giờ.  Nếu cả hai cùng làm, thời gian sẽ ngắn hơn 6 giờ.
+* Nếu thợ B làm 1 mình thì mất 4 giờ.  Nếu cả hai cùng làm, thời gian sẽ ngắn hơn 4 giờ.
+* Sử dụng quy tắc ba khó áp dụng trực tiếp vì đây không phải là tỉ lệ thuận đơn giản.  Phương pháp này không hiệu quả cho bài toán này.
+
+**Cách 4:  Sử dụng công thức tổng quát**
+
+Công thức tổng quát cho hai người cùng làm một công việc là:  `1/t = 1/t1 + 1/t2`,  trong đó:
+
+* t là thời gian cả hai cùng làm
+* t1 là thời gian người thứ nhất làm một mình
+* t2 là thời gian người thứ hai làm một mình
+
+Vậy: 1/t = 1/6 + 1/4 = 5/12 => t = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút
+
+**Cách 5:  Biểu diễn bằng đồ thị** (Khó biểu diễn bằng văn bản, nhưng về mặt khái niệm, ta có thể vẽ đồ thị biểu diễn phần việc hoàn thành theo thời gian của mỗi người, sau đó cộng dồn lại để tìm điểm giao nhau khi hoàn thành công việc)
+
+**Cách 6: Sử dụng lập luận tỷ lệ nghịch**
+
+Thời gian hoàn thành công việc tỷ lệ nghịch với năng suất.  Năng suất của hai người cùng làm là tổng năng suất của mỗi người.  Do đó, thời gian hoàn thành sẽ ngắn hơn thời gian của mỗi người làm riêng.  Tuy nhiên, lập luận này không cho phép tính toán trực tiếp mà chỉ xác định hướng giải quyết.
+
+**Cách 7:  Giải bằng phương trình**
+
+Gọi x là thời gian hoàn thành công việc khi cả hai cùng làm.  Trong 1 giờ:
+
+* Thợ A làm được 1/6 công việc
+* Thợ B làm được 1/4 công việc
+* Cả hai làm được (1/6 + 1/4)x = 1 (công việc hoàn thành)
+
+Giải phương trình: (1/6 + 1/4)x = 1 => (5/12)x = 1 => x = 12/5 giờ = 2.4 giờ = 2 giờ 24 phút
+
+
+**Kết luận:**  Tất cả các phương pháp (trừ cách 3 và 5, cách 5 khó biểu diễn bằng văn bản) đều cho kết quả là **2 giờ 2","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,7.791262626647949,2025-04-20T06:56:38.127564,5.0,5.0,5.0,5.0,5.0,5.0,
+gemini,react,1320,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",Bài toán công việc,Dễ,"Suy nghĩ 1: Bài toán yêu cầu tìm thời gian hoàn thành công việc khi hai thợ cùng làm.  Ta cần tìm năng suất của mỗi thợ rồi cộng lại để tìm năng suất chung, sau đó tính thời gian.
+
+Hành động 1: Tính năng suất của mỗi thợ. Năng suất được tính bằng phần công việc hoàn thành trong 1 giờ.
+
+Kết quả 1: Năng suất của thợ A là 1/6 công việc/giờ. Năng suất của thợ B là 1/4 công việc/giờ.
+
+Suy nghĩ 2:  Để tìm năng suất chung, ta cộng năng suất của hai thợ lại.
+
+Hành động 2: Cộng năng suất của thợ A và thợ B.
+
+Kết quả 2: Năng suất chung là 1/6 + 1/4 = 2/12 + 3/12 = 5/12 công việc/giờ.
+
+Suy nghĩ 3:  Thời gian hoàn thành công việc khi cả hai cùng làm bằng tổng công việc chia cho năng suất chung.
+
+Hành động 3: Tính thời gian bằng cách lấy 1 (toàn bộ công việc) chia cho năng suất chung.
+
+Kết quả 3: Thời gian hoàn thành công việc là 1 / (5/12) = 12/5 = 2.4 giờ.
+
+Suy nghĩ 4: Chuyển đổi kết quả sang giờ và phút.
+
+Hành động 4: Chuyển đổi 0.4 giờ sang phút: 0.4 giờ * 60 phút/giờ = 24 phút.
+
+Kết quả 4: Thời gian hoàn thành là 2 giờ 24 phút.
+
+Đáp án cuối cùng: 2 giờ 24 phút","Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 công việc. Thời gian cần: 2.4 giờ.",True,3.7837817668914795,2025-04-20T06:56:52.829896,5.0,5.0,5.0,5.0,5.0,5.0,

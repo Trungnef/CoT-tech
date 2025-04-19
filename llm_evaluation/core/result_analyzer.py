@@ -13,8 +13,21 @@ from collections import defaultdict
 import traceback
 import re
 import random
+ # Kiểm tra các thư viện cần thiết
+import torch
+import nltk
+from nltk.tokenize import word_tokenize
 
 # Import các module cần thiết
+try:
+    from ..utils.metrics_utils import calculate_bleu_scores, calculate_exact_match_accuracy, calculate_rouge_scores
+except ImportError:
+    # Fallback khi chạy module trực tiếp
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from utils.metrics_utils import calculate_bleu_scores, calculate_exact_match_accuracy, calculate_rouge_scores
+
 try:
     from ..core.model_interface import generate_text
 except ImportError:
@@ -126,7 +139,6 @@ Bạn là một chuyên gia đánh giá chất lượng đầu ra của các mô
    - Điểm 4: Tận dụng tốt ngữ cảnh và phù hợp văn hóa
    - Điểm 3: Tận dụng ngữ cảnh ở mức trung bình
    - Điểm 2: Ít tận dụng ngữ cảnh được cung cấp
-   - Điểm 1: Hoàn toàn không sử dụng ngữ cảnh được cung cấp
 
 ## BÀI TOÁN CẦN GIẢI QUYẾT
 
@@ -2823,8 +2835,8 @@ Detailed analysis:
 
     def calculate_additional_metrics(self) -> pd.DataFrame:
         """
-        Tính toán các metrics nâng cao như BERT score, METEOR score, F1-score
-        và thêm vào DataFrame kết quả.
+        Tính toán các metrics nâng cao như EM (Exact Match), ROUGE, BLEU, 
+        BERT score, METEOR score, F1-score và thêm vào DataFrame kết quả.
         
         Returns:
             pd.DataFrame: DataFrame với các metrics đã được thêm vào
@@ -2858,49 +2870,32 @@ Detailed analysis:
             logger.info(f"Sử dụng cột '{response_col}' cho câu trả lời và '{correct_answer_col}' cho đáp án chuẩn")
             logger.info(f"Bắt đầu tính toán metrics nâng cao cho {len(self.results_df)} hàng dữ liệu...")
             
-            # Kiểm tra các thư viện cần thiết
-            import torch
-            import nltk
-            from nltk.tokenize import word_tokenize
-            
-            # Đảm bảo đã tải dữ liệu NLTK cần thiết
-            try:
-                nltk.data.find('wordnet')
-                nltk.data.find('punkt')
-            except LookupError:
-                logger.info("Tải xuống dữ liệu NLTK cần thiết...")
-                try:
-                    nltk.download('wordnet', quiet=True)
-                    nltk.download('punkt', quiet=True)
-                    logger.info("Đã tải dữ liệu NLTK thành công")
-                except Exception as nltk_err:
-                    logger.warning(f"Không thể tải dữ liệu NLTK: {str(nltk_err)}")
-            
-            # Kiểm tra METEOR Score
-            try:
-                from nltk.translate.meteor_score import meteor_score as nltk_meteor_score
-                meteor_score = nltk_meteor_score
-                logger.info("Đã tìm thấy NLTK METEOR score, bắt đầu tính toán")
-            except (ImportError, AttributeError) as meteor_err:
-                logger.warning(f"Không tìm thấy NLTK METEOR score: {str(meteor_err)}")
-                meteor_score = None
-            
-            # Kiểm tra BERT Score
-            try:
-                from bert_score import score as bert_score
-                has_bert_score = True
-                logger.info("Đã tìm thấy thư viện bert-score, bắt đầu tính toán BERT score")
-            except ImportError:
-                logger.warning("Thư viện bert-score không được cài đặt, sẽ bỏ qua tính toán BERT score")
-                has_bert_score = False
-                
             # Khởi tạo các cột metrics mới nếu chưa có
+            # F1 score
             if 'f1_score' not in self.results_df.columns:
                 self.results_df['f1_score'] = np.nan
+                
+            # METEOR score
             if 'meteor_score' not in self.results_df.columns:
                 self.results_df['meteor_score'] = np.nan
-            if 'bert_score' not in self.results_df.columns and has_bert_score:
+                
+            # BERT score
+            if 'bert_score' not in self.results_df.columns:
                 self.results_df['bert_score'] = np.nan
+                
+            # Thêm các cột mới: EM, ROUGE, BLEU
+            if 'exact_match' not in self.results_df.columns:
+                self.results_df['exact_match'] = np.nan
+                
+            # ROUGE scores (thêm các cột chính)
+            for rouge_metric in ['rouge1_f', 'rouge2_f', 'rougeL_f']:
+                if rouge_metric not in self.results_df.columns:
+                    self.results_df[rouge_metric] = np.nan
+                    
+            # BLEU scores
+            for bleu_metric in ['bleu', 'bleu1', 'bleu2', 'bleu4']:
+                if bleu_metric not in self.results_df.columns:
+                    self.results_df[bleu_metric] = np.nan
             
             # Lọc các hàng có cả correct_answer và response
             valid_rows = self.results_df[pd.notna(self.results_df[correct_answer_col]) & pd.notna(self.results_df[response_col])]
@@ -2917,19 +2912,67 @@ Detailed analysis:
                     response = str(row[response_col])
                     correct_answer = str(row[correct_answer_col])
                     
-                    # Tính F1 Score dựa trên token overlap
+                    # 1. Tính F1 Score dựa trên token overlap
                     try:
                         f1_value = self._calculate_f1_token_overlap(correct_answer, response)
                         if f1_value == 0.0:
                             # Thử phương pháp dự phòng nếu f1_value = 0
                             f1_value = self._calculate_fallback_f1(correct_answer, response)
-                            logger.debug(f"F1 fallback value: {f1_value}")
                         self.results_df.at[idx, 'f1_score'] = f1_value
                     except Exception as f1_err:
                         logger.warning(f"Lỗi khi tính F1 score: {str(f1_err)}")
                         self.results_df.at[idx, 'f1_score'] = 0.0
                     
-                    # Tính METEOR Score
+                    # 2. Tính Exact Match (EM)
+                    try:
+                        # Tính EM cho 1 cặp cụ thể
+                        em_value = calculate_exact_match_accuracy(
+                            [response], [correct_answer],
+                            normalize=True, 
+                            case_sensitive=False, 
+                            remove_punctuation=True,
+                            remove_whitespace=True,
+                            relaxed_match=True
+                        )
+                        self.results_df.at[idx, 'exact_match'] = em_value
+                    except Exception as em_err:
+                        logger.warning(f"Lỗi khi tính Exact Match score: {str(em_err)}")
+                        self.results_df.at[idx, 'exact_match'] = 0.0
+
+                    # 3. Tính ROUGE Scores
+                    try:
+                        rouge_scores = calculate_rouge_scores(
+                            [response], [correct_answer],
+                            rouge_types=['rouge1', 'rouge2', 'rougeL']
+                        )
+                        
+                        # Thêm các điểm ROUGE chính vào DataFrame
+                        for metric, value in rouge_scores.items():
+                            if metric in ['rouge1_f', 'rouge2_f', 'rougeL_f']:
+                                self.results_df.at[idx, metric] = value
+                    except Exception as rouge_err:
+                        logger.warning(f"Lỗi khi tính ROUGE scores: {str(rouge_err)}")
+                        for metric in ['rouge1_f', 'rouge2_f', 'rougeL_f']:
+                            self.results_df.at[idx, metric] = 0.0
+                    
+                    # 4. Tính BLEU Scores
+                    try:
+                        bleu_scores = calculate_bleu_scores(
+                            [response], [correct_answer],
+                            max_ngram=4,
+                            lowercase=True
+                        )
+                        
+                        # Thêm các điểm BLEU vào DataFrame
+                        for metric, value in bleu_scores.items():
+                            if metric in ['bleu', 'bleu1', 'bleu2', 'bleu4']:
+                                self.results_df.at[idx, metric] = value
+                    except Exception as bleu_err:
+                        logger.warning(f"Lỗi khi tính BLEU scores: {str(bleu_err)}")
+                        for metric in ['bleu', 'bleu1', 'bleu2', 'bleu4']:
+                            self.results_df.at[idx, metric] = 0.0
+                    
+                    # 5. Tính METEOR Score
                     try:
                         from nltk.translate.meteor_score import single_meteor_score
                         # Tokenize texts
@@ -2952,6 +2995,8 @@ Detailed analysis:
                             meteor_value = single_meteor_score(correct_tokens, response_tokens)
                         except (AttributeError, LookupError) as e:
                             # Fallback nếu single_meteor_score không có sẵn hoặc bị lỗi
+                            from nltk.translate.meteor_score import meteor_score as nltk_meteor_score
+                            meteor_score = nltk_meteor_score
                             logger.debug(f"Không thể sử dụng single_meteor_score: {str(e)}. Thử sử dụng meteor_score")
                             meteor_value = meteor_score([[correct_tokens]], response_tokens)
                             
@@ -2994,19 +3039,26 @@ Detailed analysis:
                             logger.debug(f"Lỗi khi tính METEOR fallback: {str(e)}")
                             self.results_df.at[idx, 'meteor_score'] = 0.0
                     
-                    # Tính BERT Score nếu có GPU và thư viện
+                    # 6. Tính BERT Score nếu có GPU và thư viện
+                    try:
+                        # Kiểm tra nếu BERTScorer được import thành công
+                        import torch
+                        from bert_score import score as bert_score_func
+                        has_bert_score = True
+                    except ImportError:
+                        logger.warning("Thư viện bert-score không được cài đặt, sẽ bỏ qua tính toán BERT score")
+                        has_bert_score = False
+                    
                     if has_bert_score:
                         try:
                             # Thử sử dụng GPU nếu có
                             device = "cuda" if torch.cuda.is_available() else "cpu"
-                            # Sử dụng bert_score.score thay vì bert_score
-                            from bert_score import score as bert_score_func
                             # Đặt batch_size thấp hơn nếu sử dụng CPU để tránh OOM
                             batch_size = 4 if device == "cpu" else 8
                             P, R, F1 = bert_score_func(
                                 [response], 
                                 [correct_answer], 
-                                lang="vi", 
+                                lang="vi" if self.language == "vietnamese" else "en", 
                                 device=device,
                                 batch_size=batch_size
                             )
@@ -3029,6 +3081,11 @@ Detailed analysis:
             # Kiểm tra kết quả và log thông tin
             metrics_summary = {
                 'f1_score': {'count': self.results_df['f1_score'].notna().sum(), 'avg': self.results_df['f1_score'].mean()},
+                'exact_match': {'count': self.results_df['exact_match'].notna().sum(), 'avg': self.results_df['exact_match'].mean()},
+                'rouge1_f': {'count': self.results_df['rouge1_f'].notna().sum(), 'avg': self.results_df['rouge1_f'].mean()},
+                'rouge2_f': {'count': self.results_df['rouge2_f'].notna().sum(), 'avg': self.results_df['rouge2_f'].mean()},
+                'rougeL_f': {'count': self.results_df['rougeL_f'].notna().sum(), 'avg': self.results_df['rougeL_f'].mean()},
+                'bleu': {'count': self.results_df['bleu'].notna().sum(), 'avg': self.results_df['bleu'].mean()},
                 'meteor_score': {'count': self.results_df['meteor_score'].notna().sum(), 'avg': self.results_df['meteor_score'].mean()},
                 'bert_score': {'count': self.results_df['bert_score'].notna().sum(), 'avg': self.results_df['bert_score'].mean()} if 'bert_score' in self.results_df.columns else {'count': 0, 'avg': 0}
             }

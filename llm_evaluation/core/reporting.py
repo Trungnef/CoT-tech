@@ -2292,6 +2292,239 @@ Thời gian tạo: {self.timestamp}
             logger.debug(traceback.format_exc())
             return self._create_fallback_plot("BERT Score", f"Error: {str(e)}")
 
+    def _create_exact_match_plot(self):
+        """
+        Tạo biểu đồ Exact Match (EM) Score theo model và prompt type.
+        
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        if 'exact_match' not in self.results_df.columns and 'em_score' not in self.results_df.columns:
+            return self._create_fallback_plot("Exact Match Score", "No Exact Match score data available")
+        
+        try:
+            # Xác định tên cột EM
+            em_column = 'exact_match' if 'exact_match' in self.results_df.columns else 'em_score'
+            
+            # Kiểm tra số lượng giá trị không phải NaN
+            non_nan_count = self.results_df[em_column].notna().sum()
+            if non_nan_count == 0:
+                logger.warning("Không có giá trị Exact Match score hợp lệ nào để vẽ biểu đồ")
+                return self._create_fallback_plot("Exact Match Score", "No valid Exact Match score values available")
+                
+            logger.info(f"Tìm thấy {non_nan_count} giá trị Exact Match score hợp lệ để vẽ biểu đồ")
+            
+            # Tính EM score trung bình theo model và prompt
+            em_by_model_prompt = self.results_df.groupby(['model_name', 'prompt_type'])[em_column].mean().unstack()
+            
+            # Kiểm tra xem có đủ dữ liệu để vẽ biểu đồ không
+            if em_by_model_prompt.empty or em_by_model_prompt.isna().all().all():
+                logger.warning("Không đủ dữ liệu Exact Match score để vẽ biểu đồ")
+                return self._create_fallback_plot("Exact Match Score", "Insufficient data for Exact Match score visualization")
+            
+            # Vẽ biểu đồ
+            fig, ax = plt.subplots(figsize=(14, 10))
+            
+            # Xác định giới hạn giá trị dựa trên dữ liệu thực tế
+            vmin = 0  # Exact Match thường nằm trong khoảng [0, 1]
+            vmax = 1.0
+            
+            # Sử dụng seaborn heatmap với định dạng số tùy chỉnh
+            sns.heatmap(em_by_model_prompt, annot=True, cmap="YlGnBu", fmt=".3f", linewidths=.5,
+                      vmin=vmin, vmax=vmax, cbar_kws={'label': 'Exact Match Score'}, annot_kws={"size": 10})
+            
+            plt.title('Exact Match Score by Model and Prompt Type', fontsize=18, pad=20)
+            plt.tight_layout()
+            
+            # Thêm chú thích về ý nghĩa của Exact Match Score
+            plt.figtext(0.5, 0.01, 
+                       "Exact Match đánh giá sự khớp chính xác giữa câu trả lời và đáp án chuẩn.\nGiá trị 1.0 = khớp hoàn toàn, 0.0 = không khớp.", 
+                       ha="center", fontsize=10, bbox={"facecolor":"orange", "alpha":0.15, "pad":5})
+            
+            # Lưu biểu đồ
+            output_path = os.path.join(self.plots_dir, f"exact_match_score_{self.timestamp}.png")
+            plt.savefig(output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ Exact Match score: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("Exact Match Score", f"Error: {str(e)}")
+
+    def _create_rouge_scores_plot(self):
+        """
+        Tạo biểu đồ ROUGE Scores theo model và prompt type.
+        
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        # Kiểm tra các cột ROUGE khác nhau có thể có
+        rouge_columns = [col for col in self.results_df.columns if 'rouge' in col.lower()]
+        
+        if not rouge_columns:
+            return self._create_fallback_plot("ROUGE Scores", "No ROUGE scores data available")
+        
+        try:
+            # Ưu tiên ROUGE-L nếu có, hoặc ROUGE-1
+            if 'rougeL_f' in rouge_columns or 'rouge_l' in rouge_columns:
+                rouge_col = 'rougeL_f' if 'rougeL_f' in rouge_columns else 'rouge_l'
+            elif 'rouge1_f' in rouge_columns or 'rouge_1' in rouge_columns:
+                rouge_col = 'rouge1_f' if 'rouge1_f' in rouge_columns else 'rouge_1'
+            else:
+                # Sử dụng cột ROUGE đầu tiên tìm thấy
+                rouge_col = rouge_columns[0]
+            
+            # Kiểm tra số lượng giá trị không phải NaN
+            non_nan_count = self.results_df[rouge_col].notna().sum()
+            if non_nan_count == 0:
+                logger.warning(f"Không có giá trị {rouge_col} hợp lệ nào để vẽ biểu đồ")
+                return self._create_fallback_plot("ROUGE Scores", f"No valid {rouge_col} values available")
+                
+            logger.info(f"Tìm thấy {non_nan_count} giá trị {rouge_col} hợp lệ để vẽ biểu đồ")
+            
+            # Tính ROUGE score trung bình theo model và prompt
+            rouge_by_model_prompt = self.results_df.groupby(['model_name', 'prompt_type'])[rouge_col].mean().unstack()
+            
+            # Kiểm tra xem có đủ dữ liệu để vẽ biểu đồ không
+            if rouge_by_model_prompt.empty or rouge_by_model_prompt.isna().all().all():
+                logger.warning(f"Không đủ dữ liệu {rouge_col} để vẽ biểu đồ")
+                return self._create_fallback_plot("ROUGE Scores", f"Insufficient data for {rouge_col} visualization")
+            
+            # Vẽ biểu đồ
+            fig, ax = plt.subplots(figsize=(14, 10))
+            
+            # Xác định giới hạn giá trị dựa trên dữ liệu thực tế
+            vmin = np.floor(rouge_by_model_prompt.min().min() * 10) / 10 if not np.isnan(rouge_by_model_prompt.min().min()) else 0
+            vmax = np.ceil(rouge_by_model_prompt.max().max() * 10) / 10 if not np.isnan(rouge_by_model_prompt.max().max()) else 1
+            
+            # Đảm bảo vmin và vmax nằm trong khoảng [0, 1]
+            vmin = max(0, min(vmin, 0.9))
+            vmax = min(1.0, max(vmax, 0.1))
+            
+            # Sử dụng seaborn heatmap
+            sns.heatmap(rouge_by_model_prompt, annot=True, cmap="YlGnBu", fmt=".3f", linewidths=.5,
+                      vmin=vmin, vmax=vmax, cbar_kws={'label': f'{rouge_col.upper()}'}, annot_kws={"size": 10})
+            
+            # Thiết lập tiêu đề dựa vào loại ROUGE được sử dụng
+            rouge_type = rouge_col.split('_')[0].upper() if '_' in rouge_col else rouge_col.upper()
+            plt.title(f'{rouge_type} Scores by Model and Prompt Type', fontsize=18, pad=20)
+            plt.tight_layout()
+            
+            # Thêm chú thích về ý nghĩa của ROUGE Score
+            if 'rougeL' in rouge_col or 'rouge_l' in rouge_col:
+                description = "ROUGE-L đánh giá chuỗi con chung dài nhất, tập trung vào cấu trúc câu và thứ tự từ.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            elif 'rouge1' in rouge_col or 'rouge_1' in rouge_col:
+                description = "ROUGE-1 đánh giá sự trùng lặp unigram (từ đơn) giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            elif 'rouge2' in rouge_col or 'rouge_2' in rouge_col:
+                description = "ROUGE-2 đánh giá sự trùng lặp bigram (cặp từ) giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            else:
+                description = "ROUGE đánh giá sự tương đồng giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            
+            plt.figtext(0.5, 0.01, description, ha="center", fontsize=10, 
+                      bbox={"facecolor":"orange", "alpha":0.15, "pad":5})
+            
+            # Lưu biểu đồ
+            output_path = os.path.join(self.plots_dir, f"rouge_scores_{self.timestamp}.png")
+            plt.savefig(output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ ROUGE score: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("ROUGE Scores", f"Error: {str(e)}")
+    
+    def _create_bleu_scores_plot(self):
+        """
+        Tạo biểu đồ BLEU Scores theo model và prompt type.
+        
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        # Kiểm tra các cột BLEU khác nhau có thể có
+        bleu_columns = [col for col in self.results_df.columns if 'bleu' in col.lower()]
+        
+        if not bleu_columns:
+            return self._create_fallback_plot("BLEU Scores", "No BLEU scores data available")
+        
+        try:
+            # Ưu tiên BLEU tổng hợp, sau đó là BLEU-1, BLEU-2, vv
+            if 'bleu' in bleu_columns:
+                bleu_col = 'bleu'  # BLEU tổng hợp
+            elif 'bleu1' in bleu_columns:
+                bleu_col = 'bleu1'  # BLEU-1
+            else:
+                # Sử dụng cột BLEU đầu tiên tìm thấy
+                bleu_col = bleu_columns[0]
+            
+            # Kiểm tra số lượng giá trị không phải NaN
+            non_nan_count = self.results_df[bleu_col].notna().sum()
+            if non_nan_count == 0:
+                logger.warning(f"Không có giá trị {bleu_col} hợp lệ nào để vẽ biểu đồ")
+                return self._create_fallback_plot("BLEU Scores", f"No valid {bleu_col} values available")
+                
+            logger.info(f"Tìm thấy {non_nan_count} giá trị {bleu_col} hợp lệ để vẽ biểu đồ")
+            
+            # Tính BLEU score trung bình theo model và prompt
+            bleu_by_model_prompt = self.results_df.groupby(['model_name', 'prompt_type'])[bleu_col].mean().unstack()
+            
+            # Kiểm tra xem có đủ dữ liệu để vẽ biểu đồ không
+            if bleu_by_model_prompt.empty or bleu_by_model_prompt.isna().all().all():
+                logger.warning(f"Không đủ dữ liệu {bleu_col} để vẽ biểu đồ")
+                return self._create_fallback_plot("BLEU Scores", f"Insufficient data for {bleu_col} visualization")
+            
+            # Vẽ biểu đồ
+            fig, ax = plt.subplots(figsize=(14, 10))
+            
+            # Xác định giới hạn giá trị dựa trên dữ liệu thực tế
+            vmin = np.floor(bleu_by_model_prompt.min().min() * 10) / 10 if not np.isnan(bleu_by_model_prompt.min().min()) else 0
+            vmax = np.ceil(bleu_by_model_prompt.max().max() * 10) / 10 if not np.isnan(bleu_by_model_prompt.max().max()) else 1
+            
+            # Đảm bảo vmin và vmax nằm trong khoảng [0, 1]
+            vmin = max(0, min(vmin, 0.9))
+            vmax = min(1.0, max(vmax, 0.1))
+            
+            # Sử dụng seaborn heatmap
+            sns.heatmap(bleu_by_model_prompt, annot=True, cmap="YlGnBu", fmt=".3f", linewidths=.5,
+                      vmin=vmin, vmax=vmax, cbar_kws={'label': f'{bleu_col.upper()} Score'}, annot_kws={"size": 10})
+            
+            # Thiết lập tiêu đề dựa vào loại BLEU được sử dụng
+            bleu_type = bleu_col.upper()
+            plt.title(f'{bleu_type} Scores by Model and Prompt Type', fontsize=18, pad=20)
+            plt.tight_layout()
+            
+            # Thêm chú thích về ý nghĩa của BLEU Score
+            if bleu_col == 'bleu':
+                description = "BLEU đánh giá mức độ tương đồng n-gram giữa câu trả lời và đáp án chuẩn.\nThường dùng trong đánh giá dịch máy, giá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            elif bleu_col == 'bleu1':
+                description = "BLEU-1 đánh giá sự trùng lặp unigram (từ đơn) giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            elif bleu_col == 'bleu2':
+                description = "BLEU-2 đánh giá sự trùng lặp bigram (cặp từ) giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            elif bleu_col == 'bleu3':
+                description = "BLEU-3 đánh giá sự trùng lặp trigram (bộ ba từ) giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            elif bleu_col == 'bleu4':
+                description = "BLEU-4 đánh giá sự trùng lặp 4-gram (bộ bốn từ) giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            else:
+                description = f"{bleu_col.upper()} đánh giá mức độ tương đồng giữa câu trả lời và đáp án chuẩn.\nGiá trị cao hơn thể hiện sự tương đồng tốt hơn."
+            
+            plt.figtext(0.5, 0.01, description, ha="center", fontsize=10, 
+                      bbox={"facecolor":"orange", "alpha":0.15, "pad":5})
+            
+            # Lưu biểu đồ
+            output_path = os.path.join(self.plots_dir, f"bleu_scores_{self.timestamp}.png")
+            plt.savefig(output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ BLEU score: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("BLEU Scores", f"Error: {str(e)}")
+
     def _generate_visualizations(self) -> Dict[str, str]:
         """
         Tạo tất cả các biểu đồ trực quan hóa cho báo cáo.
@@ -2355,6 +2588,15 @@ Thời gian tạo: {self.timestamp}
                    'Độ phù hợp ngữ cảnh theo model và prompt')
         
         # Thêm các biểu đồ metrics nâng cao
+        create_plot(self._create_exact_match_plot, 'exact_match',
+                   'Exact Match Score đánh giá sự khớp chính xác giữa câu trả lời và đáp án')
+                   
+        create_plot(self._create_rouge_scores_plot, 'rouge_scores',
+                   'ROUGE Score đánh giá độ tương đồng văn bản và chất lượng tóm tắt')
+                   
+        create_plot(self._create_bleu_scores_plot, 'bleu_scores',
+                   'BLEU Score đánh giá chất lượng dịch thuật và sinh văn bản')
+                   
         create_plot(self._create_f1_score_plot, 'f1_score',
                    'F1 Score dựa trên sự trùng lặp token')
         

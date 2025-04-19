@@ -13,6 +13,7 @@ from sklearn.metrics import (
     roc_auc_score, confusion_matrix, classification_report
 )
 import json
+import re
 
 from .logging_utils import get_logger
 from .text_utils import clean_text
@@ -21,49 +22,43 @@ from .text_utils import clean_text
 try:
     import nltk
     
+    # Tự tạo thư mục nltk_data nếu chưa có
+    import os
+    nltk_data_dir = os.path.join(os.path.expanduser('~'), 'nltk_data')
+    os.makedirs(nltk_data_dir, exist_ok=True)
+    
     # Đảm bảo tải các resources NLTK cần thiết
     required_resources = [
         ('punkt', 'tokenizers/punkt'),
         ('wordnet', 'corpora/wordnet')
     ]
     
+    # Hàm download an toàn
+    def safe_download(resource_name):
+        try:
+            nltk.download(resource_name, quiet=True, download_dir=nltk_data_dir)
+            logging.info(f"Đã tải NLTK resource {resource_name}")
+            return True
+        except Exception as e:
+            logging.warning(f"Không thể tải NLTK resource {resource_name}: {str(e)}")
+            return False
+    
     for resource_name, resource_path in required_resources:
         try:
             nltk.data.find(resource_path)
+            logging.info(f"Đã tìm thấy NLTK resource {resource_name}")
         except LookupError:
-            try:
-                nltk.download(resource_name, quiet=True)
-            except Exception as e:
-                logging.warning(f"Không thể tải NLTK resource {resource_name}: {str(e)}")
-    
-    # Thử tạo punkt_tab nếu cần
-    try:
-        nltk.data.find('tokenizers/punkt_tab/english/')
-    except LookupError:
-        try:
-            # Tạo thư mục và sao chép dữ liệu punkt nếu cần
-            import os
-            nltk_data_paths = nltk.data.path
-            if nltk_data_paths:
-                nltk_data_dir = nltk_data_paths[0]
-                punkt_tab_dir = os.path.join(nltk_data_dir, 'tokenizers', 'punkt_tab', 'english')
-                os.makedirs(punkt_tab_dir, exist_ok=True)
-                
-                # Sao chép dữ liệu từ punkt sang punkt_tab
-                punkt_dir = os.path.join(nltk_data_dir, 'tokenizers', 'punkt')
-                if os.path.exists(punkt_dir):
-                    import shutil
-                    for file in os.listdir(punkt_dir):
-                        if file.endswith('.pickle'):
-                            src = os.path.join(punkt_dir, file)
-                            dst = os.path.join(punkt_tab_dir, file)
-                            shutil.copy2(src, dst)
-                            logging.info(f"Đã sao chép {file} từ punkt sang punkt_tab")
-        except Exception as e:
-            logging.warning(f"Không thể tạo punkt_tab resource: {str(e)}")
+            # Bỏ qua lỗi nếu không tải được, chỉ log warning
+            success = safe_download(resource_name)
+            if not success:
+                logging.warning(f"Không thể tải {resource_name}, một số chức năng có thể không hoạt động đúng")
     
     # Import meteor_score sau khi đã tải resources
-    from nltk.translate.meteor_score import meteor_score
+    try:
+        from nltk.translate.meteor_score import meteor_score
+    except ImportError as e:
+        meteor_score = None
+        logging.warning(f"Không thể import meteor_score: {str(e)}")
 except ImportError as e:
     meteor_score = None
     logging.warning(f"NLTK không được cài đặt hoặc không đầy đủ: {str(e)}. Metrics METEOR sẽ không khả dụng.")
@@ -74,6 +69,30 @@ try:
 except ImportError as e:
     BERTScorer = None
     logging.warning(f"bert-score không được cài đặt: {str(e)}. Metrics BERTScore sẽ không khả dụng.")
+
+# Import text_utils
+try:
+    from .text_utils import clean_text
+except ImportError:
+    # Fallback khi import tương đối thất bại
+    try:
+        import sys
+        import os
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from utils.text_utils import clean_text
+    except ImportError as e:
+        logging.error(f"Không thể import text_utils: {str(e)}")
+        # Fallback nếu import thất bại - định nghĩa hàm clean_text đơn giản
+        def clean_text(text, lower=True, remove_punctuation=False, remove_whitespace=False, normalize_unicode=True):
+            if not text:
+                return ""
+            if lower:
+                text = text.lower()
+            if remove_punctuation:
+                text = re.sub(r'[^\w\s]', '', text)
+            if remove_whitespace:
+                text = ' '.join(text.split())
+            return text
 
 logger = get_logger(__name__)
 
@@ -288,7 +307,8 @@ def calculate_exact_match_accuracy(predictions: List[str],
                                  normalize: bool = True,
                                  case_sensitive: bool = False,
                                  remove_punctuation: bool = True,
-                                 remove_whitespace: bool = True) -> float:
+                                 remove_whitespace: bool = True,
+                                 relaxed_match: bool = True) -> float:
     """
     Tính tỉ lệ các dự đoán khớp chính xác với tham chiếu.
     
@@ -299,6 +319,7 @@ def calculate_exact_match_accuracy(predictions: List[str],
         case_sensitive: Nếu True, phân biệt hoa thường; nếu False, không phân biệt
         remove_punctuation: Nếu True, loại bỏ dấu câu khi so sánh
         remove_whitespace: Nếu True, chuẩn hóa khoảng trắng khi so sánh
+        relaxed_match: Nếu True, sử dụng phương pháp khớp chính xác nới lỏng
         
     Returns:
         Tỉ lệ hoặc số lượng các dự đoán khớp chính xác
@@ -306,36 +327,139 @@ def calculate_exact_match_accuracy(predictions: List[str],
     if len(predictions) != len(references):
         raise ValueError(f"Số lượng dự đoán ({len(predictions)}) khác với số lượng tham chiếu ({len(references)})")
     
+    # Kiểm tra dữ liệu đầu vào
+    if not predictions or not references:
+        logger.warning("Danh sách dự đoán hoặc tham chiếu rỗng")
+        return 0.0
+    
+    logger.info(f"Tính exact match cho {len(predictions)} cặp dự đoán/tham chiếu (relaxed_match={relaxed_match})")
+    
     # Tiền xử lý các dự đoán và tham chiếu
     normalized_predictions = []
     normalized_references = []
     
-    for p, r in zip(predictions, references):
+    for i, (p, r) in enumerate(zip(predictions, references)):
+        # Xử lý dữ liệu null hoặc không phải string
+        if p is None or r is None:
+            logger.debug(f"Cặp {i}: Dữ liệu null, bỏ qua")
+            continue
+            
         if not isinstance(p, str):
-            p = str(p) if p is not None else ""
+            p = str(p)
         if not isinstance(r, str):
-            r = str(r) if r is not None else ""
+            r = str(r)
+        
+        # Bỏ qua cặp rỗng
+        if not p.strip() or not r.strip():
+            logger.debug(f"Cặp {i}: Dữ liệu rỗng, bỏ qua")
+            continue
         
         # Chuẩn hóa văn bản dựa trên các tham số
-        p_clean = clean_text(p, 
-                            lower=not case_sensitive,
-                            remove_punctuation=remove_punctuation,
-                            remove_whitespace=remove_whitespace)
-        
-        r_clean = clean_text(r, 
-                            lower=not case_sensitive,
-                            remove_punctuation=remove_punctuation,
-                            remove_whitespace=remove_whitespace)
-        
-        normalized_predictions.append(p_clean)
-        normalized_references.append(r_clean)
+        try:
+            # Trước khi chuẩn hóa
+            logger.debug(f"Cặp {i} trước khi chuẩn hóa: Dự đoán: '{p}', Tham chiếu: '{r}'")
+            
+            # Bước 1: Sử dụng clean_text cơ bản
+            p_clean = clean_text(p, 
+                              lower=not case_sensitive,
+                              remove_punctuation=remove_punctuation,
+                              remove_whitespace=remove_whitespace,
+                              normalize_unicode=True)
+            
+            r_clean = clean_text(r, 
+                              lower=not case_sensitive,
+                              remove_punctuation=remove_punctuation,
+                              remove_whitespace=remove_whitespace,
+                              normalize_unicode=True)
+            
+            # Bước 2: Xử lý bổ sung cho dữ liệu thực tế
+            if relaxed_match:
+                # Loại bỏ các ký tự đặc biệt còn lại
+                p_clean = re.sub(r'[^a-zA-Z0-9\s\u00C0-\u1EF9]', '', p_clean) 
+                r_clean = re.sub(r'[^a-zA-Z0-9\s\u00C0-\u1EF9]', '', r_clean)
+                
+                # Loại bỏ các từ khóa không quan trọng
+                stop_words = ['là', 'và', 'được', 'có', 'trong', 'của', 'các', 'những', 'với']
+                for word in stop_words:
+                    p_clean = re.sub(r'\b' + word + r'\b', '', p_clean)
+                    r_clean = re.sub(r'\b' + word + r'\b', '', r_clean)
+                
+                # Chuẩn hóa số
+                p_clean = re.sub(r'(\d+),(\d+)', r'\1.\2', p_clean)
+                r_clean = re.sub(r'(\d+),(\d+)', r'\1.\2', r_clean)
+                
+                # Chuẩn hóa khoảng trắng lại
+                p_clean = ' '.join(p_clean.split())
+                r_clean = ' '.join(r_clean.split())
+                
+                # Kiểm tra nếu có số: thử trích xuất và so sánh
+                p_numbers = re.findall(r'\b\d+(?:\.\d+)?\b', p_clean)
+                r_numbers = re.findall(r'\b\d+(?:\.\d+)?\b', r_clean)
+                
+                if p_numbers and r_numbers:
+                    same_numbers = all(float(p) == float(r) for p, r in zip(sorted(p_numbers), sorted(r_numbers)) if len(p_numbers) == len(r_numbers))
+                    logger.debug(f"Cặp {i} có các số: {p_numbers} vs {r_numbers}, khớp số: {same_numbers}")
+            
+            # Sau khi chuẩn hóa
+            logger.debug(f"Cặp {i} sau khi chuẩn hóa: Dự đoán: '{p_clean}', Tham chiếu: '{r_clean}'")
+            
+            normalized_predictions.append(p_clean)
+            normalized_references.append(r_clean)
+            
+            # Kiểm tra khớp
+            is_match = (p_clean == r_clean)
+            logger.debug(f"Cặp {i}: Khớp = {is_match}")
+            
+        except Exception as e:
+            logger.debug(f"Lỗi khi xử lý cặp dữ liệu {i}: {str(e)}")
+            continue
+    
+    # Kiểm tra sau khi xử lý
+    if not normalized_predictions or not normalized_references:
+        logger.warning("Không có dữ liệu hợp lệ sau khi xử lý")
+        return 0.0
     
     # Tính số lượng các dự đoán khớp chính xác
-    matches = sum(1 for p, r in zip(normalized_predictions, normalized_references) if p == r)
+    matches = 0
+    for i, (p, r) in enumerate(zip(normalized_predictions, normalized_references)):
+        exact_match = False
+        
+        # Phương pháp 1: So sánh chính xác
+        if p == r:
+            exact_match = True
+        # Phương pháp 2: So sánh nới lỏng nếu được yêu cầu
+        elif relaxed_match:
+            # Phương pháp 2.1: Kiểm tra nếu p chứa r hoặc r chứa p
+            if p in r or r in p:
+                exact_match = True
+                logger.debug(f"Cặp {i}: Khớp theo kiểu 'chứa trong'")
+            
+            # Phương pháp 2.2: Kiểm tra nếu tất cả từ quan trọng (từ không phải stopwords) có trong cả hai
+            if not exact_match:
+                p_words = set(p.split())
+                r_words = set(r.split())
+                # Chỉ lấy từ có ít nhất 3 ký tự để loại bỏ từ không quan trọng như "a", "an", "the"...
+                p_important = set(word for word in p_words if len(word) >= 3)
+                r_important = set(word for word in r_words if len(word) >= 3)
+                
+                if p_important and r_important:
+                    common_words = p_important.intersection(r_important)
+                    if common_words and len(common_words) >= min(len(p_important), len(r_important)) * 0.8:
+                        exact_match = True
+                        logger.debug(f"Cặp {i}: Khớp theo từ quan trọng: {common_words}")
+        
+        if exact_match:
+            matches += 1
+            logger.debug(f"Cặp {i} khớp chính xác")
+    
+    logger.info(f"Số cặp khớp chính xác: {matches}/{len(normalized_predictions)}")
     
     if normalize:
-        return matches / len(predictions) if len(predictions) > 0 else 0.0
+        result = matches / len(normalized_predictions) if normalized_predictions else 0.0
+        logger.info(f"Exact match normalized: {result:.4f}")
+        return result
     else:
+        logger.info(f"Exact match raw count: {matches}")
         return matches
 
 def calculate_token_overlap(predictions: List[str], 
@@ -803,65 +927,136 @@ def calculate_rouge_scores(predictions: List[str],
     if len(predictions) != len(references):
         raise ValueError(f"Số lượng dự đoán ({len(predictions)}) khác với số lượng tham chiếu ({len(references)})")
     
+    # Khởi tạo kết quả trống
+    result = {
+        "rouge1_f": 0.0,
+        "rouge2_f": 0.0,
+        "rougeL_f": 0.0,
+        "rouge1_p": 0.0,
+        "rouge2_p": 0.0,
+        "rougeL_p": 0.0,
+        "rouge1_r": 0.0,
+        "rouge2_r": 0.0,
+        "rougeL_r": 0.0
+    }
+    
+    # Thử sử dụng thư viện rouge-score trước (Google's implementation)
+    try:
+        from rouge_score import rouge_scorer
+        logger.info("Sử dụng thư viện rouge_score để tính ROUGE")
+        
+        scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+        all_scores = {
+            "rouge1_f": [],
+            "rouge1_p": [],
+            "rouge1_r": [],
+            "rouge2_f": [],
+            "rouge2_p": [],
+            "rouge2_r": [],
+            "rougeL_f": [],
+            "rougeL_p": [],
+            "rougeL_r": []
+        }
+        
+        for pred, ref in zip(predictions, references):
+            if not isinstance(pred, str):
+                pred = str(pred) if pred is not None else ""
+            if not isinstance(ref, str):
+                ref = str(ref) if ref is not None else ""
+                
+            # Bỏ qua các cặp rỗng hoặc quá ngắn
+            if not pred.strip() or not ref.strip():
+                continue
+                
+            try:
+                scores = scorer.score(ref, pred)
+                
+                # Lưu điểm số
+                for rouge_type, score_obj in scores.items():
+                    key_f = f"{rouge_type}_f"
+                    key_p = f"{rouge_type}_p"
+                    key_r = f"{rouge_type}_r"
+                    
+                    if key_f in all_scores:
+                        all_scores[key_f].append(score_obj.fmeasure)
+                    if key_p in all_scores:
+                        all_scores[key_p].append(score_obj.precision)
+                    if key_r in all_scores:
+                        all_scores[key_r].append(score_obj.recall)
+            except Exception as e:
+                logger.debug(f"Lỗi khi tính ROUGE cho một cặp: {str(e)}")
+                continue
+        
+        # Tính trung bình
+        for key, values in all_scores.items():
+            if values:
+                result[key] = float(np.mean(values))
+        
+        return result
+        
+    except ImportError:
+        # Nếu không có rouge-score, thử dùng thư viện rouge
+        logger.info("Thư viện rouge_score không có sẵn, thử dùng thư viện rouge")
+        
+    # Thử sử dụng thư viện rouge
     try:
         from rouge import Rouge
+        rouge = Rouge()
+        all_scores = {
+            "rouge1_f": [],
+            "rouge1_p": [],
+            "rouge1_r": [],
+            "rouge2_f": [],
+            "rouge2_p": [],
+            "rouge2_r": [],
+            "rougeL_f": [],
+            "rougeL_p": [],
+            "rougeL_r": []
+        }
+        
+        # Tính điểm ROUGE cho từng cặp dự đoán/tham chiếu
+        for pred, ref in zip(predictions, references):
+            # Xử lý các trường hợp không phải string
+            if not isinstance(pred, str):
+                pred = str(pred) if pred is not None else ""
+            if not isinstance(ref, str):
+                ref = str(ref) if ref is not None else ""
+                
+            # Bỏ qua các cặp rỗng hoặc quá ngắn
+            if not pred.strip() or not ref.strip():
+                continue
+                
+            try:
+                # Tính điểm ROUGE
+                scores = rouge.get_scores(pred, ref)[0]
+                
+                # Lưu các điểm vào danh sách để tính trung bình
+                for rouge_type in scores:
+                    for metric in ['f', 'p', 'r']:
+                        key = f"{rouge_type}_{metric}"
+                        if key in all_scores:
+                            all_scores[key].append(scores[rouge_type][metric])
+            except Exception as e:
+                logger.debug(f"Lỗi khi tính ROUGE cho một cặp: {str(e)}")
+                continue
+        
+        # Tính trung bình cho tất cả các điểm
+        for key, values in all_scores.items():
+            if values:
+                result[key] = float(np.mean(values))
+        
+        return result
     except ImportError:
-        logger.warning("Không thể tính ROUGE score: Thiếu thư viện 'rouge'. Cài đặt với 'pip install rouge'")
+        logger.warning("Không thể tính ROUGE score: Thiếu thư viện 'rouge' hoặc 'rouge_score'. Cài đặt với 'pip install rouge rouge-score'")
         return {
             "rouge1_f": 0.0,
             "rouge2_f": 0.0,
             "rougeL_f": 0.0,
-            "import_error": "Thiếu thư viện 'rouge'"
+            "import_error": "Thiếu thư viện 'rouge' và 'rouge_score'"
         }
-    
-    rouge = Rouge(metrics=rouge_types)
-    all_scores = {
-        "rouge1_f": [],
-        "rouge1_p": [],
-        "rouge1_r": [],
-        "rouge2_f": [],
-        "rouge2_p": [],
-        "rouge2_r": [],
-        "rougeL_f": [],
-        "rougeL_p": [],
-        "rougeL_r": []
-    }
-    
-    # Tính điểm ROUGE cho từng cặp dự đoán/tham chiếu
-    for pred, ref in zip(predictions, references):
-        # Xử lý các trường hợp không phải string
-        if not isinstance(pred, str):
-            pred = str(pred) if pred is not None else ""
-        if not isinstance(ref, str):
-            ref = str(ref) if ref is not None else ""
-            
-        # Bỏ qua các cặp rỗng hoặc quá ngắn
-        if not pred or not ref or len(pred.split()) < 1 or len(ref.split()) < 1:
-            continue
-            
-        try:
-            # Tính điểm ROUGE
-            scores = rouge.get_scores(pred, ref)[0]
-            
-            # Lưu các điểm vào danh sách để tính trung bình
-            for rouge_type in scores:
-                for metric in ['f', 'p', 'r']:
-                    key = f"{rouge_type}_{metric}"
-                    if key in all_scores:
-                        all_scores[key].append(scores[rouge_type][metric])
-        except Exception as e:
-            logger.debug(f"Lỗi khi tính ROUGE cho một cặp: {str(e)}")
-            continue
-    
-    # Tính trung bình cho tất cả các điểm
-    result = {}
-    for key, values in all_scores.items():
-        if values:
-            result[key] = float(np.mean(values))
-        else:
-            result[key] = 0.0
-    
-    return result
+    except Exception as e:
+        logger.error(f"Lỗi không xác định khi tính ROUGE: {str(e)}")
+        return result
 
 def calculate_bleu_scores(predictions: List[str], 
                         references: List[str],
