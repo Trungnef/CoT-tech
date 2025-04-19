@@ -7,11 +7,13 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly
 import seaborn as sns
 from typing import List, Dict, Any, Union, Optional, Tuple, Callable
 import matplotlib.colors as mcolors
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
+import traceback
 
 from .logging_utils import get_logger
 
@@ -329,7 +331,7 @@ def create_latency_plot(
             elif plot_type == 'violin':
                 sns.violinplot(x=model_col, y=latency_col, data=data, ax=ax)
             elif plot_type == 'bar':
-                sns.barplot(x=model_col, y=latency_col, data=data, ax=ax)
+                sns.barplot(x=model_col, y=latency_col, hue=model_col, data=data, ax=ax, legend=False)
             elif plot_type == 'scatter':
                 sns.stripplot(x=model_col, y=latency_col, data=data, ax=ax, jitter=True, alpha=0.7)
             else:
@@ -358,83 +360,101 @@ def create_latency_plot(
         return plt.figure()
 
 def create_radar_chart(
-    data: Dict[str, List[float]],
-    criteria: List[str],
-    title: str = 'Biểu đồ radar đánh giá',
-    figsize: Tuple[int, int] = (8, 8),
-    colors: Optional[Dict[str, str]] = None,
-    fill_alpha: float = 0.1,
-    max_value: float = 5.0
+    data: Dict[str, Dict[str, float]],
+    title: str = 'Model Performance Comparison',
+    figsize: Tuple[int, int] = (10, 10),
+    colors: Optional[List[str]] = None,
+    min_value: float = 0,
+    max_value: float = 5,
+    show_legend: bool = True
 ) -> Figure:
     """
-    Tạo biểu đồ radar (spider chart) để so sánh nhiều metrics.
+    Tạo biểu đồ radar (spiderweb) để so sánh hiệu suất của các model trên nhiều tiêu chí.
     
     Args:
-        data: Dict với key là tên model và value là list các giá trị metrics
-        criteria: Danh sách tên các tiêu chí đánh giá
+        data: Dict với cấu trúc {model_name: {criteria1: score1, criteria2: score2, ...}}
         title: Tiêu đề biểu đồ
         figsize: Kích thước biểu đồ
-        colors: Dict ánh xạ giữa tên model và màu sắc
-        fill_alpha: Độ mờ của vùng tô màu
-        max_value: Giá trị tối đa trên trục radar
+        colors: Danh sách màu sắc cho các model
+        min_value: Giá trị tối thiểu trên thang đo
+        max_value: Giá trị tối đa trên thang đo
+        show_legend: Hiển thị legend
         
     Returns:
         Đối tượng Figure của matplotlib
     """
     try:
         # Kiểm tra dữ liệu
-        if not data:
-            raise ValueError("Dữ liệu trống")
-        if not criteria:
-            raise ValueError("Không có tiêu chí đánh giá")
+        if not data or not all(isinstance(v, dict) for v in data.values()):
+            logger.warning("Dữ liệu không đúng định dạng")
+            return plt.figure()
+            
+        # Lấy danh sách các tiêu chí (sẽ là các trục của radar chart)
+        all_criteria = set()
+        for model_data in data.values():
+            all_criteria.update(model_data.keys())
         
-        # Số lượng tiêu chí
+        criteria = sorted(list(all_criteria))
+        
+        if not criteria:
+            logger.warning("Không có tiêu chí nào để vẽ radar chart")
+            return plt.figure()
+        
+        # Chuẩn hóa tên các tiêu chí
+        criteria_labels = [c.replace('_', ' ').replace('reasoning ', '').title() for c in criteria]
+        
+        # Số lượng tiêu chí (số cạnh của radar chart)
         N = len(criteria)
         
-        # Góc cho mỗi trục
+        # Tạo góc cho mỗi trục
         angles = np.linspace(0, 2*np.pi, N, endpoint=False).tolist()
         
-        # Đóng biểu đồ radar bằng cách lặp lại điểm đầu tiên
+        # Khép kín biểu đồ bằng cách lặp lại giá trị đầu tiên
         angles += angles[:1]
         
         # Tạo figure và axes
         fig, ax = plt.subplots(figsize=figsize, dpi=DPI_DEFAULT, subplot_kw=dict(polar=True))
         
-        # Sử dụng màu mặc định nếu không chỉ định
+        # Nếu không có colors, tạo bảng màu mặc định
         if colors is None:
-            colors = {}
-            color_list = list(COLORS.values())
-            for i, model in enumerate(data.keys()):
-                colors[model] = color_list[i % len(color_list)]
+            colors = plt.cm.tab10(np.linspace(0, 1, len(data)))
         
-        # Vẽ cho từng model
-        for i, (model, values) in enumerate(data.items()):
-            # Đảm bảo data đóng vòng
-            values_plot = values + values[:1]
+        # Vẽ radar chart cho mỗi model
+        for i, (model_name, model_data) in enumerate(data.items()):
+            # Lấy điểm cho tất cả các tiêu chí
+            values = [model_data.get(c, 0) for c in criteria]
             
-            # Vẽ đường và tô màu
-            color = colors.get(model, COLORS['primary'])
-            ax.plot(angles, values_plot, 'o-', linewidth=2, label=model, color=color)
-            ax.fill(angles, values_plot, alpha=fill_alpha, color=color)
+            # Khép kín biểu đồ bằng cách lặp lại giá trị đầu tiên
+            values += values[:1]
+            
+            # Vẽ đường cho model
+            color = colors[i % len(colors)] if isinstance(colors, list) else colors
+            ax.plot(angles, values, 'o-', linewidth=2, color=color, label=model_name)
+            ax.fill(angles, values, color=color, alpha=0.1)
         
-        # Đặt tên cho các trục
+        # Thiết lập các tiêu chí làm nhãn
         ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(criteria)
+        ax.set_xticklabels(criteria_labels)
         
-        # Thiết lập giới hạn trục r
-        ax.set_ylim(0, max_value)
+        # Thiết lập giới hạn các trục
+        ax.set_ylim(min_value, max_value)
+        
+        # Thêm grid
+        ax.set_rgrids(np.arange(min_value, max_value+1, 1), angle=0, fontsize=8)
+        
+        # Thêm legend nếu cần
+        if show_legend:
+            ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
         
         # Đặt tiêu đề
-        ax.set_title(title, y=1.1)
+        ax.set_title(title, pad=20)
         
-        # Thêm legend
-        ax.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
-        
+        plt.tight_layout()
         return fig
-    
+        
     except Exception as e:
-        logger.error(f"Lỗi khi tạo biểu đồ radar: {str(e)}")
-        # Trả về figure trống trong trường hợp lỗi
+        logger.error(f"Lỗi khi tạo radar chart: {str(e)}")
+        traceback.print_exc()
         return plt.figure()
 
 def create_prompt_type_comparison(
@@ -709,4 +729,604 @@ def plot_confusion_matrix(
     except Exception as e:
         logger.error(f"Lỗi khi vẽ confusion matrix: {str(e)}")
         # Trả về figure trống trong trường hợp lỗi
-        return plt.figure() 
+        return plt.figure()
+
+def create_correlation_plot(
+    data: pd.DataFrame,
+    metrics_columns: List[str],
+    title: str = 'Correlation Matrix of Metrics',
+    figsize: Tuple[int, int] = (10, 8),
+    cmap: str = 'coolwarm',
+    annot: bool = True,
+    fmt: str = '.2f',
+    mask_upper: bool = True
+) -> Figure:
+    """
+    Tạo biểu đồ tương quan (correlation matrix) giữa các metrics.
+    
+    Args:
+        data: DataFrame chứa dữ liệu
+        metrics_columns: Danh sách các cột metrics cần tính tương quan
+        title: Tiêu đề biểu đồ
+        figsize: Kích thước biểu đồ
+        cmap: Bảng màu
+        annot: Hiển thị giá trị tương quan
+        fmt: Format giá trị
+        mask_upper: Ẩn nửa trên của ma trận (tránh hiển thị trùng lặp)
+        
+    Returns:
+        Đối tượng Figure của matplotlib
+    """
+    try:
+        # Tính tương quan giữa các cột
+        available_cols = [col for col in metrics_columns if col in data.columns]
+        if not available_cols:
+            logger.warning("Không có cột metrics nào khả dụng để tính tương quan.")
+            return plt.figure()
+            
+        # Chỉ lấy các hàng có giá trị
+        subset_df = data[available_cols].dropna()
+        
+        if len(subset_df) < 5:
+            logger.warning("Không đủ dữ liệu để tạo biểu đồ tương quan (cần ít nhất 5 hàng).")
+            return plt.figure()
+            
+        corr_matrix = subset_df.corr()
+        
+        # Tạo figure
+        fig, ax = plt.subplots(figsize=figsize, dpi=DPI_DEFAULT)
+        
+        # Tạo mask cho nửa trên nếu cần
+        mask = None
+        if mask_upper:
+            mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
+            
+        # Vẽ heatmap
+        sns.heatmap(
+            corr_matrix, 
+            mask=mask,
+            cmap=cmap,
+            annot=annot, 
+            fmt=fmt,
+            square=True,
+            linewidths=.5,
+            cbar_kws={"shrink": .8},
+            ax=ax
+        )
+        
+        # Chỉnh sửa tên các trục
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+        
+        # Đặt tiêu đề
+        ax.set_title(title)
+        
+        plt.tight_layout()
+        return fig
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi tạo biểu đồ tương quan: {str(e)}")
+        return plt.figure()
+
+def create_error_distribution_chart(
+    data: pd.DataFrame,
+    error_type_col: str = 'error_type',
+    group_by_col: str = 'model_name',
+    title: str = 'Distribution of Error Types by Model',
+    figsize: Tuple[int, int] = (12, 8),
+    plot_type: str = 'stacked_bar',
+    colors: Optional[List[str]] = None,
+    normalize: bool = True
+) -> Figure:
+    """
+    Tạo biểu đồ phân bố lỗi theo model hoặc prompt type.
+    
+    Args:
+        data: DataFrame chứa dữ liệu
+        error_type_col: Tên cột chứa loại lỗi
+        group_by_col: Tên cột để nhóm (model_name hoặc prompt_type)
+        title: Tiêu đề biểu đồ
+        figsize: Kích thước biểu đồ
+        plot_type: Loại biểu đồ ('stacked_bar' hoặc 'pie')
+        colors: Danh sách màu sắc
+        normalize: Chuẩn hóa dữ liệu (%)
+        
+    Returns:
+        Đối tượng Figure của matplotlib
+    """
+    try:
+        # Kiểm tra dữ liệu
+        if error_type_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {error_type_col} trong dữ liệu")
+            return plt.figure()
+            
+        if group_by_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {group_by_col} trong dữ liệu")
+            return plt.figure()
+            
+        # Lọc các hàng có thông tin lỗi
+        error_df = data[data[error_type_col].notna()].copy()
+        
+        if len(error_df) == 0:
+            logger.warning("Không có dữ liệu lỗi để phân tích")
+            return plt.figure()
+            
+        # Thay thế các giá trị NaN hoặc rỗng bằng "Unknown"
+        error_df[error_type_col] = error_df[error_type_col].fillna("Unknown")
+        error_df.loc[error_df[error_type_col] == "", error_type_col] = "Unknown"
+        
+        # Tạo bảng tần suất
+        error_counts = pd.crosstab(
+            error_df[group_by_col], 
+            error_df[error_type_col], 
+            normalize=normalize
+        )
+        
+        # Nếu normalize, chuyển sang phần trăm
+        if normalize:
+            error_counts = error_counts * 100
+        
+        # Tạo figure
+        fig, ax = plt.subplots(figsize=figsize, dpi=DPI_DEFAULT)
+        
+        if plot_type == 'stacked_bar':
+            # Biểu đồ cột chồng
+            error_counts.plot(
+                kind='bar', 
+                stacked=True, 
+                ax=ax, 
+                colormap='tab20' if colors is None else None,
+                color=colors
+            )
+            
+            # Chỉnh sửa tên các trục
+            ax.set_xlabel(group_by_col.replace('_', ' ').title())
+            ax.set_ylabel('Percentage of Errors' if normalize else 'Count of Errors')
+            ax.legend(title=error_type_col.replace('_', ' ').title(), bbox_to_anchor=(1.05, 1), loc='upper left')
+            
+            # Thêm giá trị lên mỗi cột
+            if normalize:
+                for c in ax.containers:
+                    labels = [f'{v:.1f}%' if v > 5 else '' for v in c.datavalues]
+                    ax.bar_label(c, labels=labels, label_type='center')
+            
+        elif plot_type == 'pie':
+            # Tạo biểu đồ tròn cho mỗi giá trị trong group_by_col
+            nrows = int(np.ceil(len(error_counts) / 3))
+            ncols = min(len(error_counts), 3)
+            
+            fig, axes = plt.subplots(nrows, ncols, figsize=figsize, dpi=DPI_DEFAULT)
+            
+            # Làm phẳng axes nếu cần
+            if nrows == 1 and ncols == 1:
+                axes = np.array([axes])
+            elif nrows == 1 or ncols == 1:
+                axes = axes.flatten()
+                
+            for i, (name, row) in enumerate(error_counts.iterrows()):
+                if i < nrows * ncols:
+                    # Tính chỉ số hàng, cột
+                    if nrows == 1 and ncols == 1:
+                        ax = axes[0]
+                    elif nrows == 1 or ncols == 1:
+                        ax = axes[i]
+                    else:
+                        ax = axes[i // ncols, i % ncols]
+                    
+                    # Vẽ biểu đồ tròn
+                    wedges, texts, autotexts = ax.pie(
+                        row, 
+                        labels=None,
+                        autopct='%1.1f%%' if normalize else '%d',
+                        startangle=90,
+                        colors=colors
+                    )
+                    
+                    # Chỉnh màu chữ
+                    for autotext in autotexts:
+                        autotext.set_color('white')
+                    
+                    ax.set_title(name)
+                    
+            # Ẩn các axes không dùng
+            for i in range(len(error_counts), nrows * ncols):
+                if nrows == 1 and ncols == 1:
+                    pass
+                elif nrows == 1 or ncols == 1:
+                    axes[i].axis('off')
+                else:
+                    axes[i // ncols, i % ncols].axis('off')
+            
+            # Thêm legend chung
+            fig.legend(
+                wedges, 
+                error_counts.columns, 
+                title=error_type_col.replace('_', ' ').title(),
+                loc='lower center', 
+                bbox_to_anchor=(0.5, 0)
+            )
+        
+        # Đặt tiêu đề chung
+        if plot_type == 'pie':
+            fig.suptitle(title, fontsize=16)
+        else:
+            ax.set_title(title)
+        
+        plt.tight_layout()
+        return fig
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi tạo biểu đồ phân bố lỗi: {str(e)}")
+        traceback.print_exc()
+        return plt.figure()
+
+def create_reasoning_distribution_plot(
+    data: pd.DataFrame,
+    reasoning_cols: List[str],
+    group_by_col: str = 'model_name',
+    plot_type: str = 'box',
+    title: str = 'Distribution of Reasoning Scores',
+    figsize: Tuple[int, int] = (14, 10),
+    palette: str = 'viridis'
+) -> Figure:
+    """
+    Tạo biểu đồ phân phối điểm suy luận (reasoning scores).
+    
+    Args:
+        data: DataFrame chứa dữ liệu
+        reasoning_cols: Danh sách các cột điểm suy luận cần vẽ
+        group_by_col: Tên cột để nhóm (model_name hoặc prompt_type)
+        plot_type: Loại biểu đồ ('box', 'violin' hoặc 'swarm')
+        title: Tiêu đề biểu đồ
+        figsize: Kích thước biểu đồ
+        palette: Bảng màu seaborn
+        
+    Returns:
+        Đối tượng Figure của matplotlib
+    """
+    try:
+        # Kiểm tra dữ liệu
+        available_cols = [col for col in reasoning_cols if col in data.columns]
+        if not available_cols:
+            logger.warning(f"Không tìm thấy cột điểm suy luận nào trong dữ liệu")
+            return plt.figure()
+            
+        if group_by_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {group_by_col} trong dữ liệu")
+            return plt.figure()
+        
+        # Lọc dữ liệu có ít nhất một cột điểm
+        reasoning_df = data[data[available_cols].notna().any(axis=1)].copy()
+        
+        if len(reasoning_df) == 0:
+            logger.warning("Không có dữ liệu điểm suy luận để phân tích")
+            return plt.figure()
+        
+        # Reshape dữ liệu sang dạng long format để dễ vẽ
+        id_vars = [group_by_col]
+        
+        # Thêm các biến phân loại khác nếu có
+        for col in ['prompt_type', 'question_type', 'difficulty']:
+            if col in reasoning_df.columns and col != group_by_col:
+                id_vars.append(col)
+        
+        # Chuyển sang dạng long format
+        long_df = pd.melt(
+            reasoning_df,
+            id_vars=id_vars,
+            value_vars=available_cols,
+            var_name='reasoning_metric',
+            value_name='score'
+        )
+        
+        # Chuẩn hóa tên reasoning_metric để hiển thị đẹp hơn
+        long_df['reasoning_metric'] = long_df['reasoning_metric'].apply(
+            lambda x: x.replace('reasoning_', '').replace('_', ' ').title()
+        )
+        
+        # Tạo figure và axes
+        fig, ax = plt.subplots(figsize=figsize, dpi=DPI_DEFAULT)
+        
+        # Vẽ biểu đồ dựa trên loại được chọn
+        if plot_type == 'box':
+            ax = sns.boxplot(
+                data=long_df, 
+                x='reasoning_metric', 
+                y='score',
+                hue=group_by_col,
+                palette=palette,
+                ax=ax
+            )
+            
+        elif plot_type == 'violin':
+            ax = sns.violinplot(
+                data=long_df, 
+                x='reasoning_metric', 
+                y='score',
+                hue=group_by_col,
+                palette=palette,
+                inner='quart',  # Hiển thị boxplot bên trong violin
+                ax=ax
+            )
+            
+        elif plot_type == 'swarm':
+            ax = sns.boxplot(
+                data=long_df, 
+                x='reasoning_metric', 
+                y='score',
+                hue=group_by_col,
+                palette=palette,
+                ax=ax,
+                width=0.6,
+                fliersize=0  # Ẩn outliers từ boxplot
+            )
+            
+            # Thêm swarmplot để thấy phân bố thực tế
+            ax = sns.swarmplot(
+                data=long_df, 
+                x='reasoning_metric', 
+                y='score',
+                hue=group_by_col,
+                palette=palette,
+                alpha=0.6,
+                dodge=True,
+                ax=ax
+            )
+            
+            # Tránh hiện 2 legend trùng nhau
+            handles, labels = ax.get_legend_handles_labels()
+            half = len(handles) // 2
+            ax.legend(handles[:half], labels[:half], title=group_by_col)
+        
+        # Chỉnh sửa tên các trục
+        ax.set_xlabel('Tiêu chí đánh giá suy luận')
+        ax.set_ylabel('Điểm (1-5)')
+        
+        # Đặt tiêu đề
+        ax.set_title(title)
+        
+        # Chỉnh legend nếu không phải swarm
+        if plot_type != 'swarm':
+            handles, labels = ax.get_legend_handles_labels()
+            ax.legend(handles, labels, title=group_by_col, bbox_to_anchor=(1.05, 1), loc='upper left')
+        
+        plt.tight_layout()
+        return fig
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi tạo biểu đồ phân phối điểm suy luận: {str(e)}")
+        traceback.print_exc()
+        return plt.figure()
+
+def create_interactive_bar_chart(
+    data: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    color_col: Optional[str] = None,
+    title: str = 'Interactive Bar Chart',
+    height: int = 600,
+    color_discrete_map: Optional[Dict[str, str]] = None
+) -> 'plotly.graph_objects.Figure':
+    """
+    Tạo biểu đồ cột tương tác bằng Plotly.
+    
+    Args:
+        data: DataFrame chứa dữ liệu
+        x_col: Tên cột làm trục x
+        y_col: Tên cột làm trục y
+        color_col: Tên cột để phân biệt màu sắc (nếu có)
+        title: Tiêu đề biểu đồ
+        height: Chiều cao biểu đồ (px)
+        color_discrete_map: Dict ánh xạ giá trị trong color_col với mã màu
+        
+    Returns:
+        Đối tượng Figure của plotly
+    """
+    try:
+        # Import plotly
+        import plotly.express as px
+        
+        # Kiểm tra dữ liệu
+        if x_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {x_col} trong dữ liệu")
+            return px.bar()
+            
+        if y_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {y_col} trong dữ liệu")
+            return px.bar()
+            
+        if color_col and color_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {color_col} trong dữ liệu")
+            color_col = None
+        
+        # Tạo biểu đồ
+        fig = px.bar(
+            data,
+            x=x_col,
+            y=y_col,
+            color=color_col,
+            title=title,
+            height=height,
+            color_discrete_map=color_discrete_map,
+            template="plotly_white",
+            hover_data=data.columns,  # Hiển thị tất cả dữ liệu khi hover
+            text=y_col  # Hiển thị giá trị trên mỗi cột
+        )
+        
+        # Chỉnh định dạng
+        fig.update_traces(
+            texttemplate='%{text:.2f}', 
+            textposition='outside'
+        )
+        
+        fig.update_layout(
+            xaxis_title=x_col.replace('_', ' ').title(),
+            yaxis_title=y_col.replace('_', ' ').title()
+        )
+        
+        return fig
+        
+    except ImportError:
+        logger.warning("Không thể tạo biểu đồ tương tác. Vui lòng cài đặt plotly: pip install plotly")
+        return None
+    except Exception as e:
+        logger.error(f"Lỗi khi tạo biểu đồ cột tương tác: {str(e)}")
+        traceback.print_exc()
+        import plotly.express as px
+        return px.bar()
+
+def create_interactive_heatmap(
+    data: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    value_col: str,
+    title: str = 'Interactive Heatmap',
+    height: int = 600,
+    colorscale: str = 'Viridis'
+) -> 'plotly.graph_objects.Figure':
+    """
+    Tạo biểu đồ heatmap tương tác bằng Plotly.
+    
+    Args:
+        data: DataFrame chứa dữ liệu
+        x_col: Tên cột làm trục x
+        y_col: Tên cột làm trục y
+        value_col: Tên cột chứa giá trị
+        title: Tiêu đề biểu đồ
+        height: Chiều cao biểu đồ (px)
+        colorscale: Bảng màu
+        
+    Returns:
+        Đối tượng Figure của plotly
+    """
+    try:
+        # Import plotly
+        import plotly.express as px
+        
+        # Kiểm tra dữ liệu
+        if x_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {x_col} trong dữ liệu")
+            return px.imshow()
+            
+        if y_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {y_col} trong dữ liệu")
+            return px.imshow()
+            
+        if value_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {value_col} trong dữ liệu")
+            return px.imshow()
+        
+        # Pivot dữ liệu
+        pivot_df = data.pivot_table(
+            index=y_col, 
+            columns=x_col, 
+            values=value_col,
+            aggfunc='mean'
+        )
+        
+        # Tạo biểu đồ
+        fig = px.imshow(
+            pivot_df,
+            title=title,
+            height=height,
+            color_continuous_scale=colorscale,
+            text_auto='.2f',  # Hiển thị giá trị trong mỗi ô
+            aspect='auto'     # Tự động điều chỉnh tỷ lệ
+        )
+        
+        # Chỉnh định dạng
+        fig.update_layout(
+            xaxis_title=x_col.replace('_', ' ').title(),
+            yaxis_title=y_col.replace('_', ' ').title()
+        )
+        
+        return fig
+        
+    except ImportError:
+        logger.warning("Không thể tạo biểu đồ tương tác. Vui lòng cài đặt plotly: pip install plotly")
+        return None
+    except Exception as e:
+        logger.error(f"Lỗi khi tạo biểu đồ heatmap tương tác: {str(e)}")
+        traceback.print_exc()
+        import plotly.express as px
+        return px.imshow()
+
+def create_interactive_scatter_plot(
+    data: pd.DataFrame,
+    x_col: str,
+    y_col: str,
+    color_col: Optional[str] = None,
+    size_col: Optional[str] = None,
+    text_col: Optional[str] = None,
+    title: str = 'Interactive Scatter Plot',
+    height: int = 600,
+    opacity: float = 0.7
+) -> 'plotly.graph_objects.Figure':
+    """
+    Tạo biểu đồ scatter tương tác bằng Plotly.
+    
+    Args:
+        data: DataFrame chứa dữ liệu
+        x_col: Tên cột làm trục x
+        y_col: Tên cột làm trục y
+        color_col: Tên cột để phân biệt màu sắc (nếu có)
+        size_col: Tên cột để điều chỉnh kích thước điểm (nếu có)
+        text_col: Tên cột hiển thị khi hover (nếu có)
+        title: Tiêu đề biểu đồ
+        height: Chiều cao biểu đồ (px)
+        opacity: Độ trong suốt của điểm (0-1)
+        
+    Returns:
+        Đối tượng Figure của plotly
+    """
+    try:
+        # Import plotly
+        import plotly.express as px
+        
+        # Kiểm tra dữ liệu
+        if x_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {x_col} trong dữ liệu")
+            return px.scatter()
+            
+        if y_col not in data.columns:
+            logger.warning(f"Không tìm thấy cột {y_col} trong dữ liệu")
+            return px.scatter()
+        
+        # Chuẩn bị hover_data
+        hover_data = []
+        for col in data.columns:
+            if col not in [x_col, y_col, color_col, size_col] and data[col].dtype != 'object':
+                hover_data.append(col)
+        
+        # Tạo biểu đồ
+        fig = px.scatter(
+            data,
+            x=x_col,
+            y=y_col,
+            color=color_col,
+            size=size_col,
+            text=text_col,
+            title=title,
+            height=height,
+            opacity=opacity,
+            template="plotly_white",
+            hover_data=hover_data,
+            trendline="ols" if data[x_col].dtype != 'object' and data[y_col].dtype != 'object' else None
+        )
+        
+        # Chỉnh định dạng
+        fig.update_layout(
+            xaxis_title=x_col.replace('_', ' ').title(),
+            yaxis_title=y_col.replace('_', ' ').title()
+        )
+        
+        return fig
+        
+    except ImportError:
+        logger.warning("Không thể tạo biểu đồ tương tác. Vui lòng cài đặt plotly: pip install plotly")
+        return None
+    except Exception as e:
+        logger.error(f"Lỗi khi tạo biểu đồ scatter tương tác: {str(e)}")
+        traceback.print_exc()
+        import plotly.express as px
+        return px.scatter() 

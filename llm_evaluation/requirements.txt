@@ -23,8 +23,13 @@ rouge-score>=0.1.2 # Hoặc rouge_score, kiểm tra tên package chính xác
 nltk>=3.8.0
 scikit-learn>=1.2.0 # Cần cho tính toán similarity
 
+# Metrics
+bert-score>=0.3.13 # Thư viện cho BERTScore metrics
+# Đảm bảo đã cài đặt nltk và tải wordnet và punkt bằng:
+# python -c "import nltk; nltk.download('wordnet'); nltk.download('punkt')"
+
 # Optional (cho sentence similarity)
-# sentence-transformers>=2.2.0
+sentence-transformers>=2.2.0
 
 # Optional (cho config validation)
 # jsonschema>=4.17.0

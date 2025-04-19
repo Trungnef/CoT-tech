@@ -46,6 +46,19 @@ def parse_arguments():
     parser.add_argument("--checkpoint-frequency", type=int, default=config.DEFAULT_CHECKPOINT_FREQUENCY,
                         help="Tần suất lưu checkpoint (số câu hỏi)")
     
+    # Lọc câu hỏi theo tags, difficulty và question_type
+    parser.add_argument("--include-tags", nargs='+', 
+                        help="Chỉ bao gồm câu hỏi có ít nhất một trong các tags được chỉ định")
+    
+    parser.add_argument("--exclude-tags", nargs='+',
+                        help="Loại trừ câu hỏi có bất kỳ tag nào trong danh sách này")
+    
+    parser.add_argument("--difficulty-levels", nargs='+', choices=["Dễ", "Trung bình", "Khó"],
+                        help="Chỉ bao gồm câu hỏi có độ khó được chỉ định (Dễ, Trung bình, Khó)")
+    
+    parser.add_argument("--question-types", nargs='+',
+                        help="Chỉ bao gồm câu hỏi có loại được chỉ định (VD: logic, math, text)")
+    
     # Các flag
     parser.add_argument("--test-run", action="store_true", 
                         help="Chạy thử nghiệm với số lượng câu hỏi, mô hình và prompt giới hạn")
@@ -162,18 +175,63 @@ def main():
     # Tải danh sách câu hỏi
     try:
         questions = load_questions(args.questions_file)
+        original_count = len(questions)
         
         # Lọc câu hỏi theo ID nếu được chỉ định
         if args.question_ids:
-            original_count = len(questions)
             questions = [q for q in questions if q.get('id') in args.question_ids]
             logger.info(f"Đã lọc {original_count} câu hỏi xuống còn {len(questions)} câu hỏi theo ID đã chỉ định")
+            original_count = len(questions)
+        
+        # Lọc câu hỏi theo tags
+        if args.include_tags:
+            include_tags = set(tag.lower() for tag in args.include_tags)
+            questions = [
+                q for q in questions 
+                if 'tags' in q and any(tag.lower() in include_tags for tag in q['tags'])
+            ]
+            logger.info(f"Đã lọc xuống còn {len(questions)} câu hỏi theo include-tags: {args.include_tags}")
+            original_count = len(questions)
+        
+        if args.exclude_tags:
+            exclude_tags = set(tag.lower() for tag in args.exclude_tags)
+            questions = [
+                q for q in questions 
+                if 'tags' not in q or not any(tag.lower() in exclude_tags for tag in q['tags'])
+            ]
+            logger.info(f"Đã lọc xuống còn {len(questions)} câu hỏi sau khi loại trừ tags: {args.exclude_tags}")
+            original_count = len(questions)
+        
+        # Lọc câu hỏi theo độ khó
+        if args.difficulty_levels:
+            difficulty_levels = set(args.difficulty_levels)
+            questions = [
+                q for q in questions 
+                if 'difficulty' in q and q['difficulty'] in difficulty_levels
+            ]
+            logger.info(f"Đã lọc xuống còn {len(questions)} câu hỏi theo độ khó: {args.difficulty_levels}")
+            original_count = len(questions)
+        
+        # Lọc câu hỏi theo loại
+        if args.question_types:
+            question_types = set(qt.lower() for qt in args.question_types)
+            questions = [
+                q for q in questions 
+                if 'type' in q and q['type'].lower() in question_types
+            ]
+            logger.info(f"Đã lọc xuống còn {len(questions)} câu hỏi theo loại: {args.question_types}")
+            original_count = len(questions)
         
         # Giới hạn số lượng câu hỏi nếu cần
         if args.max_questions and args.max_questions < len(questions):
             questions = questions[:args.max_questions]
+            logger.info(f"Đã giới hạn xuống {len(questions)} câu hỏi theo max-questions: {args.max_questions}")
             
-        logger.info(f"Đã tải {len(questions)} câu hỏi từ {args.questions_file}")
+        logger.info(f"Đã tải và lọc {len(questions)} câu hỏi từ {args.questions_file}")
+        
+        if len(questions) == 0:
+            logger.error("Không có câu hỏi nào sau khi lọc. Vui lòng kiểm tra lại các tiêu chí lọc.")
+            return
     except Exception as e:
         logger.error(f"Lỗi khi tải câu hỏi: {str(e)}")
         logger.debug(f"Chi tiết lỗi: {traceback.format_exc()}")

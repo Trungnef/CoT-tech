@@ -15,6 +15,65 @@ from sklearn.metrics import (
 import json
 
 from .logging_utils import get_logger
+from .text_utils import clean_text
+
+# Thêm import mới cho METEOR và BERTScore
+try:
+    import nltk
+    
+    # Đảm bảo tải các resources NLTK cần thiết
+    required_resources = [
+        ('punkt', 'tokenizers/punkt'),
+        ('wordnet', 'corpora/wordnet')
+    ]
+    
+    for resource_name, resource_path in required_resources:
+        try:
+            nltk.data.find(resource_path)
+        except LookupError:
+            try:
+                nltk.download(resource_name, quiet=True)
+            except Exception as e:
+                logging.warning(f"Không thể tải NLTK resource {resource_name}: {str(e)}")
+    
+    # Thử tạo punkt_tab nếu cần
+    try:
+        nltk.data.find('tokenizers/punkt_tab/english/')
+    except LookupError:
+        try:
+            # Tạo thư mục và sao chép dữ liệu punkt nếu cần
+            import os
+            nltk_data_paths = nltk.data.path
+            if nltk_data_paths:
+                nltk_data_dir = nltk_data_paths[0]
+                punkt_tab_dir = os.path.join(nltk_data_dir, 'tokenizers', 'punkt_tab', 'english')
+                os.makedirs(punkt_tab_dir, exist_ok=True)
+                
+                # Sao chép dữ liệu từ punkt sang punkt_tab
+                punkt_dir = os.path.join(nltk_data_dir, 'tokenizers', 'punkt')
+                if os.path.exists(punkt_dir):
+                    import shutil
+                    for file in os.listdir(punkt_dir):
+                        if file.endswith('.pickle'):
+                            src = os.path.join(punkt_dir, file)
+                            dst = os.path.join(punkt_tab_dir, file)
+                            shutil.copy2(src, dst)
+                            logging.info(f"Đã sao chép {file} từ punkt sang punkt_tab")
+        except Exception as e:
+            logging.warning(f"Không thể tạo punkt_tab resource: {str(e)}")
+    
+    # Import meteor_score sau khi đã tải resources
+    from nltk.translate.meteor_score import meteor_score
+except ImportError as e:
+    meteor_score = None
+    logging.warning(f"NLTK không được cài đặt hoặc không đầy đủ: {str(e)}. Metrics METEOR sẽ không khả dụng.")
+
+try:
+    from bert_score import BERTScorer
+    bert_scorer = None  # Khởi tạo lazy khi cần
+except ImportError as e:
+    BERTScorer = None
+    logging.warning(f"bert-score không được cài đặt: {str(e)}. Metrics BERTScore sẽ không khả dụng.")
 
 logger = get_logger(__name__)
 
@@ -227,7 +286,9 @@ def calculate_regression_metrics(y_true: List[float],
 def calculate_exact_match_accuracy(predictions: List[str], 
                                  references: List[str],
                                  normalize: bool = True,
-                                 case_sensitive: bool = False) -> float:
+                                 case_sensitive: bool = False,
+                                 remove_punctuation: bool = True,
+                                 remove_whitespace: bool = True) -> float:
     """
     Tính tỉ lệ các dự đoán khớp chính xác với tham chiếu.
     
@@ -236,6 +297,8 @@ def calculate_exact_match_accuracy(predictions: List[str],
         references: Danh sách các tham chiếu
         normalize: Nếu True, trả về tỉ lệ; nếu False, trả về số lượng
         case_sensitive: Nếu True, phân biệt hoa thường; nếu False, không phân biệt
+        remove_punctuation: Nếu True, loại bỏ dấu câu khi so sánh
+        remove_whitespace: Nếu True, chuẩn hóa khoảng trắng khi so sánh
         
     Returns:
         Tỉ lệ hoặc số lượng các dự đoán khớp chính xác
@@ -243,11 +306,32 @@ def calculate_exact_match_accuracy(predictions: List[str],
     if len(predictions) != len(references):
         raise ValueError(f"Số lượng dự đoán ({len(predictions)}) khác với số lượng tham chiếu ({len(references)})")
     
-    if not case_sensitive:
-        predictions = [p.lower() if isinstance(p, str) else p for p in predictions]
-        references = [r.lower() if isinstance(r, str) else r for r in references]
+    # Tiền xử lý các dự đoán và tham chiếu
+    normalized_predictions = []
+    normalized_references = []
     
-    matches = sum(1 for p, r in zip(predictions, references) if p == r)
+    for p, r in zip(predictions, references):
+        if not isinstance(p, str):
+            p = str(p) if p is not None else ""
+        if not isinstance(r, str):
+            r = str(r) if r is not None else ""
+        
+        # Chuẩn hóa văn bản dựa trên các tham số
+        p_clean = clean_text(p, 
+                            lower=not case_sensitive,
+                            remove_punctuation=remove_punctuation,
+                            remove_whitespace=remove_whitespace)
+        
+        r_clean = clean_text(r, 
+                            lower=not case_sensitive,
+                            remove_punctuation=remove_punctuation,
+                            remove_whitespace=remove_whitespace)
+        
+        normalized_predictions.append(p_clean)
+        normalized_references.append(r_clean)
+    
+    # Tính số lượng các dự đoán khớp chính xác
+    matches = sum(1 for p, r in zip(normalized_predictions, normalized_references) if p == r)
     
     if normalize:
         return matches / len(predictions) if len(predictions) > 0 else 0.0
@@ -256,7 +340,10 @@ def calculate_exact_match_accuracy(predictions: List[str],
 
 def calculate_token_overlap(predictions: List[str], 
                            references: List[str],
-                           tokenizer: Callable[[str], List[str]] = None) -> Dict[str, float]:
+                           tokenizer: Callable[[str], List[str]] = None,
+                           case_sensitive: bool = False,
+                           remove_punctuation: bool = True,
+                           remove_stopwords: bool = False) -> Dict[str, float]:
     """
     Tính độ chồng lặp token giữa dự đoán và tham chiếu.
     
@@ -264,6 +351,9 @@ def calculate_token_overlap(predictions: List[str],
         predictions: Danh sách các dự đoán
         references: Danh sách các tham chiếu
         tokenizer: Hàm tokenize văn bản, mặc định là split
+        case_sensitive: Nếu True, phân biệt hoa thường; nếu False, không phân biệt
+        remove_punctuation: Nếu True, loại bỏ dấu câu khi so sánh
+        remove_stopwords: Nếu True, loại bỏ stopwords khi so sánh
         
     Returns:
         Dict chứa các metrics: precision, recall, f1
@@ -271,28 +361,112 @@ def calculate_token_overlap(predictions: List[str],
     if len(predictions) != len(references):
         raise ValueError(f"Số lượng dự đoán ({len(predictions)}) khác với số lượng tham chiếu ({len(references)})")
     
-    if tokenizer is None:
-        tokenizer = lambda x: x.lower().split()
+    # Hàm tokenize mặc định nâng cao
+    def default_tokenizer(text):
+        # Chuẩn hóa text trước khi tokenize
+        text = clean_text(text, 
+                         lower=not case_sensitive, 
+                         remove_punctuation=remove_punctuation,
+                         remove_whitespace=True)
+        
+        # Thử sử dụng word_tokenize nếu có NLTK
+        try:
+            import nltk
+            try:
+                nltk.data.find('punkt')
+            except LookupError:
+                nltk.download('punkt', quiet=True)
+            
+            from nltk.tokenize import word_tokenize
+            tokens = word_tokenize(text)
+        except (ImportError, AttributeError):
+            # Tokenize đơn giản bằng split nếu không có NLTK
+            tokens = text.split()
+        
+        # Loại bỏ stopwords nếu cần
+        if remove_stopwords:
+            try:
+                # Sử dụng danh sách stopwords tiếng Việt hoặc tiếng Anh
+                # nếu có thư viện nltk
+                import nltk
+                try:
+                    nltk.data.find('corpora/stopwords')
+                except LookupError:
+                    nltk.download('stopwords', quiet=True)
+                
+                from nltk.corpus import stopwords
+                
+                # Ưu tiên stopwords tiếng Việt nếu có, nếu không dùng tiếng Anh
+                try:
+                    stop_words = set(stopwords.words('vietnamese'))
+                except:
+                    stop_words = set(stopwords.words('english'))
+                
+                tokens = [t for t in tokens if t not in stop_words]
+            except ImportError:
+                # Bỏ qua nếu không có nltk
+                pass
+        
+        return tokens
+    
+    # Sử dụng tokenizer được cung cấp hoặc default_tokenizer
+    tokenizer = tokenizer or default_tokenizer
     
     precisions = []
     recalls = []
     f1s = []
     
     for pred, ref in zip(predictions, references):
+        # Xử lý các trường hợp không phải string
+        if not isinstance(pred, str):
+            pred = str(pred) if pred is not None else ""
+        if not isinstance(ref, str):
+            ref = str(ref) if ref is not None else ""
+            
         # Bỏ qua các cặp rỗng
         if not pred or not ref:
             continue
             
+        # Phương pháp 1: Sử dụng tập hợp (set)
         # Tokenize
         pred_tokens = set(tokenizer(pred))
         ref_tokens = set(tokenizer(ref))
         
+        if not pred_tokens or not ref_tokens:
+            continue
+            
         # Tính intersection
         intersection = pred_tokens.intersection(ref_tokens)
         
         # Tính precision, recall, f1
-        precision = len(intersection) / len(pred_tokens) if pred_tokens else 0
-        recall = len(intersection) / len(ref_tokens) if ref_tokens else 0
+        precision_set = len(intersection) / len(pred_tokens) if pred_tokens else 0
+        recall_set = len(intersection) / len(ref_tokens) if ref_tokens else 0
+        
+        # Phương pháp 2: Sử dụng đếm tần suất (Counter) - thường chính xác hơn
+        try:
+            from collections import Counter
+            pred_tokens_list = tokenizer(pred)
+            ref_tokens_list = tokenizer(ref)
+            
+            pred_counter = Counter(pred_tokens_list)
+            ref_counter = Counter(ref_tokens_list)
+            
+            # Đếm token trùng dựa trên tần suất xuất hiện
+            common_counter = pred_counter & ref_counter
+            
+            precision_counter = sum(common_counter.values()) / sum(pred_counter.values()) if sum(pred_counter.values()) > 0 else 0
+            recall_counter = sum(common_counter.values()) / sum(ref_counter.values()) if sum(ref_counter.values()) > 0 else 0
+            
+            # Sử dụng phương pháp 2 nếu có thể
+            precision = precision_counter
+            recall = recall_counter
+            
+        except Exception:
+            # Fallback sang phương pháp 1
+            precision = precision_set
+            recall = recall_set
+        
+        # Tính F1
         f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
         
         precisions.append(precision)
@@ -610,4 +784,531 @@ def calculate_latency_metrics(
     for p in percentiles:
         metrics[f"latency_p{p}"] = float(np.percentile(latencies_array, p))
     
-    return metrics 
+    return metrics
+
+def calculate_rouge_scores(predictions: List[str], 
+                         references: List[str],
+                         rouge_types: List[str] = ['rouge1', 'rouge2', 'rougeL']) -> Dict[str, float]:
+    """
+    Tính các chỉ số ROUGE (Recall-Oriented Understudy for Gisting Evaluation) cho đánh giá tóm tắt văn bản.
+    
+    Args:
+        predictions: Danh sách các dự đoán
+        references: Danh sách các tham chiếu
+        rouge_types: Các loại chỉ số ROUGE cần tính
+        
+    Returns:
+        Dict chứa các chỉ số ROUGE
+    """
+    if len(predictions) != len(references):
+        raise ValueError(f"Số lượng dự đoán ({len(predictions)}) khác với số lượng tham chiếu ({len(references)})")
+    
+    try:
+        from rouge import Rouge
+    except ImportError:
+        logger.warning("Không thể tính ROUGE score: Thiếu thư viện 'rouge'. Cài đặt với 'pip install rouge'")
+        return {
+            "rouge1_f": 0.0,
+            "rouge2_f": 0.0,
+            "rougeL_f": 0.0,
+            "import_error": "Thiếu thư viện 'rouge'"
+        }
+    
+    rouge = Rouge(metrics=rouge_types)
+    all_scores = {
+        "rouge1_f": [],
+        "rouge1_p": [],
+        "rouge1_r": [],
+        "rouge2_f": [],
+        "rouge2_p": [],
+        "rouge2_r": [],
+        "rougeL_f": [],
+        "rougeL_p": [],
+        "rougeL_r": []
+    }
+    
+    # Tính điểm ROUGE cho từng cặp dự đoán/tham chiếu
+    for pred, ref in zip(predictions, references):
+        # Xử lý các trường hợp không phải string
+        if not isinstance(pred, str):
+            pred = str(pred) if pred is not None else ""
+        if not isinstance(ref, str):
+            ref = str(ref) if ref is not None else ""
+            
+        # Bỏ qua các cặp rỗng hoặc quá ngắn
+        if not pred or not ref or len(pred.split()) < 1 or len(ref.split()) < 1:
+            continue
+            
+        try:
+            # Tính điểm ROUGE
+            scores = rouge.get_scores(pred, ref)[0]
+            
+            # Lưu các điểm vào danh sách để tính trung bình
+            for rouge_type in scores:
+                for metric in ['f', 'p', 'r']:
+                    key = f"{rouge_type}_{metric}"
+                    if key in all_scores:
+                        all_scores[key].append(scores[rouge_type][metric])
+        except Exception as e:
+            logger.debug(f"Lỗi khi tính ROUGE cho một cặp: {str(e)}")
+            continue
+    
+    # Tính trung bình cho tất cả các điểm
+    result = {}
+    for key, values in all_scores.items():
+        if values:
+            result[key] = float(np.mean(values))
+        else:
+            result[key] = 0.0
+    
+    return result
+
+def calculate_bleu_scores(predictions: List[str], 
+                        references: List[str],
+                        max_ngram: int = 4,
+                        lowercase: bool = True) -> Dict[str, float]:
+    """
+    Tính điểm BLEU (Bilingual Evaluation Understudy) cho đánh giá chất lượng dịch máy.
+    
+    Args:
+        predictions: Danh sách các dự đoán
+        references: Danh sách các tham chiếu
+        max_ngram: Độ dài n-gram tối đa cần xét (1 đến 4)
+        lowercase: Có chuyển văn bản về chữ thường không
+        
+    Returns:
+        Dict chứa các chỉ số BLEU
+    """
+    if len(predictions) != len(references):
+        raise ValueError(f"Số lượng dự đoán ({len(predictions)}) khác với số lượng tham chiếu ({len(references)})")
+    
+    try:
+        import nltk
+        from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+        
+        # Tải các resource cần thiết nếu chưa có
+        try:
+            nltk.data.find('tokenizers/punkt')
+        except LookupError:
+            nltk.download('punkt', quiet=True)
+    except ImportError:
+        logger.warning("Không thể tính BLEU score: Thiếu thư viện 'nltk'. Cài đặt với 'pip install nltk'")
+        return {
+            "bleu": 0.0, 
+            "bleu1": 0.0, 
+            "bleu2": 0.0, 
+            "bleu3": 0.0, 
+            "bleu4": 0.0,
+            "import_error": "Thiếu thư viện 'nltk'"
+        }
+    
+    # Khởi tạo smoothing function để tránh điểm 0 khi không có n-gram match
+    smoothing = SmoothingFunction().method1
+    
+    # Danh sách điểm BLEU cho từng n-gram (1-4)
+    bleu_scores = {f"bleu{i}": [] for i in range(1, max_ngram + 1)}
+    bleu_scores["bleu"] = []  # Điểm BLEU tổng hợp
+    
+    # Tính điểm BLEU cho từng cặp dự đoán/tham chiếu
+    for pred, ref in zip(predictions, references):
+        # Xử lý các trường hợp không phải string
+        if not isinstance(pred, str):
+            pred = str(pred) if pred is not None else ""
+        if not isinstance(ref, str):
+            ref = str(ref) if ref is not None else ""
+            
+        # Bỏ qua các cặp rỗng
+        if not pred or not ref:
+            continue
+            
+        # Hạ chữ hoa nếu cần
+        if lowercase:
+            pred = pred.lower()
+            ref = ref.lower()
+        
+        try:
+            # Tokenize
+            pred_tokens = nltk.word_tokenize(pred)
+            ref_tokens = [nltk.word_tokenize(ref)]  # BLEU cần list của các references
+            
+            # Tính điểm BLEU tổng hợp (trung bình các n-gram)
+            weights = [1.0/max_ngram] * max_ngram
+            bleu = sentence_bleu(ref_tokens, pred_tokens, 
+                               weights=weights,
+                               smoothing_function=smoothing)
+            bleu_scores["bleu"].append(bleu)
+            
+            # Tính điểm BLEU cho từng n-gram
+            for i in range(1, max_ngram + 1):
+                weights = [0.0] * max_ngram
+                weights[i-1] = 1.0
+                bleu_i = sentence_bleu(ref_tokens, pred_tokens, 
+                                      weights=weights,
+                                      smoothing_function=smoothing)
+                bleu_scores[f"bleu{i}"].append(bleu_i)
+        except Exception as e:
+            logger.debug(f"Lỗi khi tính BLEU cho một cặp: {str(e)}")
+            continue
+    
+    # Tính trung bình cho tất cả các điểm
+    result = {}
+    for key, values in bleu_scores.items():
+        if values:
+            result[key] = float(np.mean(values))
+        else:
+            result[key] = 0.0
+    
+    return result
+
+def calculate_meteor_score(predictions: List[str], 
+                          references: List[str],
+                          alpha: float = 0.9,
+                          beta: float = 3.0,
+                          gamma: float = 0.5) -> Dict[str, float]:
+    """
+    Tính điểm METEOR (Metric for Evaluation of Translation with Explicit ORdering).
+    
+    Args:
+        predictions: Danh sách các dự đoán
+        references: Danh sách các tham chiếu
+        alpha, beta, gamma: Tham số của METEOR
+        
+    Returns:
+        Dict chứa điểm METEOR
+    """
+    # Check if NLTK's meteor_score is available
+    try:
+        from nltk.translate.meteor_score import meteor_score
+    except ImportError:
+        logger.warning("NLTK không được cài đặt. Không thể tính điểm METEOR.")
+        return {
+            "meteor": 0.0, 
+            "meteor_scores": [0.0] * len(predictions) if predictions else [],
+            "error": "NLTK not installed"
+        }
+    
+    if len(predictions) != len(references):
+        raise ValueError(f"Số lượng dự đoán ({len(predictions)}) và tham chiếu ({len(references)}) không khớp")
+    
+    try:
+        # Ensure NLTK data is available
+        import nltk
+        try:
+            nltk.data.find('wordnet')
+            nltk.data.find('punkt')
+        except LookupError:
+            nltk.download('wordnet', quiet=True)
+            nltk.download('punkt', quiet=True)
+            
+        # Tính METEOR score cho từng cặp
+        meteor_scores = []
+        
+        for i in range(len(predictions)):
+            try:
+                # Chuẩn hóa prediction và reference
+                prediction = str(predictions[i]).strip() if predictions[i] is not None else ""
+                reference = str(references[i]).strip() if references[i] is not None else ""
+                
+                if not prediction or not reference:
+                    meteor_scores.append(0.0)
+                    continue
+                    
+                # Thử tokenize bằng word_tokenize
+                try:
+                    from nltk.tokenize import word_tokenize
+                    pred_tokens = word_tokenize(prediction)
+                    ref_tokens = word_tokenize(reference)
+                except (ImportError, LookupError):
+                    # Fallback sang split() nếu word_tokenize không khả dụng
+                    pred_tokens = prediction.lower().split()
+                    ref_tokens = reference.lower().split()
+                    
+                if not pred_tokens or not ref_tokens:
+                    meteor_scores.append(0.0)
+                    continue
+                    
+                # Tính METEOR score
+                try:
+                    # Thử sử dụng single_meteor_score nếu có
+                    from nltk.translate.meteor_score import single_meteor_score
+                    score = single_meteor_score(ref_tokens, pred_tokens)
+                except (ImportError, AttributeError):
+                    # Fallback sang meteor_score
+                    score = meteor_score([[ref_tokens]], pred_tokens)
+                    
+                meteor_scores.append(score)
+                
+            except Exception as e:
+                logger.debug(f"Lỗi khi tính METEOR cho cặp {i}: {str(e)}")
+                # Fallback: Tính tương tự METEOR bằng cách tính F-score
+                try:
+                    # Không sử dụng word_tokenize để tránh lỗi
+                    ref_words = references[i].lower().split()
+                    pred_words = predictions[i].lower().split()
+                    
+                    # Sử dụng Counter để đếm tần suất
+                    from collections import Counter
+                    ref_counter = Counter(ref_words)
+                    pred_counter = Counter(pred_words)
+                    
+                    # Tìm tokens chung
+                    common_counter = ref_counter & pred_counter
+                    
+                    # Tính precision, recall
+                    ref_count = sum(ref_counter.values())
+                    pred_count = sum(pred_counter.values())
+                    common_count = sum(common_counter.values())
+                    
+                    if pred_count == 0:
+                        precision = 0
+                    else:
+                        precision = common_count / pred_count
+                        
+                    if ref_count == 0:
+                        recall = 0
+                    else:
+                        recall = common_count / ref_count
+                        
+                    # Tính F-score với alpha=0.9 (tương tự METEOR)
+                    if precision + recall > 0:
+                        meteor_fallback = precision * recall / (alpha * precision + (1 - alpha) * recall)
+                        meteor_scores.append(meteor_fallback)
+                    else:
+                        meteor_scores.append(0.0)
+                except Exception:
+                    meteor_scores.append(0.0)
+        
+        # Tính trung bình
+        avg_meteor = np.mean(meteor_scores) if meteor_scores else 0.0
+        
+        return {
+            "meteor": float(avg_meteor),
+            "meteor_scores": [float(score) for score in meteor_scores]
+        }
+    
+    except Exception as e:
+        logger.error(f"Lỗi khi tính điểm METEOR: {str(e)}")
+        return {
+            "meteor": 0.0,
+            "meteor_scores": [0.0] * len(predictions) if predictions else [],
+            "error": str(e)
+        }
+
+def calculate_text_generation_metrics(predictions: List[str], 
+                                    references: List[str],
+                                    include_bleu: bool = True,
+                                    include_rouge: bool = True,
+                                    include_token_overlap: bool = True,
+                                    include_meteor: bool = True,
+                                    include_bertscore: bool = False,
+                                    case_sensitive: bool = False,
+                                    remove_punctuation: bool = True) -> Dict[str, float]:
+    """
+    Tính toán tất cả các metrics liên quan đến sinh văn bản.
+    
+    Args:
+        predictions: Danh sách các dự đoán
+        references: Danh sách các tham chiếu
+        include_bleu: Có tính BLEU không
+        include_rouge: Có tính ROUGE không
+        include_token_overlap: Có tính token overlap không
+        include_meteor: Có tính METEOR không 
+        include_bertscore: Có tính BERTScore không
+        case_sensitive: Có phân biệt chữ hoa/thường không
+        remove_punctuation: Có loại bỏ dấu câu không
+        
+    Returns:
+        Dict chứa tất cả các metrics
+    """
+    if not predictions or not references:
+        logger.warning("Danh sách dự đoán hoặc tham chiếu rỗng")
+        return {}
+    
+    # Chuẩn hóa độ dài danh sách nếu cần
+    if len(predictions) != len(references):
+        min_len = min(len(predictions), len(references))
+        logger.warning(f"Độ dài không khớp: {len(predictions)} dự đoán vs {len(references)} tham chiếu. Cắt xuống {min_len}")
+        predictions = predictions[:min_len]
+        references = references[:min_len]
+    
+    all_metrics = {}
+    
+    # Tính BLEU
+    if include_bleu:
+        try:
+            bleu_metrics = calculate_bleu_scores(
+                predictions, references, 
+                lowercase=(not case_sensitive)
+            )
+            all_metrics.update(bleu_metrics)
+        except Exception as e:
+            logger.error(f"Lỗi khi tính BLEU: {str(e)}")
+            all_metrics.update({"bleu_error": str(e)})
+    
+    # Tính ROUGE
+    if include_rouge:
+        try:
+            rouge_metrics = calculate_rouge_scores(predictions, references)
+            all_metrics.update(rouge_metrics)
+        except Exception as e:
+            logger.error(f"Lỗi khi tính ROUGE: {str(e)}")
+            all_metrics.update({"rouge_error": str(e)})
+    
+    # Tính token overlap
+    if include_token_overlap:
+        try:
+            overlap_metrics = calculate_token_overlap(
+                predictions, references,
+                case_sensitive=case_sensitive,
+                remove_punctuation=remove_punctuation
+            )
+            all_metrics.update(overlap_metrics)
+        except Exception as e:
+            logger.error(f"Lỗi khi tính token overlap: {str(e)}")
+            all_metrics.update({"overlap_error": str(e)})
+    
+    # Tính METEOR
+    if include_meteor and meteor_score is not None:
+        try:
+            meteor_metrics = calculate_meteor_score(predictions, references)
+            all_metrics.update(meteor_metrics)
+        except Exception as e:
+            logger.error(f"Lỗi khi tính METEOR: {str(e)}")
+            all_metrics.update({"meteor_error": str(e)})
+    
+    # Tính BERTScore
+    if include_bertscore and BERTScorer is not None:
+        try:
+            bertscore_metrics = calculate_bertscore(predictions, references)
+            all_metrics.update(bertscore_metrics)
+        except Exception as e:
+            logger.error(f"Lỗi khi tính BERTScore: {str(e)}")
+            all_metrics.update({"bertscore_error": str(e)})
+    
+    return all_metrics 
+
+def calculate_bertscore(predictions: List[str], 
+                       references: List[str],
+                       lang: str = "vi",
+                       model_type: str = "microsoft/mdeberta-v3-base",
+                       batch_size: int = 8,
+                       rescale_with_baseline: bool = True) -> Dict[str, float]:
+    """
+    Tính điểm BERTScore sử dụng bert-score package.
+    
+    Args:
+        predictions: Danh sách các dự đoán
+        references: Danh sách các tham chiếu
+        lang: Ngôn ngữ của văn bản
+        model_type: Mô hình BERT để sử dụng
+        batch_size: Kích thước batch
+        rescale_with_baseline: Có áp dụng rescaling không
+        
+    Returns:
+        Dict chứa điểm BERTScore (precision, recall, F1)
+    """
+    # Try to import bert_score directly
+    try:
+        from bert_score import score as bert_score_func
+    except ImportError:
+        logger.warning("bert-score không được cài đặt. Không thể tính BERTScore.")
+        return {
+            "bertscore_precision": 0.0,
+            "bertscore_recall": 0.0, 
+            "bertscore_f1": 0.0,
+            "error": "bert-score not installed"
+        }
+    
+    if len(predictions) != len(references):
+        raise ValueError(f"Số lượng dự đoán ({len(predictions)}) và tham chiếu ({len(references)}) không khớp")
+    
+    try:
+        # Check if torch is available and set device
+        import torch
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+        # Adjust batch size for CPU to avoid OOM
+        if device == "cpu":
+            batch_size = min(batch_size, 4)
+            logger.info(f"Sử dụng CPU cho BERTScore với batch_size={batch_size}")
+        
+        # Filter out empty predictions/references
+        valid_pairs = [(p, r) for p, r in zip(predictions, references) 
+                      if p and r and isinstance(p, str) and isinstance(r, str)]
+        
+        if not valid_pairs:
+            logger.warning("Không có cặp dự đoán/tham chiếu hợp lệ cho BERTScore")
+            return {
+                "bertscore_precision": 0.0,
+                "bertscore_recall": 0.0,
+                "bertscore_f1": 0.0,
+                "error": "No valid prediction/reference pairs"
+            }
+        
+        valid_preds, valid_refs = zip(*valid_pairs)
+        
+        # Calculate BERTScore
+        try:
+            P, R, F1 = bert_score_func(
+                valid_preds, 
+                valid_refs, 
+                lang=lang,
+                model_type=model_type,
+                batch_size=batch_size,
+                device=device,
+                rescale_with_baseline=rescale_with_baseline
+            )
+            
+            # Convert to Python objects
+            avg_precision = P.mean().item()
+            avg_recall = R.mean().item() 
+            avg_f1 = F1.mean().item()
+            
+            precision_scores = P.tolist()
+            recall_scores = R.tolist()
+            f1_scores = F1.tolist()
+            
+            # Fill in scores for all original predictions
+            all_precision = []
+            all_recall = []
+            all_f1 = []
+            
+            score_idx = 0
+            for p, r in zip(predictions, references):
+                if p and r and isinstance(p, str) and isinstance(r, str):
+                    all_precision.append(precision_scores[score_idx])
+                    all_recall.append(recall_scores[score_idx])
+                    all_f1.append(f1_scores[score_idx])
+                    score_idx += 1
+                else:
+                    all_precision.append(0.0)
+                    all_recall.append(0.0)
+                    all_f1.append(0.0)
+            
+            return {
+                "bertscore_precision": avg_precision,
+                "bertscore_recall": avg_recall,
+                "bertscore_f1": avg_f1,
+                "bertscore_precision_scores": all_precision,
+                "bertscore_recall_scores": all_recall,
+                "bertscore_f1_scores": all_f1
+            }
+        except Exception as e:
+            logger.error(f"Lỗi khi tính BERTScore: {str(e)}")
+            import traceback
+            logger.debug(traceback.format_exc())
+            return {
+                "bertscore_precision": 0.0,
+                "bertscore_recall": 0.0,
+                "bertscore_f1": 0.0,
+                "error": str(e)
+            }
+    
+    except Exception as e:
+        logger.error(f"Lỗi khi khởi tạo để tính BERTScore: {str(e)}")
+        return {
+            "bertscore_precision": 0.0,
+            "bertscore_recall": 0.0,
+            "bertscore_f1": 0.0,
+            "error": str(e)
+        } 

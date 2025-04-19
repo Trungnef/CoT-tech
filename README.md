@@ -33,6 +33,29 @@ Framework này cung cấp một bộ công cụ để đánh giá hiệu suất 
     *   **CSV/JSON**: Dữ liệu tổng hợp và kết quả thô để phân tích sâu hơn.
 *   **Linh Hoạt**: Dễ dàng mở rộng để hỗ trợ thêm mô hình, loại prompt, metrics đánh giá, hoặc nguồn dữ liệu câu hỏi mới.
 
+## Tính Năng Mới
+
+* **CLI Filtering**: Bộ lọc câu hỏi nâng cao từ command line theo tags, difficulty và loại câu hỏi:
+  * `--include-tags`: Chỉ bao gồm câu hỏi có ít nhất một trong các tags được chỉ định
+  * `--exclude-tags`: Loại trừ câu hỏi có bất kỳ tag nào trong danh sách này
+  * `--difficulty-levels`: Lọc câu hỏi theo độ khó (Dễ, Trung bình, Khó)
+  * `--question-types`: Lọc câu hỏi theo loại (ví dụ: logic, math, text)
+
+* **Xử Lý Lỗi Nâng Cao**: 
+  * API errors được phân loại chi tiết và xử lý gracefully
+  * Error recovery cải tiến để tránh crash khi gặp lỗi trong một phần của quá trình phân tích
+  * Logging chi tiết hơn để dễ dàng debug
+
+* **Kiểm Tra Cấu Hình Toàn Diện**:
+  * Phân biệt rõ ràng giữa lỗi nghiêm trọng và cảnh báo 
+  * Kiểm tra cấu hình model phù hợp với danh sách model đã chọn
+  * Kiểm tra định dạng file câu hỏi và cấu trúc dữ liệu
+
+* **Metrics Nâng Cao**:
+  * ROUGE và BLEU metrics cho đánh giá sinh văn bản
+  * Token overlap F1 cải tiến với xử lý tiếng Việt tốt hơn
+  * Exact Match với tùy chọn normalize linh hoạt
+
 ## Cài Đặt
 
 1.  **Clone Repository**:
@@ -68,10 +91,13 @@ Framework này cung cấp một bộ công cụ để đánh giá hiệu suất 
     *   Điền các thông tin cần thiết:
         ```dotenv
         # --- API Keys ---
-        # Bắt buộc nếu sử dụng model tương ứng
-        GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-        GROQ_API_KEY="YOUR_GROQ_API_KEY"
-        # OPENAI_API_KEY="YOUR_OPENAI_API_KEY" # Nếu tích hợp OpenAI
+        # Cấu hình API keys trong file .env
+        # Hỗ trợ nhiều API keys để tự động chuyển đổi khi gặp lỗi hết quota
+
+        # Định dạng: danh sách các API keys phân tách bằng dấu phẩy
+        GEMINI_API_KEYS="KEY1,KEY2,KEY3"
+        GROQ_API_KEYS="KEY1,KEY2,KEY3"
+        OPENAI_API_KEYS="KEY1,KEY2,KEY3"
 
         # --- Local Model Paths ---
         # Đường dẫn tuyệt đối hoặc tương đối đến thư mục chứa model và tokenizer đã tải về
@@ -211,8 +237,8 @@ Chào mừng các đóng góp! Vui lòng tạo Pull Request hoặc Issue trên r
 
 ## Tác Giả
 
-TRUNEE
+TRUNE
 
 ## Giấy Phép
 
-ALONEEE
+Aloneee

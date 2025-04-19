@@ -29,7 +29,9 @@ from .metrics_utils import (
     calculate_binary_metrics, calculate_multiclass_metrics,
     calculate_regression_metrics, calculate_exact_match_accuracy,
     calculate_token_overlap, calculate_llm_reasoning_metrics,
-    calculate_answer_correctness, calculate_latency_metrics
+    calculate_answer_correctness, calculate_latency_metrics,
+    calculate_rouge_scores, calculate_bleu_scores,
+    calculate_text_generation_metrics
 )
 
 # Visualization utils
@@ -76,6 +78,8 @@ __all__ = [
     'calculate_regression_metrics', 'calculate_exact_match_accuracy',
     'calculate_token_overlap', 'calculate_llm_reasoning_metrics',
     'calculate_answer_correctness', 'calculate_latency_metrics',
+    'calculate_rouge_scores', 'calculate_bleu_scores',
+    'calculate_text_generation_metrics',
     
     # Visualization utils
     'set_visualization_style', 'create_accuracy_comparison_plot',

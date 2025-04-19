@@ -17,8 +17,8 @@ from .logging_utils import get_logger
 logger = get_logger(__name__)
 
 # Ngưỡng cảnh báo và ngưỡng xử lý
-MEMORY_WARNING_THRESHOLD = 75  # Phần trăm
-MEMORY_CRITICAL_THRESHOLD = 85  # Phần trăm
+MEMORY_WARNING_THRESHOLD = 85  # Phần trăm
+MEMORY_CRITICAL_THRESHOLD = 90  # Phần trăm
 MEMORY_MONITORING_INTERVAL = 5  # Giây
 
 # Đối tượng quản lý bộ nhớ toàn cục
