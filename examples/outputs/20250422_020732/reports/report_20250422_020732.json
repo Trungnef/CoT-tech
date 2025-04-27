@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "timestamp": "20250422_020732",
+    "total_questions": 1620,
+    "total_correct": 1326
+  },
+  "models": {
+    "llama": {
+      "correct": 491,
+      "total": 540,
+      "accuracy": 0.9092592592592592
+    },
+    "qwen": {
+      "correct": 442,
+      "total": 540,
+      "accuracy": 0.8185185185185185
+    },
+    "gemini": {
+      "correct": 393,
+      "total": 540,
+      "accuracy": 0.7277777777777777
+    }
+  },
+  "prompts": {
+    "zero_shot": {
+      "correct": 84,
+      "total": 90,
+      "accuracy": 0.9333333333333333
+    },
+    "few_shot": {
+      "correct": 83,
+      "total": 90,
+      "accuracy": 0.9222222222222223
+    },
+    "cot": {
+      "correct": 87,
+      "total": 90,
+      "accuracy": 0.9666666666666667
+    },
+    "cot_self_consistency_3": {
+      "correct": 215,
+      "total": 270,
+      "accuracy": 0.7962962962962963
+    },
+    "cot_self_consistency_5": {
+      "correct": 360,
+      "total": 450,
+      "accuracy": 0.8
+    },
+    "cot_self_consistency_7": {
+      "correct": 497,
+      "total": 630,
+      "accuracy": 0.7888888888888889
+    }
+  }
+}

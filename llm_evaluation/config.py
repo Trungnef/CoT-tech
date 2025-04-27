@@ -79,17 +79,99 @@ DEFAULT_BATCH_SIZE = 20  # Kích thước batch tối ưu cho 3 GPU: xử lý 15
 DEFAULT_MAX_QUESTIONS = None  # None = all questions
 DEFAULT_CHECKPOINT_FREQUENCY = 5  # Save checkpoint after every X questions
 MAX_CHECKPOINTS = 5  # Maximum number of checkpoints to keep
+
+# Cấu hình max_tokens dựa trên loại prompt
+# Cung cấp max_tokens cao hơn cho các prompts đòi hỏi suy luận nhiều
+PROMPT_TOKEN_CONFIGS = {
+    # Giá trị mặc định cho mỗi model
+    "default": {
+        "llama": 512,
+        "qwen": 384,
+        "gemini": 1024,
+        "groq": 1024,
+        "openai": 1024
+    },
+    # Prompt đơn giản
+    "zero_shot": {
+        "llama": 512,
+        "qwen": 384,
+        "gemini": 1024,
+        "groq": 1024,
+        "openai": 1024
+    },
+    # Few-shot prompts
+    "few_shot_3": {
+        "llama": 768,
+        "qwen": 512,
+        "gemini": 1536,
+        "groq": 1536,
+        "openai": 1536
+    },
+    "few_shot_5": {
+        "llama": 1024,
+        "qwen": 768,
+        "gemini": 1792,
+        "groq": 1792,
+        "openai": 1792
+    },
+    "few_shot_7": {
+        "llama": 1280,
+        "qwen": 1024,
+        "gemini": 2048,
+        "groq": 2048,
+        "openai": 2048
+    },
+    # Chain-of-Thought prompts
+    "cot": {
+        "llama": 1024,
+        "qwen": 768,
+        "gemini": 2048,
+        "groq": 2048,
+        "openai": 2048
+    },
+    # CoT with self-consistency
+    "cot_self_consistency_3": {
+        "llama": 1280,
+        "qwen": 1024,
+        "gemini": 2560,
+        "groq": 2560,
+        "openai": 2560
+    },
+    "cot_self_consistency_5": {
+        "llama": 1536,
+        "qwen": 1280,
+        "gemini": 3072,
+        "groq": 3072,
+        "openai": 3072
+    },
+    "cot_self_consistency_7": {
+        "llama": 1792,
+        "qwen": 1536,
+        "gemini": 3584,
+        "groq": 3584,
+        "openai": 3584
+    },
+    # ReAct prompts (cần nhiều tokens nhất do suy luận phức tạp)
+    "react": {
+        "llama": 2048,
+        "qwen": 1792,
+        "gemini": 4096,
+        "groq": 4096,
+        "openai": 4096
+    }
+}
+
 # Cấu hình model mặc định
 MODEL_CONFIGS = {
     "llama": {
-        "max_tokens": 512,
+        "max_tokens": 512,  # Giá trị mặc định, sẽ được ghi đè bởi cấu hình prompt cụ thể
         "temperature": 0.7,
         "top_p": 0.95,
         "top_k": 40,
         "repetition_penalty": 1.1,
     },
     "qwen": {
-        "max_tokens": 384,
+        "max_tokens": 384,  # Giá trị mặc định, sẽ được ghi đè bởi cấu hình prompt cụ thể
         "temperature": 0.7,
         "top_p": 0.95,
         "top_k": 40,
@@ -97,13 +179,13 @@ MODEL_CONFIGS = {
         "disable_attention_warnings": True,
     },
     "gemini": {
-        "max_tokens": 1024,
+        "max_tokens": 1024,  # Giá trị mặc định, sẽ được ghi đè bởi cấu hình prompt cụ thể
         "temperature": 0.7,
         "top_p": 0.95,
         "top_k": 40,
     },
     "groq": {
-        "max_tokens": 1024,
+        "max_tokens": 1024,  # Giá trị mặc định, sẽ được ghi đè bởi cấu hình prompt cụ thể
         "temperature": 0.7,
         "top_p": 0.95,
         "model": "llama3-70b-8192"  # Default model for Groq
@@ -206,6 +288,31 @@ DISK_CACHE_CONFIG = {
     "compression": True,  # Nén cache để tiết kiệm dung lượng ổ đĩa
     "cleanup_on_startup": False  # Có xóa cache cũ khi khởi động hay không
 }
+
+def get_max_tokens(model_name, prompt_type):
+    """
+    Lấy giá trị max_tokens phù hợp dựa trên loại model và prompt.
+    
+    Args:
+        model_name (str): Tên model (llama, qwen, gemini, groq)
+        prompt_type (str): Loại prompt (zero_shot, few_shot_3, cot, react, etc.)
+    
+    Returns:
+        int: Giá trị max_tokens phù hợp
+    """
+    # Nếu không tìm thấy cấu hình cho prompt_type, sử dụng default
+    if prompt_type not in PROMPT_TOKEN_CONFIGS:
+        prompt_type = "default"
+    
+    # Nếu không tìm thấy cấu hình cho model_name, sử dụng default
+    if model_name not in PROMPT_TOKEN_CONFIGS[prompt_type]:
+        # Trả về giá trị mặc định từ MODEL_CONFIGS nếu có
+        if model_name in MODEL_CONFIGS:
+            return MODEL_CONFIGS[model_name]["max_tokens"]
+        # Hoặc giá trị mặc định an toàn
+        return 1024
+    
+    return PROMPT_TOKEN_CONFIGS[prompt_type][model_name]
 
 def validate_config():
     """Kiểm tra tính hợp lệ của cấu hình và hiển thị cảnh báo cho các giá trị bị thiếu."""
@@ -317,6 +424,14 @@ def display_config_summary():
     logger.info(f"Questions file: {QUESTIONS_FILE}")
     logger.info(f"Batch size: {DEFAULT_BATCH_SIZE}")
     logger.info(f"Checkpoint frequency: {DEFAULT_CHECKPOINT_FREQUENCY}")
+    
+    # Hiển thị thông tin max_tokens cho các prompt
+    logger.info("=== Cấu hình max_tokens theo prompt ===")
+    for prompt_type in DEFAULT_PROMPTS:
+        logger.info(f"Prompt '{prompt_type}':")
+        for model_name in DEFAULT_MODELS:
+            max_tokens = get_max_tokens(model_name, prompt_type)
+            logger.info(f"  - {model_name}: {max_tokens} tokens")
     
     # Hiển thị thông tin API
     logger.info("=== Thông tin API ===")

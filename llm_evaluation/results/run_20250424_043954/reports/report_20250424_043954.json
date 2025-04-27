@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "timestamp": "20250424_043954",
+    "total_questions": 4500,
+    "total_correct": 4492
+  },
+  "models": {
+    "llama": {
+      "correct": 1794,
+      "total": 1800,
+      "accuracy": 0.9966666666666667
+    },
+    "qwen": {
+      "correct": 1798,
+      "total": 1800,
+      "accuracy": 0.9988888888888889
+    },
+    "gemini": {
+      "correct": 900,
+      "total": 900,
+      "accuracy": 1.0
+    }
+  },
+  "prompts": {
+    "zero_shot": {
+      "correct": 498,
+      "total": 500,
+      "accuracy": 0.996
+    },
+    "few_shot_3": {
+      "correct": 500,
+      "total": 500,
+      "accuracy": 1.0
+    },
+    "few_shot_5": {
+      "correct": 500,
+      "total": 500,
+      "accuracy": 1.0
+    },
+    "few_shot_7": {
+      "correct": 498,
+      "total": 500,
+      "accuracy": 0.996
+    },
+    "cot": {
+      "correct": 500,
+      "total": 500,
+      "accuracy": 1.0
+    },
+    "cot_self_consistency_3": {
+      "correct": 500,
+      "total": 500,
+      "accuracy": 1.0
+    },
+    "cot_self_consistency_5": {
+      "correct": 500,
+      "total": 500,
+      "accuracy": 1.0
+    },
+    "cot_self_consistency_7": {
+      "correct": 500,
+      "total": 500,
+      "accuracy": 1.0
+    },
+    "react": {
+      "correct": 496,
+      "total": 500,
+      "accuracy": 0.992
+    }
+  }
+}

@@ -8,6 +8,7 @@ import sys
 import logging
 import logging.handlers
 import datetime
+import threading
 from pathlib import Path
 from typing import Dict, Optional, Union, List, Any
 
@@ -27,6 +28,8 @@ logging.addLevelName(METRICS, "METRICS")
 
 # Global logger instance
 logger = None
+_is_initializing = False  # Flag to track initialization state
+lock = threading.RLock()  # Add a lock for thread safety
 
 class ColoredFormatter(logging.Formatter):
     """
@@ -48,6 +51,25 @@ class ColoredFormatter(logging.Formatter):
             record.color = True  # Mark as processed
         
         return message
+
+class ThreadSafeRotatingFileHandler(logging.handlers.RotatingFileHandler):
+    """Thread-safe implementation of RotatingFileHandler"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lock = threading.RLock()
+    
+    def emit(self, record):
+        with self.lock:
+            super().emit(record)
+    
+    def doRollover(self):
+        with self.lock:
+            super().doRollover()
+    
+    def shouldRollover(self, record):
+        with self.lock:
+            return super().shouldRollover(record)
 
 def metrics(self, message, *args, **kws):
     """
@@ -89,64 +111,80 @@ def setup_logging(
     Returns:
         logging.Logger: Logger tập trung
     """
-    global logger
+    global logger, _is_initializing
     
-    if logger is not None:
-        # Logger đã được thiết lập
-        return logger
-    
-    # Tạo thư mục logs nếu chưa tồn tại
-    log_dir_path = Path(log_dir)
-    log_dir_path.mkdir(exist_ok=True, parents=True)
-    
-    # Tạo tên file log dựa trên timestamp nếu không được chỉ định
-    if log_file is None:
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_file = f"llm_evaluation_{timestamp}.log"
-    
-    log_file_path = log_dir_path / log_file
-    
-    # Tạo root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)  # Bắt tất cả log, filter sẽ được áp dụng ở handlers
-    
-    # Xóa handlers cũ (nếu có)
-    if root_logger.handlers:
-        root_logger.handlers.clear()
-    
-    # Tạo formatters
-    console_formatter = ColoredFormatter(log_format, date_format) if colored_console else logging.Formatter(log_format, date_format)
-    file_formatter = logging.Formatter(log_format, date_format)
-    
-    # Tạo console handler
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(console_level)
-    console_handler.setFormatter(console_formatter)
-    root_logger.addHandler(console_handler)
-    
-    # Tạo file handler sử dụng RotatingFileHandler
-    file_handler = logging.handlers.RotatingFileHandler(
-        log_file_path, maxBytes=max_file_size, backupCount=backup_count, encoding='utf-8'
-    )
-    file_handler.setLevel(file_level)
-    file_handler.setFormatter(file_formatter)
-    root_logger.addHandler(file_handler)
-    
-    # Thiết lập level cho từng module cụ thể
-    if module_levels:
-        for module_name, level in module_levels.items():
-            module_logger = logging.getLogger(module_name)
-            module_logger.setLevel(level)
-    
-    # Tạo logger riêng cho ứng dụng
-    logger = logging.getLogger("llm_evaluation")
-    
-    # Log thông báo khởi tạo
-    logger.info(f"Logging initialized. Log file: {log_file_path}")
-    logger.debug(f"Console log level: {logging.getLevelName(console_level)}")
-    logger.debug(f"File log level: {logging.getLevelName(file_level)}")
-    
-    return logger
+    with lock:  # Use lock to prevent concurrent setup
+        # Check if already initialized or currently initializing
+        if logger is not None:
+            return logger
+            
+        # Set initializing flag to prevent reentrant calls
+        if _is_initializing:
+            # Return a temporary logger to avoid blocking
+            temp_logger = logging.getLogger("llm_evaluation.temp")
+            if not temp_logger.handlers:
+                handler = logging.StreamHandler(sys.stdout)
+                handler.setFormatter(logging.Formatter(log_format, date_format))
+                temp_logger.addHandler(handler)
+            return temp_logger
+            
+        _is_initializing = True
+        
+        try:
+            # Tạo thư mục logs nếu chưa tồn tại
+            log_dir_path = Path(log_dir)
+            log_dir_path.mkdir(exist_ok=True, parents=True)
+            
+            # Tạo tên file log dựa trên timestamp nếu không được chỉ định
+            if log_file is None:
+                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                log_file = f"llm_evaluation_{timestamp}.log"
+            
+            log_file_path = log_dir_path / log_file
+            
+            # Tạo root logger
+            root_logger = logging.getLogger()
+            root_logger.setLevel(logging.DEBUG)  # Bắt tất cả log, filter sẽ được áp dụng ở handlers
+            
+            # Xóa handlers cũ (nếu có)
+            if root_logger.handlers:
+                root_logger.handlers.clear()
+            
+            # Tạo formatters
+            console_formatter = ColoredFormatter(log_format, date_format) if colored_console else logging.Formatter(log_format, date_format)
+            file_formatter = logging.Formatter(log_format, date_format)
+            
+            # Tạo console handler
+            console_handler = logging.StreamHandler(sys.stdout)
+            console_handler.setLevel(console_level)
+            console_handler.setFormatter(console_formatter)
+            root_logger.addHandler(console_handler)
+            
+            # Tạo file handler sử dụng ThreadSafeRotatingFileHandler
+            file_handler = ThreadSafeRotatingFileHandler(
+                log_file_path, maxBytes=max_file_size, backupCount=backup_count, encoding='utf-8'
+            )
+            file_handler.setLevel(file_level)
+            file_handler.setFormatter(file_formatter)
+            root_logger.addHandler(file_handler)
+            
+            # Thiết lập level cho từng module cụ thể
+            if module_levels:
+                for module_name, level in module_levels.items():
+                    module_logger = logging.getLogger(module_name)
+                    module_logger.setLevel(level)
+            
+            # Tạo logger riêng cho ứng dụng
+            logger = logging.getLogger("llm_evaluation")
+            
+            # Log thông báo khởi tạo
+            logger.info(f"Logging initialized. Log file: {log_file_path}")
+            logger.debug(f"Console log level: {logging.getLevelName(console_level)}")
+            logger.debug(f"File log level: {logging.getLevelName(file_level)}")
+            
+            return logger
+        finally:
+            _is_initializing = False
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
     """
@@ -163,7 +201,9 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
     
     # Nếu chưa thiết lập logging, thiết lập với cấu hình mặc định
     if logger is None:
-        setup_logging()
+        with lock:
+            if logger is None:  # Double-check pattern
+                setup_logging()
     
     if name is None:
         return logger

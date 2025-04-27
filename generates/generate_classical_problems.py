@@ -118,6 +118,20 @@ class ClassicalProblemGenerator:
             }
         }
 
+    def simplify_fraction(self, num, den):
+        if den == 0: 
+            return "Lỗi chia 0"
+        if num == 0: 
+            return "0"
+        common_divisor = math.gcd(int(num), int(den))
+        s_num = num // common_divisor
+        s_den = den // common_divisor
+        # Handle sign for negative denominator
+        if s_den < 0:
+            s_num = -s_num
+            s_den = -s_den
+        return f"{s_num}/{s_den}" if s_den != 1 else str(s_num)
+
     def generate_problem(self, problem_type: str) -> Dict:
         template_data = random.choice(self.problem_types[problem_type]["templates"])
         template = template_data["template"]
@@ -222,13 +236,18 @@ class ClassicalProblemGenerator:
                 sum_num = num1 * den2 + num2 * den1
                 product_num = num1 * num2
                 product_den = den1 * den2
+                
+                # Use the simplify_fraction function here
+                sum_simplified = self.simplify_fraction(sum_num, common_den)
+                product_simplified = self.simplify_fraction(product_num, product_den)
+                
                 process = f"({num1}×{den2} + {num2}×{den1})/({den1}×{den2})"
                 return {
                     "question": template.format(frac1=frac1, frac2=frac2),
                     "solution": solution_template.format(
                         process=process,
-                        sum=f"{sum_num}/{common_den}",
-                        product=f"{product_num}/{product_den}"
+                        sum=sum_simplified,
+                        product=product_simplified
                     )
                 }
             elif problem_type == "Bài toán công việc":

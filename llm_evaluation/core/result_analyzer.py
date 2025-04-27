@@ -20,13 +20,13 @@ from nltk.tokenize import word_tokenize
 
 # Import các module cần thiết
 try:
-    from ..utils.metrics_utils import calculate_bleu_scores, calculate_exact_match_accuracy, calculate_rouge_scores
+    from ..utils.metrics_utils import calculate_bleu_scores, calculate_exact_match_accuracy, calculate_rouge_scores, calculate_consistency_metrics
 except ImportError:
     # Fallback khi chạy module trực tiếp
     import sys
     import os
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from utils.metrics_utils import calculate_bleu_scores, calculate_exact_match_accuracy, calculate_rouge_scores
+    from utils.metrics_utils import calculate_bleu_scores, calculate_exact_match_accuracy, calculate_rouge_scores, calculate_consistency_metrics
 
 try:
     from ..core.model_interface import generate_text
@@ -210,6 +210,7 @@ Hãy đánh giá và cho điểm từ 1-5 cho từng tiêu chí, trong đó 1 l�
             'consistency_metrics': {},
             'difficulty_metrics': {},
             'context_metrics': {},
+            'error_analysis_metrics': {},  # Thêm khóa mới cho metrics phân tích lỗi
             'advanced_metrics': {},  # Thêm khóa mới cho các metrics nâng cao
             'errors': []  # Thêm trường để ghi lại các lỗi
         }
@@ -310,8 +311,33 @@ Hãy đánh giá và cho điểm từ 1-5 cho từng tiêu chí, trong đó 1 l�
                 logger.error(error_msg)
                 logger.debug(traceback.format_exc())
                 analysis_results['errors'].append({'step': 'context_metrics', 'error': error_msg})
+        
+        # 6. Phân tích lỗi (Error Analysis)
+        if 'is_correct' in self.results_df.columns:
+            if self.verbose:
+                logger.info("Thực hiện phân tích lỗi cho các câu trả lời sai")
             
-        # 6. Tính toán F1-score, precision, recall ở cấp độ model/prompt 
+            try:
+                # Số lượng mẫu phân tích lỗi (mặc định 50)
+                error_sample_size = 50
+                
+                # Chạy phân tích lỗi
+                self.results_df = self.analyze_errors(self.results_df, sample_size=error_sample_size)
+                
+                # Tính metrics từ kết quả phân tích lỗi
+                analysis_results['error_analysis_metrics'] = self._compute_error_metrics(self.results_df)
+                
+                if self.verbose:
+                    # Tính số lượng mẫu đã phân tích lỗi
+                    error_analyzed = sum(self.results_df['error_type'] != '')
+                    logger.info(f"Đã phân tích lỗi cho {error_analyzed} câu trả lời")
+            except Exception as e:
+                error_msg = f"Lỗi khi thực hiện phân tích lỗi: {str(e)}"
+                logger.error(error_msg)
+                logger.debug(traceback.format_exc())
+                analysis_results['errors'].append({'step': 'error_analysis', 'error': error_msg})
+        
+        # 7. Tính toán F1-score, precision, recall ở cấp độ model/prompt 
         if 'is_correct' in self.results_df.columns:
             try:
                 f1_metrics = self._compute_f1_metrics(self.results_df)
@@ -324,7 +350,7 @@ Hãy đánh giá và cho điểm từ 1-5 cho từng tiêu chí, trong đó 1 l�
                 logger.debug(traceback.format_exc())
                 analysis_results['errors'].append({'step': 'f1_metrics', 'error': error_msg})
         
-        # 7. Tính toán METEOR và BERTScore cho văn bản
+        # 8. Tính toán METEOR và BERTScore cho văn bản
         if 'response' in self.results_df.columns and 'correct_answer' in self.results_df.columns:
             try:
                 from ..utils.metrics_utils import calculate_meteor_score, calculate_bertscore
@@ -1480,6 +1506,30 @@ Brief Explanation:
         Returns:
             pd.DataFrame: DataFrame đã bổ sung đánh giá tính nhất quán
         """
+        try:
+            # Import calculate_consistency_metrics từ metrics_utils
+            # Đảm bảo thư mục gốc nằm trong sys.path
+            import sys
+            import os
+            import numpy as np
+            import logging
+            
+            # Thiết lập logging
+            logger = logging.getLogger(__name__)
+            
+            # Thêm thư mục gốc vào sys.path để tránh lỗi import
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            parent_dir = os.path.dirname(os.path.dirname(current_dir))  # Thư mục gốc của dự án
+            if parent_dir not in sys.path:
+                sys.path.append(parent_dir)
+                logger.info(f"Đã thêm {parent_dir} vào sys.path")
+            
+            from llm_evaluation.utils.metrics_utils import calculate_consistency_metrics
+        except ImportError as e:
+            logger.error(f"Lỗi khi import module calculate_consistency_metrics: {str(e)}")
+            logger.error("Đảm bảo thư mục gốc của dự án đã được thêm vào sys.path")
+            return results_df
+        
         # Kiểm tra xem có cột response không
         if 'response' not in results_df.columns:
             logger.error("Lỗi khi đánh giá tính nhất quán: thiếu cột 'response'")
@@ -1494,6 +1544,9 @@ Brief Explanation:
         
         if 'consistency_most_common' not in results_df.columns:
             results_df['consistency_most_common'] = ''
+        
+        if 'consistency_unique_answers' not in results_df.columns:
+            results_df['consistency_unique_answers'] = np.nan
         
         # Lọc các prompt có chứa self-consistency
         self_consistency_mask = results_df['prompt_type'].str.contains('consistency|cot_self_consistency', case=False)
@@ -1522,23 +1575,27 @@ Brief Explanation:
             responses = group['response'].tolist()
             final_answers = group['final_answer'].tolist() if 'final_answer' in group.columns else responses
             
-            # Tính toán tỷ lệ nhất quán
-            from collections import Counter
-            answer_counts = Counter(final_answers)
-            
-            # Xác định câu trả lời phổ biến nhất
-            most_common_answer, most_common_count = answer_counts.most_common(1)[0]
-            agreement_rate = most_common_count / len(final_answers)
-            
-            # Tính điểm nhất quán: 1 nếu hoàn toàn nhất quán, giảm dần khi có nhiều câu trả lời khác nhau
-            unique_answers = len(answer_counts)
-            consistency_score = 1.0 if unique_answers == 1 else (most_common_count / len(final_answers))
-            
-            # Cập nhật điểm nhất quán cho từng dòng trong nhóm
-            for idx in group.index:
-                results_df.at[idx, 'consistency_score'] = consistency_score
-                results_df.at[idx, 'consistency_agreement_rate'] = agreement_rate
-                results_df.at[idx, 'consistency_most_common'] = most_common_answer
+            # Sử dụng hàm calculate_consistency_metrics để tính metrics
+            group_key = f"{model}_{question_id}_{prompt_type}"
+            try:
+                consistency_results = calculate_consistency_metrics(
+                    responses=[responses],  # Truyền vào list của list
+                    final_answers=[final_answers] if final_answers != responses else None,
+                    groupby_keys=[group_key]
+                )
+                
+                # Lấy kết quả cho nhóm này
+                if group_key in consistency_results:
+                    metrics = consistency_results[group_key]
+                    
+                    # Cập nhật điểm nhất quán cho từng dòng trong nhóm
+                    for idx in group.index:
+                        results_df.at[idx, 'consistency_score'] = metrics["consistency_score"]
+                        results_df.at[idx, 'consistency_agreement_rate'] = metrics["agreement_rate"]
+                        results_df.at[idx, 'consistency_most_common'] = metrics["most_common_answer"]
+                        results_df.at[idx, 'consistency_unique_answers'] = metrics["unique_answers"]
+            except Exception as e:
+                logger.error(f"Lỗi khi tính toán consistency metrics cho nhóm {group_key}: {str(e)}")
         
         # Xóa cột tạm base_prompt_type
         results_df = results_df.drop('base_prompt_type', axis=1)

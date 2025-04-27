@@ -115,12 +115,17 @@ class Evaluator:
     
     def run_evaluation(self, resume=False, checkpoint_path=None):
         """
-        Chạy quá trình đánh giá cho tất cả model, prompt, và câu hỏi.
+        Thực hiện đánh giá trên tất cả các tổ hợp model, prompt, và câu hỏi.
         
         Args:
             resume (bool): Có tiếp tục từ checkpoint gần nhất không
             checkpoint_path (str, optional): Đường dẫn đến checkpoint cụ thể để tải
+            
+        Returns:
+            dict: Kết quả đánh giá (DataFrame) và các metric
         """
+        import config as app_config
+        
         # Tải checkpoint nếu cần tiếp tục đánh giá
         if resume:
             if checkpoint_path:
@@ -128,7 +133,15 @@ class Evaluator:
             else:
                 self._resume_from_checkpoint()
         
+        # Đánh dấu thời điểm bắt đầu
         self.eval_start_time = time.time()
+        
+        # Reset trạng thái nếu không resume
+        if not resume:
+            self.results = []
+            self.completed_combinations = set()
+            self.current_model = None
+            self.current_prompt = None
         
         # Hiển thị thông tin bắt đầu đánh giá
         log_section(logger, "Bắt đầu đánh giá LLM")
@@ -230,28 +243,45 @@ class Evaluator:
                             try:
                                 # Xử lý đồng thời tất cả câu hỏi trong batch nếu là model local (Llama, Qwen)
                                 if model_name.lower() in ["llama", "qwen"]:
+                                    # Chuẩn bị cấu trúc dữ liệu đúng cho batch processing
+                                    batch_prompt_info = []
+                                    for i, prompt in enumerate(batch_prompts):
+                                        batch_prompt_info.append({
+                                            "prompt": prompt,
+                                            "prompt_type": prompt_type,
+                                            "question_idx": batch_question_idxs[i]
+                                        })
+                                    
                                     # Xử lý batch cùng lúc với mô hình local
                                     start_time_batch = time.time()
-                                    batch_responses = self._evaluate_local_model_batch(
-                                        model_name, batch_prompts, batch_questions_to_evaluate)
+                                    batch_results = self._evaluate_local_model_batch(
+                                        model_name, batch_prompt_info, batch_questions_to_evaluate)
                                     batch_latency = time.time() - start_time_batch
                                     
-                                    # Xử lý từng kết quả và kiểm tra đáp án
-                                    for i, (question, response) in enumerate(zip(batch_questions_to_evaluate, batch_responses)):
-                                        question_id = batch_question_ids[i]
-                                        question_idx = batch_question_idxs[i]
-                                        latency_per_question = batch_latency / len(batch_responses)
+                                    # Thêm kết quả vào kết quả chính
+                                    if batch_results:
+                                        self.results.extend(batch_results)
                                         
-                                        # Đánh giá và lưu kết quả
-                                        result = self._process_evaluation_result(
-                                            model_name, prompt_type, question, question_idx, 
-                                            response, latency_per_question
-                                        )
-                                        
-                                        if result:
-                                            batch_results.append(result)
+                                        # Cập nhật các combination đã hoàn thành
+                                        for result in batch_results:
+                                            question_id = result.get('question_id')
                                             self.completed_combinations.add((model_name, prompt_type, question_id))
                                             pbar.update(1)
+                                    else:
+                                        logger.warning(f"Không có kết quả từ batch processing cho {model_name}")
+                                        # Nếu xử lý batch không thành công, thử xử lý tuần tự từng câu
+                                        for i, question in enumerate(batch_questions_to_evaluate):
+                                            question_id = batch_question_ids[i]
+                                            question_idx = batch_question_idxs[i]
+                                            
+                                            result = self._evaluate_single_combination(
+                                                model_name, prompt_type, question, question_idx
+                                            )
+                                            
+                                            if result:
+                                                self.results.append(result)
+                                                self.completed_combinations.add((model_name, prompt_type, question_id))
+                                                pbar.update(1)
                                 
                                 # Đối với API models hoặc nếu xử lý batch không thành công, xử lý tuần tự từng câu
                                 else:
@@ -507,6 +537,7 @@ class Evaluator:
             dict: Kết quả đánh giá hoặc None nếu có lỗi
         """
         import json  # Thêm import json ở đầu hàm
+        import config as app_config  # Import trực tiếp app_config
         
         question_id = question.get('id', question_idx)
         question_text = question.get('question', question.get('text', ''))
@@ -520,13 +551,17 @@ class Evaluator:
             prompt_type=prompt_type
         )
         
+        # Lấy max_tokens từ cấu hình theo loại prompt
+        max_tokens = app_config.get_max_tokens(model_name, prompt_type)
+        logger.debug(f"Sử dụng max_tokens={max_tokens} cho {model_name}/{prompt_type}")
+        
         # Đặt mô hình trả lời câu hỏi
         start_time = time.time()
         try:
             response = self.model_interface.get_response(
                 model_name=model_name,
                 prompt=prompt,
-                max_tokens=config.MODEL_CONFIGS[model_name]['max_tokens']
+                max_tokens=max_tokens
             )
             latency = time.time() - start_time
             
@@ -542,7 +577,7 @@ class Evaluator:
             reasoning_average = 0
             
             # Đánh giá khả năng suy luận
-            if self.reasoning_evaluation_enabled and config.REASONING_EVALUATION_CONFIG.get('enabled', True):
+            if self.reasoning_evaluation_enabled and app_config.REASONING_EVALUATION_CONFIG.get('enabled', True):
                 try:
                     logger.debug(f"Bắt đầu đánh giá reasoning cho {model_name}/{prompt_type}/{question_id}")
 
@@ -553,10 +588,10 @@ class Evaluator:
                     reasoning_prompt = self._create_reasoning_evaluation_prompt(question_text, response, expected_answer)
 
                     # Lấy phản hồi đánh giá từ mô hình giám khảo (Llama3-70B qua Groq API)
-                    logger.debug(f"Gửi yêu cầu đánh giá reasoning đến model: {config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')}")
+                    logger.debug(f"Gửi yêu cầu đánh giá reasoning đến model: {app_config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')}")
                     
                     # Định dạng tên model đúng cho Groq
-                    reasoning_model = "groq/" + config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')
+                    reasoning_model = "groq/" + app_config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')
                     
                     reasoning_eval = self.model_interface.get_response(
                         model_name=reasoning_model,
@@ -1893,96 +1928,116 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
             model_answer=model_answer
         )
         
-        # Thử sử dụng Groq API trước
-        try:
-            # Lấy phản hồi đánh giá từ LLM
-            if self.verbose:
-                logger.info(f"Gửi yêu cầu đánh giá reasoning đến model: {self.reasoning_model}")
-                
-            eval_response = generate_text(
-                model_name=self.reasoning_model,
-                prompt=evaluation_prompt,
-                generation_config={
-                    "temperature": 0.1,  # Giảm temperature để có kết quả ổn định
-                    "max_tokens": 1000    # Đủ dài cho đánh giá chi tiết
-                }
-            )
+        # Số lần thử tối đa
+        max_retries = 3
+        
+        # Danh sách mô hình để thử
+        all_models = [self.reasoning_model]
+        
+        # Thêm Gemini nếu có API và khác model hiện tại
+        if config.GEMINI_API_KEY and "gemini" not in all_models:
+            all_models.append("gemini")
+        
+        # Thêm các model local nếu đã cấu hình
+        if config.LLAMA_MODEL_PATH and "llama" not in all_models:
+            all_models.append("llama")
+        if config.QWEN_MODEL_PATH and "qwen" not in all_models:
+            all_models.append("qwen")
             
-            # Nếu response là tuple (text, stats), lấy text
-            if isinstance(eval_response, tuple) and len(eval_response) > 0:
-                eval_response = eval_response[0]
-                
-            # Kiểm tra xem có lỗi không
-            if isinstance(eval_response, str) and eval_response.startswith("Error:"):
-                logger.warning(f"Lỗi từ Groq API: {eval_response}")
-                raise Exception(f"Groq API error: {eval_response}")
-                
-            # Parse kết quả đánh giá
-            return self._parse_reasoning_evaluation(eval_response)
+        # Khởi tạo biến lưu lỗi
+        last_error = None
             
-        except Exception as e:
-            logger.error(f"Lỗi khi đánh giá suy luận với Groq: {str(e)}")
-            logger.warning("Thử fallback sang model local hoặc model API khác")
-            
-            # Danh sách các model thay thế để thử
-            fallback_models = []
-            
-            # Thêm Gemini nếu có API
-            if config.GEMINI_API_KEY:
-                fallback_models.append("gemini")
-            
-            # Thêm các model local nếu đã cấu hình
-            if config.LLAMA_MODEL_PATH:
-                fallback_models.append("llama")
-            if config.QWEN_MODEL_PATH:
-                fallback_models.append("qwen")
-                
-            # Thử lần lượt các model thay thế
-            for fallback_model in fallback_models:
-                logger.info(f"Thử đánh giá suy luận với model fallback: {fallback_model}")
+        # Thử từng model với số lần retry
+        for model_name in all_models:
+            for attempt in range(max_retries):
                 try:
-                    fallback_response = generate_text(
-                        model_name=fallback_model,
+                    # Lấy phản hồi đánh giá từ LLM
+                    if self.verbose:
+                        logger.info(f"Gửi yêu cầu đánh giá reasoning đến model: {model_name} (lần thử {attempt+1}/{max_retries})")
+                        
+                    # Thiết lập thời gian timeout dài hơn cho các lần thử lại
+                    timeout = 30 + (attempt * 15)  # 30s cho lần đầu, sau đó tăng thêm 15s cho mỗi lần thử
+                    
+                    eval_response = generate_text(
+                        model_name=model_name,
                         prompt=evaluation_prompt,
                         generation_config={
-                            "temperature": 0.1,
-                            "max_tokens": 1000
+                            "temperature": 0.1,  # Giảm temperature để có kết quả ổn định
+                            "max_tokens": 1000,   # Đủ dài cho đánh giá chi tiết
+                            "timeout": timeout    # Thiết lập timeout tùy chỉnh
                         }
                     )
                     
-                    # Xử lý phản hồi
-                    if isinstance(fallback_response, tuple) and len(fallback_response) > 0:
-                        fallback_response = fallback_response[0]
+                    # Nếu response là tuple (text, stats), lấy text
+                    if isinstance(eval_response, tuple) and len(eval_response) > 0:
+                        eval_response = eval_response[0]
+                        
+                    # Kiểm tra xem có lỗi không
+                    if isinstance(eval_response, str):
+                        if eval_response.startswith("[Error:"):
+                            error_msg = eval_response.strip("[]")
+                            logger.warning(f"Lỗi từ {model_name}: {error_msg}")
+                            
+                            # Lưu lỗi và tiếp tục thử
+                            last_error = Exception(error_msg)
+                            
+                            # Chuyển sang lần thử tiếp theo nếu còn lần thử
+                            if attempt < max_retries - 1:
+                                logger.info(f"Thử lại với {model_name} (lần {attempt+2}/{max_retries})")
+                                time.sleep(1)  # Chờ 1 giây trước khi thử lại
+                                continue
+                            else:
+                                # Hết số lần thử với model này, chuyển sang model khác
+                                break
+                        else:
+                            # Thành công, parse kết quả đánh giá
+                            return self._parse_reasoning_evaluation(eval_response)
+                
+                except Exception as e:
+                    last_error = e
+                    error_type = str(e).split(":")[0] if ":" in str(e) else "UNKNOWN_ERROR"
                     
-                    # Kiểm tra lỗi
-                    if not isinstance(fallback_response, str) or fallback_response.startswith("Error:"):
-                        logger.warning(f"Model {fallback_model} cũng thất bại: {fallback_response}")
-                        continue
+                    # Log lỗi
+                    logger.error(f"Lỗi trong quá trình đánh giá reasoning: {str(e)}")
                     
-                    # Parse kết quả đánh giá từ model fallback
-                    logger.info(f"Đã nhận được phản hồi từ model fallback {fallback_model}")
-                    return self._parse_reasoning_evaluation(fallback_response)
+                    # Kiểm tra nếu là lỗi cần retry
+                    retriable_errors = [
+                        "RETRIABLE_ERROR", "UNKNOWN_ERROR", "QUOTA_LIMIT_ERROR", 
+                        "TIMEOUT_ERROR", "CIRCUIT_BREAKER_OPEN"
+                    ]
                     
-                except Exception as fallback_error:
-                    logger.error(f"Lỗi khi sử dụng model fallback {fallback_model}: {str(fallback_error)}")
-                    continue
+                    if any(err_type in error_type for err_type in retriable_errors):
+                        # Nếu còn lần thử
+                        if attempt < max_retries - 1:
+                            wait_time = (attempt + 1) * 2  # Tăng thời gian chờ theo số lần thử
+                            logger.info(f"Lỗi có thể thử lại. Chờ {wait_time}s và thử lại với {model_name}")
+                            time.sleep(wait_time)
+                            continue
                     
-            # Nếu tất cả model đều thất bại, trả về kết quả mặc định
-            logger.error("Tất cả model đều thất bại trong việc đánh giá suy luận")
-            return {
-                'logical_flow': 0,
-                'mathematical_correctness': 0,
-                'clarity': 0,
-                'completeness': 0,
-                'relevance': 0,
-                'avg_score': 0,
-                'explanation': f"Lỗi khi đánh giá: {str(e)}"
-            }
+                    # Các lỗi khác hoặc hết số lần thử với model hiện tại
+                    logger.warning(f"Thử lại không thành công với {model_name}. Chuyển sang model khác nếu có.")
+                    break
+        
+        # Nếu tất cả model đều thất bại, trả về kết quả mặc định
+        error_msg = str(last_error) if last_error else "Không xác định"
+        logger.error(f"Tất cả model đều thất bại trong việc đánh giá suy luận. Lỗi cuối: {error_msg}")
+        
+        return {
+            'accuracy': 0,
+            'reasoning': 0,
+            'completeness': 0,
+            'explanation': 0,
+            'cultural_context': 0,
+            'average': 0,
+            'comment': f"Lỗi khi đánh giá: {error_msg}"
+        }
 
     def analyze_and_report(self):
         """
         Phân tích các kết quả thu thập được và tạo báo cáo.
         """
+        import config as app_config
+        
         if self.results_df is None or len(self.results_df) == 0:
             self.logger.warning("Không có kết quả để phân tích")
             return
@@ -2049,37 +2104,76 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
 
     def _evaluate_local_model_batch(self, model_name, batch_prompts, batch_questions):
         """
-        Đánh giá một batch câu hỏi cùng lúc với model local.
+        Đánh giá một batch câu hỏi với model local để tối ưu hiệu suất.
         
         Args:
-            model_name (str): Tên của model
-            batch_prompts (list): Danh sách prompts
-            batch_questions (list): Danh sách câu hỏi
+            model_name (str): Tên model
+            batch_prompts (list): Danh sách prompts theo từng loại
+            batch_questions (list): Danh sách questions tương ứng
             
         Returns:
-            list: Danh sách các câu trả lời
+            list: Danh sách kết quả đánh giá
         """
-        logger.info(f"Đang xử lý batch với {len(batch_prompts)} câu hỏi trên model {model_name}")
-        
-        try:
-            # Lấy max tokens từ config
-            max_tokens = config.MODEL_CONFIGS[model_name]['max_tokens']
-            
-            # Sử dụng batch_generate_text để xử lý nhiều prompt cùng lúc
-            batch_responses = self.model_interface.batch_generate_text(
-                model_name=model_name,
-                prompts=batch_prompts,
-                config={"max_tokens": max_tokens}
-            )
-            
-            logger.info(f"Đã xử lý thành công batch {len(batch_responses)} câu trả lời")
-            return batch_responses
-            
-        except Exception as e:
-            logger.error(f"Lỗi khi xử lý batch với model {model_name}: {str(e)}")
-            logger.debug(traceback.format_exc())
-            # Trả về danh sách trống để handler ở trên xử lý tiếp
+        if not batch_prompts:
             return []
+            
+        results = []
+        
+        # Group các prompts theo loại để áp dụng max_tokens phù hợp
+        prompt_type_groups = {}
+        for prompt_info in batch_prompts:
+            prompt_type = prompt_info["prompt_type"]
+            if prompt_type not in prompt_type_groups:
+                prompt_type_groups[prompt_type] = []
+            prompt_type_groups[prompt_type].append(prompt_info)
+        
+        # Import config để lấy max_tokens dựa trên prompt_type
+        import config as app_config
+        
+        # Xử lý từng nhóm prompt_type
+        for prompt_type, prompts_in_group in prompt_type_groups.items():
+            # Lấy max_tokens phù hợp cho prompt_type này
+            max_tokens = app_config.get_max_tokens(model_name, prompt_type)
+            logger.debug(f"Batch processing: Sử dụng max_tokens={max_tokens} cho {model_name}/{prompt_type}")
+            
+            # Chuẩn bị input cho model
+            input_prompts = [p["prompt"] for p in prompts_in_group]
+            question_indices = [p["question_idx"] for p in prompts_in_group]
+            
+            # Generate các responses
+            batch_config = {
+                "max_tokens": max_tokens,
+                "temperature": 0.7,
+                "top_p": 0.95
+            }
+            
+            start_time = time.time()
+            responses = self.model_interface.batch_generate_text(model_name, input_prompts, batch_config)
+            batch_latency = time.time() - start_time
+            
+            # Average latency per question
+            avg_latency = batch_latency / len(input_prompts) if input_prompts else 0
+            
+            # Xử lý từng response
+            for i, response in enumerate(responses):
+                prompt_info = prompts_in_group[i]
+                question_idx = question_indices[i]
+                question = batch_questions[i]
+                
+                # Xử lý kết quả và thêm vào danh sách
+                result = self._process_evaluation_result(
+                    model_name=model_name,
+                    prompt_type=prompt_type,
+                    question=question,
+                    question_idx=question_idx,
+                    response=response,
+                    latency=avg_latency
+                )
+                
+                if result:
+                    results.append(result)
+        
+        return results
     
     def _process_evaluation_result(self, model_name, prompt_type, question, question_idx, response, latency):
         """
@@ -2097,6 +2191,7 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
             dict: Kết quả đánh giá
         """
         import json
+        import config as app_config  # Import trực tiếp app_config
         
         question_id = question.get('id', question_idx)
         question_text = question.get('question', question.get('text', ''))
@@ -2117,7 +2212,7 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
             reasoning_average = 0
             
             # Đánh giá khả năng suy luận nếu được bật
-            if self.reasoning_evaluation_enabled and config.REASONING_EVALUATION_CONFIG.get('enabled', True):
+            if self.reasoning_evaluation_enabled and app_config.REASONING_EVALUATION_CONFIG.get('enabled', True):
                 try:
                     logger.debug(f"Bắt đầu đánh giá reasoning cho {model_name}/{prompt_type}/{question_id}")
 
@@ -2128,7 +2223,7 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
                     reasoning_prompt = self._create_reasoning_evaluation_prompt(question_text, response, expected_answer)
 
                     # Lấy phản hồi đánh giá
-                    reasoning_model = "groq/" + config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')
+                    reasoning_model = "groq/" + app_config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')
                     
                     reasoning_eval = self.model_interface.get_response(
                         model_name=reasoning_model,

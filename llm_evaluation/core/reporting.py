@@ -2090,6 +2090,214 @@ Thời gian tạo: {self.timestamp}
             logger.debug(traceback.format_exc())
             return self._create_fallback_plot("Reasoning by Question Type", f"Error: {str(e)}")
     
+    def _create_reasoning_by_question_type_by_model_plot(self):
+        """
+        Tạo biểu đồ đánh giá reasoning theo loại câu hỏi và mô hình.
+        
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        # Kiểm tra điều kiện cần thiết
+        if 'question_type' not in self.results_df.columns or 'model_name' not in self.results_df.columns:
+            return self._create_fallback_plot("Reasoning by Question Type and Model", 
+                                             "Missing question_type or model_name data")
+            
+        # Kiểm tra xem có dữ liệu reasoning không
+        reasoning_cols = [col for col in self.results_df.columns if col.startswith('reasoning_') 
+                         and col not in ['reasoning_evaluation', 'reasoning_scores_str']]
+        
+        if not reasoning_cols:
+            return self._create_fallback_plot("Reasoning by Question Type and Model", 
+                                             "No reasoning data available")
+        
+        try:
+            # Lấy danh sách các model và loại câu hỏi
+            models = self.results_df['model_name'].unique()
+            question_types = self.results_df['question_type'].unique()
+            
+            # Tập trung vào điểm trung bình để đơn giản hoá biểu đồ
+            if 'reasoning_average' not in reasoning_cols:
+                # Nếu không có cột reasoning_average, sử dụng cột reasoning đầu tiên
+                target_col = reasoning_cols[0]
+                col_label = target_col.replace('reasoning_', '').title()
+            else:
+                target_col = 'reasoning_average'
+                col_label = 'Average Reasoning'
+            
+            # Tạo dữ liệu cho biểu đồ
+            data_for_plot = []
+            for model in models:
+                for q_type in question_types:
+                    # Lọc dữ liệu theo model và loại câu hỏi
+                    filtered_df = self.results_df[(self.results_df['model_name'] == model) & 
+                                                (self.results_df['question_type'] == q_type)]
+                    
+                    if not filtered_df.empty and target_col in filtered_df.columns:
+                        # Tính điểm trung bình
+                        avg_score = filtered_df[target_col].mean()
+                        sample_count = len(filtered_df)
+                        
+                        if not pd.isna(avg_score) and sample_count > 0:
+                            data_for_plot.append({
+                                'Model': model,
+                                'Question Type': q_type,
+                                'Score': avg_score,
+                                'Sample Count': sample_count
+                            })
+            
+            if not data_for_plot:
+                return self._create_fallback_plot("Reasoning by Question Type and Model", 
+                                                "Insufficient reasoning data")
+            
+            # Tạo DataFrame cho biểu đồ
+            plot_df = pd.DataFrame(data_for_plot)
+            
+            # Vẽ heat map để thể hiện mối quan hệ giữa model và loại câu hỏi
+            plt.figure(figsize=(16, 12))
+            
+            # Tạo pivot table
+            pivot_table = plot_df.pivot_table(values='Score', 
+                                            index='Model', 
+                                            columns='Question Type')
+            
+            # Vẽ heatmap với annotation
+            sns.heatmap(pivot_table, annot=True, cmap="YlGnBu", fmt=".2f", linewidths=.5,
+                      vmin=1, vmax=5, cbar_kws={'label': 'Score (1-5 scale)'})
+            
+            plt.title(f'Reasoning Quality by Question Type and Model ({col_label})', 
+                     fontsize=18, pad=20)
+            plt.tight_layout()
+            
+            # Lưu biểu đồ chính
+            output_path = os.path.join(self.plots_dir, 
+                                     f"reasoning_by_question_type_by_model_{self.timestamp}.png")
+            plt.savefig(output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            # Tạo biểu đồ bar để so sánh các model theo từng loại câu hỏi
+            plt.figure(figsize=(18, len(question_types) * 3))
+            
+            # Tạo subplots cho mỗi loại câu hỏi
+            fig, axes = plt.subplots(len(question_types), 1, 
+                                   figsize=(14, len(question_types) * 3), 
+                                   sharex=True)
+            
+            if len(question_types) == 1:
+                axes = [axes]  # Đảm bảo axes luôn là một list
+                
+            for i, q_type in enumerate(question_types):
+                # Lọc dữ liệu cho loại câu hỏi này
+                type_data = plot_df[plot_df['Question Type'] == q_type]
+                
+                if not type_data.empty:
+                    # Sắp xếp theo điểm số
+                    type_data = type_data.sort_values('Score', ascending=False)
+                    
+                    # Vẽ biểu đồ bar - FIX: thêm hue='Model' và legend=False thay vì chỉ dùng palette
+                    sns.barplot(x='Score', y='Model', hue='Model', data=type_data, ax=axes[i], 
+                             palette='viridis', legend=False)
+                    
+                    # Thêm giá trị vào thanh
+                    for j, v in enumerate(type_data['Score']):
+                        sample_count = type_data.iloc[j]['Sample Count']
+                        axes[i].text(v + 0.1, j, f"{v:.2f} (n={sample_count})", 
+                                   va='center', fontsize=10)
+                    
+                    # Thêm tiêu đề và định dạng
+                    axes[i].set_title(f'Question Type: {q_type}', fontsize=14)
+                    axes[i].set_xlim(0, 5.5)  # Đặt thang điểm 0-5
+                    axes[i].grid(axis='x', linestyle='--', alpha=0.7)
+            
+            # Thêm tiêu đề chung và định dạng
+            fig.suptitle(f'Model Reasoning Performance by Question Type ({col_label})', 
+                        fontsize=18)
+            plt.tight_layout()
+            plt.subplots_adjust(top=0.95)
+            
+            # Lưu biểu đồ bar
+            bar_output_path = os.path.join(self.plots_dir, 
+                                         f"reasoning_by_question_type_by_model_bar_{self.timestamp}.png")
+            plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            # Nếu có nhiều cột reasoning, tạo thêm biểu đồ radar cho từng model
+            if len(reasoning_cols) >= 3 and 'reasoning_average' in reasoning_cols:
+                # Tạo dữ liệu cho radar chart
+                criteria_labels = {
+                    'reasoning_accuracy': 'Accuracy',
+                    'reasoning_logic': 'Logic',
+                    'reasoning_consistency': 'Consistency',
+                    'reasoning_difficulty': 'Difficulty',
+                    'reasoning_context': 'Context'
+                }
+                
+                # Lọc các cột tiêu chí chính, bỏ qua average
+                radar_cols = [col for col in reasoning_cols if col in criteria_labels]
+                
+                if len(radar_cols) >= 3:  # Cần ít nhất 3 tiêu chí để vẽ radar chart
+                    # Tạo một biểu đồ radar cho mỗi model
+                    for model in models:
+                        model_data = {}
+                        
+                        # Tính điểm trung bình cho mỗi tiêu chí theo model
+                        model_df = self.results_df[self.results_df['model_name'] == model]
+                        
+                        for col in radar_cols:
+                            if col in model_df.columns:
+                                label = criteria_labels.get(col, col.replace('reasoning_', '').title())
+                                avg_score = model_df[col].mean()
+                                if not pd.isna(avg_score):
+                                    model_data[label] = avg_score
+                        
+                        if len(model_data) >= 3:  # Đảm bảo có đủ dữ liệu
+                            # Chuẩn bị dữ liệu cho radar chart
+                            categories = list(model_data.keys())
+                            values = list(model_data.values())
+                            
+                            # Tạo biểu đồ radar
+                            plt.figure(figsize=(10, 8))
+                            
+                            # Tính toán góc cho mỗi trục
+                            N = len(categories)
+                            angles = [n / float(N) * 2 * np.pi for n in range(N)]
+                            angles += angles[:1]  # Đóng hình đa giác
+                            
+                            # Thêm giá trị
+                            values += values[:1]  # Đóng đa giác
+                            
+                            # Thiết lập biểu đồ
+                            ax = plt.subplot(111, polar=True)
+                            
+                            # Vẽ đường biểu đồ
+                            ax.plot(angles, values, linewidth=2, linestyle='solid')
+                            ax.fill(angles, values, alpha=0.4)
+                            
+                            # Thiết lập các trục và nhãn
+                            plt.xticks(angles[:-1], categories, fontsize=12)
+                            
+                            # Thiết lập giới hạn y
+                            ax.set_ylim(0, 5)
+                            
+                            # Thêm nhãn giá trị
+                            ax.set_rlabel_position(0)
+                            plt.yticks([1, 2, 3, 4, 5], ['1', '2', '3', '4', '5'], fontsize=10)
+                            
+                            # Thêm tiêu đề
+                            plt.title(f"Reasoning Criteria Performance: {model}", fontsize=15)
+                            
+                            # Lưu biểu đồ
+                            radar_path = os.path.join(self.plots_dir, 
+                                                    f"reasoning_radar_{model}_{self.timestamp}.png")
+                            plt.savefig(radar_path, dpi=120, bbox_inches='tight')
+                            plt.close()
+            
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ reasoning theo loại câu hỏi và model: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("Reasoning by Question Type and Model", f"Error: {str(e)}")
+    
     def _create_f1_score_plot(self):
         """
         Tạo biểu đồ F1 Score theo model và prompt type.
@@ -2573,6 +2781,18 @@ Thời gian tạo: {self.timestamp}
         # Thêm biểu đồ reasoning theo loại câu hỏi
         create_plot(self._create_reasoning_by_question_type_plot, 'reasoning_by_question_type',
                    'Chất lượng suy luận phân theo loại câu hỏi')
+                   
+        # Thêm biểu đồ reasoning theo loại câu hỏi và model
+        create_plot(self._create_reasoning_by_question_type_by_model_plot, 'reasoning_by_question_type_by_model',
+                   'Chất lượng suy luận phân theo loại câu hỏi và model')
+                   
+        # Thêm biểu đồ consistency score
+        create_plot(self._create_consistency_score_plot, 'consistency_score',
+                   'Đánh giá tính nhất quán (consistency) trong các câu trả lời của model')
+        
+        # Thêm biểu đồ phân tích lỗi (error analysis)
+        create_plot(self._create_error_analysis_plot, 'error_analysis',
+                  'Phân tích và phân loại các lỗi trong câu trả lời của model')
         
         # Thêm các biểu đồ đánh giá theo criteria khác
         create_plot(self._create_criteria_evaluation_plot, 'criteria_evaluation',
@@ -2607,3 +2827,276 @@ Thời gian tạo: {self.timestamp}
                    'BERT Score đánh giá độ tương đồng ngữ nghĩa')
                    
         return plot_paths
+
+    def _create_consistency_score_plot(self):
+        """
+        Tạo biểu đồ đánh giá tính nhất quán của các mô hình.
+        
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        # Kiểm tra xem có dữ liệu consistency không
+        if 'consistency_score' not in self.results_df.columns:
+            return self._create_fallback_plot("Consistency Score", "No consistency score data available")
+        
+        # Lọc các dòng có giá trị consistency_score không phải NaN
+        consistency_df = self.results_df[~self.results_df['consistency_score'].isna()]
+        
+        if len(consistency_df) == 0:
+            return self._create_fallback_plot("Consistency Score", "No valid consistency score values available")
+        
+        try:
+            # 1. Tạo biểu đồ tổng quan về consistency score
+            plt.figure(figsize=(14, 10))
+            
+            # Sử dụng model_name thay vì model nếu có
+            model_col = 'model_name' if 'model_name' in consistency_df.columns else 'model'
+            
+            # Tính consistency score trung bình theo model và prompt type
+            if model_col in consistency_df.columns and 'prompt_type' in consistency_df.columns:
+                pivot_df = consistency_df.pivot_table(
+                    values='consistency_score',
+                    index=model_col,
+                    columns='prompt_type',
+                    aggfunc='mean'
+                )
+                
+                # Vẽ heatmap
+                ax = sns.heatmap(pivot_df, annot=True, cmap="YlGnBu", fmt=".3f", 
+                               linewidths=.5, vmin=0, vmax=1.0, cbar_kws={'label': 'Consistency Score'})
+                plt.title('Model Consistency Score by Prompt Type', fontsize=16)
+                plt.ylabel('Model')
+                plt.xlabel('Prompt Type')
+                
+                # Thêm chú thích
+                plt.figtext(0.5, 0.01, 
+                           "Consistency Score đo lường mức độ nhất quán trong câu trả lời của model khi chạy nhiều lần.\n1.0 = hoàn toàn nhất quán, 0.0 = hoàn toàn không nhất quán.",
+                           ha="center", fontsize=10, bbox={"facecolor":"orange", "alpha":0.2, "pad":5})
+                
+                # Lưu biểu đồ
+                consistency_score_path = os.path.join(self.plots_dir, f"consistency_score_{self.timestamp}.png")
+                plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+                plt.close()
+                
+                # 2. Tạo biểu đồ thứ hai về agreement rate
+                plt.figure(figsize=(14, 10))
+                
+                # Tính agreement rate trung bình theo model và prompt type
+                pivot_df_agreement = consistency_df.pivot_table(
+                    values='consistency_agreement_rate',
+                    index=model_col,
+                    columns='prompt_type',
+                    aggfunc='mean'
+                )
+                
+                # Vẽ heatmap
+                sns.heatmap(pivot_df_agreement, annot=True, cmap="YlGnBu", fmt=".3f", 
+                          linewidths=.5, vmin=0, vmax=1.0, cbar_kws={'label': 'Agreement Rate'})
+                plt.title('Model Agreement Rate by Prompt Type', fontsize=16)
+                plt.ylabel('Model')
+                plt.xlabel('Prompt Type')
+                
+                # Thêm chú thích
+                plt.figtext(0.5, 0.01, 
+                           "Agreement Rate là tỷ lệ các lần chạy cho ra câu trả lời phổ biến nhất.\nChỉ số này đo lường khả năng đưa ra cùng một câu trả lời của model.",
+                           ha="center", fontsize=10, bbox={"facecolor":"orange", "alpha":0.2, "pad":5})
+                
+                # Lưu biểu đồ
+                agreement_rate_path = os.path.join(self.plots_dir, f"agreement_rate_{self.timestamp}.png")
+                plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+                plt.close()
+                
+                # 3. Tạo biểu đồ so sánh tất cả các model
+                plt.figure(figsize=(14, 10))
+                
+                # Tính giá trị trung bình theo model
+                consistency_by_model = consistency_df.groupby(model_col)['consistency_score'].mean()
+                agreement_by_model = consistency_df.groupby(model_col)['consistency_agreement_rate'].mean()
+                
+                # Tạo DataFrame mới để vẽ
+                comparison_df = pd.DataFrame({
+                    'Consistency Score': consistency_by_model,
+                    'Agreement Rate': agreement_by_model
+                })
+                
+                # Vẽ biểu đồ cột
+                comparison_df.plot(kind='bar', figsize=(14, 8), width=0.8)
+                plt.title('Consistency Metrics by Model', fontsize=16)
+                plt.ylabel('Score (0-1)')
+                plt.xlabel('Model')
+                plt.ylim(0, 1.05)
+                plt.grid(axis='y', linestyle='--', alpha=0.7)
+                plt.legend(loc='best')
+                
+                # Thêm giá trị lên đầu các cột
+                for i, v in enumerate(comparison_df['Consistency Score']):
+                    plt.text(i-0.2, v + 0.02, f'{v:.3f}', ha='center', fontsize=9)
+                for i, v in enumerate(comparison_df['Agreement Rate']):
+                    plt.text(i+0.2, v + 0.02, f'{v:.3f}', ha='center', fontsize=9)
+                
+                # Lưu biểu đồ
+                comparison_path = os.path.join(self.plots_dir, f"consistency_comparison_{self.timestamp}.png")
+                plt.savefig(comparison_path, dpi=120, bbox_inches='tight')
+                plt.close()
+                
+                return consistency_score_path
+                
+            else:
+                # Nếu không có cả model và prompt_type
+                avg_consistency = consistency_df['consistency_score'].mean()
+                avg_agreement = consistency_df['consistency_agreement_rate'].mean() if 'consistency_agreement_rate' in consistency_df.columns else 0
+                
+                # Tạo biểu đồ đơn giản
+                plt.figure(figsize=(10, 6))
+                metrics = ['Consistency Score', 'Agreement Rate']
+                values = [avg_consistency, avg_agreement]
+                
+                plt.bar(metrics, values, color=['skyblue', 'lightgreen'])
+                plt.title('Overall Consistency Metrics', fontsize=16)
+                plt.ylim(0, 1.05)
+                plt.grid(axis='y', linestyle='--', alpha=0.7)
+                
+                # Thêm giá trị lên đầu các cột
+                for i, v in enumerate(values):
+                    plt.text(i, v + 0.02, f'{v:.3f}', ha='center')
+                
+                # Lưu biểu đồ
+                output_path = os.path.join(self.plots_dir, f"consistency_overall_{self.timestamp}.png")
+                plt.savefig(output_path, dpi=120, bbox_inches='tight')
+                plt.close()
+                
+                return output_path
+                
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ consistency score: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("Consistency Score", f"Error: {str(e)}")
+
+    def _create_error_analysis_plot(self):
+        """
+        Tạo biểu đồ phân tích lỗi dựa trên kết quả phân loại lỗi.
+        Hiển thị tỉ lệ các loại lỗi khác nhau theo model và prompt type.
+        
+        Returns:
+            str: Đường dẫn đến file biểu đồ
+        """
+        # Kiểm tra xem có dữ liệu error_type không
+        if 'error_type' not in self.results_df.columns:
+            return self._create_fallback_plot("Error Analysis", "No error analysis data available")
+        
+        # Lọc các dòng có phân loại lỗi (error_type không rỗng và is_correct=False)
+        error_df = self.results_df[(self.results_df['error_type'] != '') & 
+                                  (self.results_df['is_correct'] == False)]
+        
+        if len(error_df) == 0:
+            return self._create_fallback_plot("Error Analysis", "No error analysis data available")
+        
+        try:
+            # Sử dụng model_name thay vì model nếu có
+            model_col = 'model_name' if 'model_name' in error_df.columns else 'model'
+            
+            # 1. Tạo biểu đồ tổng quan về phân bố các loại lỗi
+            plt.figure(figsize=(14, 10))
+            
+            # Đếm số lượng mỗi loại lỗi
+            error_counts = error_df['error_type'].value_counts()
+            
+            # Tạo biểu đồ cột
+            ax = error_counts.plot(kind='bar', color='lightcoral')
+            plt.title('Phân bố các loại lỗi', fontsize=16)
+            plt.xlabel('Loại lỗi')
+            plt.ylabel('Số lượng')
+            plt.xticks(rotation=45, ha='right')
+            plt.grid(axis='y', linestyle='--', alpha=0.7)
+            
+            # Thêm giá trị lên đầu các cột
+            for i, v in enumerate(error_counts):
+                ax.text(i, v + 0.5, str(v), ha='center')
+            
+            # Thêm chú thích
+            plt.figtext(0.5, 0.01, 
+                       "Error Analysis phân loại các lỗi của model thành các nhóm như lỗi kiến thức, lỗi suy luận, lỗi tính toán, v.v.",
+                       ha="center", fontsize=10, bbox={"facecolor":"orange", "alpha":0.2, "pad":5})
+            
+            # Lưu biểu đồ
+            overall_path = os.path.join(self.plots_dir, f"error_analysis_overall_{self.timestamp}.png")
+            plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            # 2. Tạo biểu đồ phân tích lỗi theo model
+            if model_col in error_df.columns:
+                plt.figure(figsize=(14, 12))
+                
+                # Tạo crosstab để đếm số lượng mỗi loại lỗi theo model
+                error_by_model = pd.crosstab(error_df[model_col], error_df['error_type'])
+                
+                # Tính phần trăm
+                error_by_model_pct = error_by_model.div(error_by_model.sum(axis=1), axis=0) * 100
+                
+                # Vẽ heatmap
+                sns.heatmap(error_by_model_pct, annot=error_by_model.values, fmt='d', cmap="YlOrRd", 
+                          linewidths=0.5, cbar_kws={'label': 'Phần trăm (%)'})
+                
+                plt.title('Phân tích lỗi theo Model', fontsize=16)
+                plt.ylabel('Model')
+                plt.xlabel('Loại lỗi')
+                plt.xticks(rotation=45, ha='right')
+                
+                # Lưu biểu đồ
+                model_path = os.path.join(self.plots_dir, f"error_analysis_by_model_{self.timestamp}.png")
+                plt.savefig(model_path, dpi=120, bbox_inches='tight')
+                plt.close()
+            
+            # 3. Tạo biểu đồ phân tích lỗi theo prompt type
+            plt.figure(figsize=(16, 12))
+            
+            # Tạo crosstab để đếm số lượng mỗi loại lỗi theo prompt type
+            error_by_prompt = pd.crosstab(error_df['prompt_type'], error_df['error_type'])
+            
+            # Tính phần trăm
+            error_by_prompt_pct = error_by_prompt.div(error_by_prompt.sum(axis=1), axis=0) * 100
+            
+            # Vẽ heatmap
+            sns.heatmap(error_by_prompt_pct, annot=error_by_prompt.values, fmt='d', cmap="YlOrRd", 
+                      linewidths=0.5, cbar_kws={'label': 'Phần trăm (%)'})
+            
+            plt.title('Phân tích lỗi theo Prompt Type', fontsize=16)
+            plt.ylabel('Prompt Type')
+            plt.xlabel('Loại lỗi')
+            plt.xticks(rotation=45, ha='right')
+            
+            # Lưu biểu đồ
+            prompt_path = os.path.join(self.plots_dir, f"error_analysis_by_prompt_{self.timestamp}.png")
+            plt.savefig(prompt_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            # 4. Tạo biểu đồ tròn tổng quan
+            plt.figure(figsize=(12, 12))
+            
+            # Tính phần trăm
+            error_pct = error_counts / error_counts.sum() * 100
+            
+            # Vẽ biểu đồ tròn
+            plt.pie(error_pct, labels=error_pct.index, autopct='%1.1f%%', startangle=90,
+                  wedgeprops={'edgecolor': 'white', 'linewidth': 1},
+                  textprops={'size': 12})
+            
+            plt.title('Tỷ lệ các loại lỗi', fontsize=16)
+            plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
+            
+            # Thêm chú thích
+            plt.figtext(0.5, 0.01, 
+                       "Biểu đồ hiển thị tỷ lệ phần trăm của từng loại lỗi trong tổng số lỗi được phân tích",
+                       ha="center", fontsize=10, bbox={"facecolor":"orange", "alpha":0.2, "pad":5})
+            
+            # Lưu biểu đồ
+            pie_path = os.path.join(self.plots_dir, f"error_analysis_pie_{self.timestamp}.png")
+            plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+            plt.close()
+            
+            return overall_path
+            
+        except Exception as e:
+            logger.error(f"Lỗi khi tạo biểu đồ error analysis: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return self._create_fallback_plot("Error Analysis", f"Error: {str(e)}")

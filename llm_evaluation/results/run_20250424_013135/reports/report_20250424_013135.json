@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "timestamp": "20250424_013135",
+    "total_questions": 10,
+    "total_correct": 10
+  },
+  "models": {
+    "gemini": {
+      "correct": 10,
+      "total": 10,
+      "accuracy": 1.0
+    }
+  },
+  "prompts": {
+    "cot": {
+      "correct": 10,
+      "total": 10,
+      "accuracy": 1.0
+    }
+  }
+}

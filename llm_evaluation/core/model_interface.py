@@ -89,36 +89,132 @@ def create_smart_retry(api_name):
     error_codes = cfg.get("error_codes_to_retry", [429, 500, 502, 503, 504])
     
     def should_retry_exception(exception):
-        """Kiểm tra xem có nên retry cho exception này không"""
-        # Nếu là lỗi rate limit hoặc server error, retry
-        if any(str(code) in str(exception) for code in error_codes):
+        """
+        Determine if an exception should trigger a retry.
+        
+        Args:
+            exception: The exception that was raised
+            
+        Returns:
+            bool: Whether to retry the request
+        """
+        # Check for HTTP status codes in various exception types
+        status_code = None
+        
+        # Extract status code from different exception types
+        if hasattr(exception, 'status_code'):
+            status_code = exception.status_code
+        elif hasattr(exception, 'response') and hasattr(exception.response, 'status_code'):
+            status_code = exception.response.status_code
+        elif hasattr(exception, 'code'):
+            status_code = exception.code
+        
+        # Always retry on connection errors and timeouts
+        if isinstance(exception, (ConnectionError, TimeoutError)) or 'timeout' in str(exception).lower():
             return True
             
-        # Kiểm tra các mẫu chuỗi lỗi phổ biến
-        error_patterns = [
-            'rate limit', 'quota', 'timeout', 'connection error', 
-            'server error', 'overloaded', 'temporarily unavailable',
-            'circuit breaker', 'try again'
+        # Always retry on rate limit errors (429)
+        if status_code == 429:
+            return True
+        
+        # Always retry on bad gateway (502), service unavailable (503), and gateway timeout (504)
+        if status_code in (502, 503, 504):
+            return True
+            
+        # Retry on specific error messages
+        error_msg = str(exception).lower()
+        retry_keywords = [
+            'rate limit', 
+            'too many requests',
+            'timeout', 
+            'connection', 
+            'socket',
+            'reset',
+            'broken pipe',
+            'server overloaded',
+            'bad gateway',
+            'service unavailable',
+            'gateway timeout',
+            'internal server error'
         ]
-        return any(pattern in str(exception).lower() for pattern in error_patterns)
+        
+        if any(keyword in error_msg for keyword in retry_keywords):
+            return True
+            
+        # Check if it's a transient API error
+        if 'try again' in error_msg or 'please retry' in error_msg:
+            return True
+        
+        # Don't retry on authentication errors or input validation errors
+        if status_code in (400, 401, 403, 404, 422):
+            return False
+            
+        # By default, don't retry
+        return False
     
     def wait_with_jitter(retry_state):
-        """Hàm chờ đợi có jitter để tránh thundering herd"""
-        # Tính toán thời gian chờ cơ bản
-        wait_time = min(base_delay * (2 ** (retry_state.attempt_number - 1)), max_delay)
+        """
+        Calculate wait time using exponential backoff with jitter.
         
-        # Thêm jitter ngẫu nhiên
-        jitter = random.uniform(-jitter_factor, jitter_factor) * wait_time
-        wait_time = max(base_delay, wait_time + jitter)
+        Args:
+            retry_state: The current retry state
+            
+        Returns:
+            float: Number of seconds to wait
+        """
+        # Get retry attempt number (starting from 0)
+        retry_number = retry_state.attempt_number - 1
         
-        # Nếu là lỗi rate limit (429), tăng thời gian chờ thêm
-        if hasattr(retry_state, 'outcome') and retry_state.outcome is not None:
-            exception = retry_state.outcome.exception()
-            if exception and '429' in str(exception):
-                wait_time *= 1.5  # Tăng 50% thời gian chờ cho lỗi rate limit
-                
-        logger.info(f"Thử lại lần {retry_state.attempt_number} sau {wait_time:.1f}s (có jitter)")
-        return wait_time
+        # Base delay (in seconds)
+        base_delay = 1.0
+        
+        # Max delay (in seconds) - cap at 60 seconds
+        max_delay = 60.0
+        
+        # Calculate exponential backoff
+        exponential_delay = min(max_delay, base_delay * (2 ** retry_number))
+        
+        # Add jitter (random value between 0 and exponential_delay * 0.5)
+        jitter = random.uniform(0, exponential_delay * 0.5)
+        
+        # If the exception contains a Retry-After header, respect it
+        exception = retry_state.outcome.exception()
+        if exception is not None:
+            retry_after = None
+            
+            # Try to extract Retry-After header from different exception types
+            if hasattr(exception, 'headers') and 'Retry-After' in exception.headers:
+                retry_after = exception.headers['Retry-After']
+            elif hasattr(exception, 'response') and hasattr(exception.response, 'headers') and 'Retry-After' in exception.response.headers:
+                retry_after = exception.response.headers['Retry-After']
+            
+            # If we found a Retry-After header, parse and use it (with some additional jitter)
+            if retry_after is not None:
+                try:
+                    # Retry-After can be a number of seconds or an HTTP date
+                    if retry_after.isdigit():
+                        # It's a number of seconds
+                        retry_after_seconds = float(retry_after)
+                        # Add a small random jitter (0-1 seconds)
+                        return retry_after_seconds + random.uniform(0, 1)
+                    else:
+                        # It might be an HTTP date format
+                        # Parse the date and calculate seconds from now
+                        from email.utils import parsedate_to_datetime
+                        retry_date = parsedate_to_datetime(retry_after)
+                        now = datetime.datetime.now(datetime.timezone.utc)
+                        wait_seconds = max(0, (retry_date - now).total_seconds())
+                        return wait_seconds + random.uniform(0, 1)
+                except (ValueError, TypeError):
+                    # If parsing fails, fall back to exponential backoff
+                    pass
+        
+        # Log retry attempt with wait time
+        from llm_evaluation.utils.logging_setup import get_logger
+        logger = get_logger("model_interface")
+        logger.info(f"Retry attempt {retry_number + 1} for {exception.__class__.__name__}. Waiting {exponential_delay + jitter:.2f} seconds...")
+        
+        return exponential_delay + jitter
     
     # Tạo decorator tùy chỉnh
     retry_decorator = retry(
@@ -275,7 +371,8 @@ class ModelInterface:
         Args:
             model_name (str): Tên của model (llama, qwen, gemini, groq)
             prompt (str): Prompt input
-            config (dict): Cấu hình generation (temperature, max_tokens, etc.)
+            config (dict): Cấu hình generation (temperature, max_tokens, etc.) 
+                           Có thể chứa prompt_type để lấy max_tokens phù hợp từ cấu hình
             
         Returns:
             tuple: (text, stats)
@@ -287,6 +384,13 @@ class ModelInterface:
         # Chuẩn bị cấu hình mặc định từ config module
         import config as app_config
         model_config = app_config.MODEL_CONFIGS.get(model_name, {}).copy()
+        
+        # Xử lý prompt_type nếu có để lấy max_tokens phù hợp
+        if config and 'prompt_type' in config:
+            prompt_type = config.pop('prompt_type')  # Lấy và xóa prompt_type khỏi config
+            # Lấy max_tokens phù hợp từ cấu hình
+            model_config['max_tokens'] = app_config.get_max_tokens(model_name, prompt_type)
+            logger.debug(f"Sử dụng max_tokens={model_config['max_tokens']} cho {model_name}/{prompt_type}")
         
         # Ghi đè cấu hình nếu được cung cấp
         if config:
@@ -640,9 +744,58 @@ class ModelInterface:
         Returns:
             tuple: (text, stats)
         """
+        start_time = time.time()
+        max_retries = 5  # Số lần thử lại tối đa
+        
         # Áp dụng decorator tại runtime để đảm bảo cấu hình mới nhất
         decorated_function = self.groq_retry_decorator(self._generate_with_groq_impl)
-        return decorated_function(prompt, gen_config)
+        
+        for attempt in range(max_retries):
+            try:
+                return decorated_function(prompt, gen_config)
+            except Exception as e:
+                error_msg = str(e)
+                
+                # Trích xuất loại lỗi
+                error_type = None
+                if ":" in error_msg:
+                    error_type = error_msg.split(":")[0].strip()
+                
+                # Kiểm tra nếu đã đến lần retry cuối cùng
+                if attempt == max_retries - 1:
+                    logger.error(f"Đã thử lại tối đa {max_retries} lần nhưng vẫn thất bại. Lỗi cuối cùng: {error_msg}")
+                    
+                    # Trả về thông báo lỗi thay vì throw exception
+                    detail_msg = error_msg.split(".")[0] if "." in error_msg else error_msg
+                    return f"[Error: {detail_msg}]", {
+                        "has_error": True,
+                        "error_message": detail_msg,
+                        "error_type": error_type or "UNKNOWN_ERROR",
+                        "elapsed_time": time.time() - start_time
+                    }
+                
+                # Kiểm tra các lỗi đặc biệt không thể recover
+                if "INVALID_API_KEY_ERROR" in error_msg and "Tất cả Groq API keys đều không hợp lệ" in error_msg:
+                    logger.error("Tất cả API keys đều không hợp lệ, không thể tiếp tục retry")
+                    return f"[Error: Tất cả API keys không hợp lệ]", {
+                        "has_error": True,
+                        "error_message": "Tất cả API keys không hợp lệ",
+                        "error_type": "INVALID_API_KEY_ERROR",
+                        "elapsed_time": time.time() - start_time
+                    }
+                
+                # Các lỗi đã được xử lý ở _generate_with_groq_impl, 
+                # decorator sẽ tự động retry
+                logger.warning(f"Đang thử lại lần {attempt + 1}/{max_retries} sau lỗi: {error_msg}")
+        
+        # Không bao giờ nên đến đây do đã có xử lý ở trên,
+        # nhưng thêm để đảm bảo code an toàn
+        return f"[Error: Quá nhiều lần thử không thành công]", {
+            "has_error": True,
+            "error_message": "Quá nhiều lần thử không thành công",
+            "error_type": "MAX_RETRIES_EXCEEDED",
+            "elapsed_time": time.time() - start_time
+        }
     
     def _generate_with_groq_impl(self, prompt, gen_config):
         """
@@ -728,8 +881,16 @@ class ModelInterface:
             error_type = type(e).__name__
             error_msg = f"Lỗi khi sinh văn bản với Groq API: {str(e)}"
             logger.error(error_msg)
+            
+            # Log status code nếu có
+            status_code = None
             if hasattr(e, 'status_code'):
-                logger.error(f"Status code: {e.status_code}")
+                status_code = e.status_code
+                logger.error(f"Status code: {status_code}")
+            elif hasattr(e, 'response') and hasattr(e.response, 'status_code'):
+                status_code = e.response.status_code
+                logger.error(f"Status code: {status_code}")
+            
             logger.debug(traceback.format_exc())
             
             # Trích xuất retry-after header nếu có
@@ -740,9 +901,41 @@ class ModelInterface:
                     logger.info(f"Tìm thấy header Retry-After: {retry_after}s")
                 except (ValueError, TypeError):
                     pass
+            elif hasattr(e, 'response') and hasattr(e.response, 'headers') and 'retry-after' in e.response.headers:
+                try:
+                    retry_after = float(e.response.headers['retry-after'])
+                    logger.info(f"Tìm thấy header Retry-After: {retry_after}s")
+                except (ValueError, TypeError):
+                    pass
+            
+            # Xử lý lỗi 503 Service Unavailable
+            if status_code == 503 or 'service unavailable' in str(e).lower():
+                logger.warning(f"Groq API error: Lỗi không rõ. Đang thử lại...")
+                
+                # Tùy chỉnh thời gian chờ
+                wait_time = self._handle_rate_limit_error(api_name, e, retry_after)
+                
+                # Thực hiện retry ngay tại đây thay vì lan truyền lỗi
+                time.sleep(min(wait_time, 10))  # Giới hạn tối đa 10 giây
+                
+                # Throw lỗi để retry decorator bắt và xử lý
+                raise Exception(f"RETRIABLE_ERROR: Lỗi 503 Service Unavailable. Đang thử lại.")
+            
+            # Xử lý lỗi 500 Internal Server Error 
+            if status_code == 500 or 'internal server error' in str(e).lower():
+                logger.warning(f"Groq API error: Lỗi không rõ. Đang thử lại...")
+                
+                # Tùy chỉnh thời gian chờ
+                wait_time = self._handle_rate_limit_error(api_name, e, retry_after)
+                
+                # Thực hiện retry ngay tại đây thay vì lan truyền lỗi
+                time.sleep(min(wait_time, 10))  # Giới hạn tối đa 10 giây
+                
+                # Throw lỗi để retry decorator bắt và xử lý
+                raise Exception(f"RETRIABLE_ERROR: Lỗi 500 Internal Server Error. Đang thử lại.")
             
             # Customized error message based on error type
-            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower() or hasattr(e, 'status_code') and getattr(e, 'status_code') == 429:
+            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower() or (status_code == 429):
                 # Đánh dấu key hiện tại đã hết quota
                 current_key = config.GROQ_API_KEYS[self.current_groq_key_index]
                 
@@ -813,38 +1006,35 @@ class ModelInterface:
                 # Kiểm tra xem còn key khả dụng không
                 if len(self.exhausted_groq_keys) >= len(config.GROQ_API_KEYS):
                     detail_msg = "Tất cả Groq API keys đều không hợp lệ. Vui lòng kiểm tra cấu hình."
+                    logger.error(detail_msg)
+                    error_type = "INVALID_API_KEY_ERROR"
                 else:
-                    detail_msg = f"Key không hợp lệ. Chuyển sang key #{self.current_groq_key_index + 1}/{len(config.GROQ_API_KEYS)}"
+                    # Nếu còn key khả dụng, thử lại với key mới
+                    detail_msg = f"Key #{self.current_groq_key_index} không hợp lệ. Chuyển sang key #{self.current_groq_key_index + 1}/{len(config.GROQ_API_KEYS)}"
+                    logger.warning(detail_msg)
                     
                     # Khởi tạo lại client với key mới
                     self._get_groq_client()
-                
-                error_type = "INVALID_API_KEY_ERROR"
-            elif 'timeout' in str(e).lower():
-                detail_msg = "Request bị timeout. Đang thử lại..."
-                error_type = "TIMEOUT_ERROR"
-            elif 'not found' in str(e).lower() and 'model' in str(e).lower():
-                detail_msg = f"Model {model_name} không tồn tại hoặc không khả dụng."
-                error_type = "MODEL_NOT_FOUND_ERROR"
-            elif 'circuit breaker' in str(e).lower():
-                detail_msg = "Circuit breaker đang mở, đang chờ cooldown"
-                error_type = "CIRCUIT_BREAKER_OPEN"
+                    
+                    # Thử lại lập tức với key mới
+                    error_type = "INVALID_API_KEY_ERROR"
             else:
-                detail_msg = "Lỗi không rõ. Đang thử lại..."
-                error_type = "UNKNOWN_ERROR"
+                # Lỗi khác, xem như lỗi chung và retry
+                detail_msg = f"Lỗi không rõ. Đang thử lại..."
+                logger.warning(f"Groq API error: {detail_msg}")
                 
-            logger.warning(f"Groq API error: {detail_msg}")
+                # Tạm thời đặt lại rate limiters và cập nhật circuit breaker
+                wait_time = self._handle_rate_limit_error(api_name, e, retry_after)
+                
+                # Thực hiện sleep ngay tại đây
+                time.sleep(min(wait_time, 10))  # Giới hạn tối đa 10 giây
+                
+                error_type = "UNKNOWN_ERROR"
             
-            # Đối với một số lỗi nghiêm trọng, trả về ngay lập tức thay vì retry
-            if error_type in ["INVALID_API_KEY_ERROR", "MODEL_NOT_FOUND_ERROR"]:
-                return f"[Error: {detail_msg}]", {
-                    "has_error": True,
-                    "error_message": detail_msg,
-                    "error_type": error_type,
-                    "elapsed_time": time.time() - start_time
-                }
+            # Tạo thông điệp lỗi chi tiết
+            detail_msg = detail_msg if 'detail_msg' in locals() else "Lỗi không rõ. Đang thử lại..."
             
-            # Raise để retry được kích hoạt
+            # Throw lỗi để retry decorator bắt và xử lý
             raise Exception(f"{error_type}: {detail_msg}. Original error: {str(e)}")
     
     def _apply_rate_limiting(self, api_name):
@@ -1914,7 +2104,7 @@ class ModelInterface:
         
         return max_memory
 
-    def get_response(self, model_name, prompt, max_tokens=1024):
+    def get_response(self, model_name, prompt, max_tokens=None):
         """
         Lấy response từ model với giao diện đơn giản hơn.
         
@@ -1936,6 +2126,14 @@ class ModelInterface:
             model_config["model"] = model_name.replace("groq/", "")
             logger.debug(f"Đã chuyển đổi {model_name} -> {actual_model_name} với model config: {model_config}")
         
+        # Import lại config để đảm bảo dùng phiên bản mới nhất
+        import config as app_config
+        
+        # Nếu không có max_tokens được chỉ định, sử dụng giá trị mặc định từ config
+        if max_tokens is None:
+            # Mặc định là lấy config model cơ bản
+            max_tokens = app_config.MODEL_CONFIGS[actual_model_name].get("max_tokens", 1024)
+        
         config = {
             "max_tokens": max_tokens,
             "temperature": 0.7,
@@ -1953,7 +2151,6 @@ class ModelInterface:
             return f"Error: {stats.get('error_message', 'Unknown error')}"
             
         return response
-
     def _is_key_exhausted(self, key, exhausted_keys):
         """
         Kiểm tra xem key có đang bị hết hạn không, có tính đến việc sang ngày mới.
@@ -2150,17 +2347,18 @@ def get_available_models():
     Returns:
         dict: Danh sách model và trạng thái
     """
+    import config as app_config
     models = {}
     
     # Model local
-    if config.LLAMA_MODEL_PATH:
+    if app_config.LLAMA_MODEL_PATH:
         models["llama"] = {
             "type": "local",
             "cached": "llama_model" in _MODEL_CACHE,
             "disk_cached": "llama" in _DISK_CACHE_INDEX
         }
     
-    if config.QWEN_MODEL_PATH:
+    if app_config.QWEN_MODEL_PATH:
         models["qwen"] = {
             "type": "local",
             "cached": "qwen_model" in _MODEL_CACHE,
@@ -2168,18 +2366,19 @@ def get_available_models():
         }
     
     # Model API
-    if config.GEMINI_API_KEYS:
+    if app_config.GEMINI_API_KEYS:
         models["gemini"] = {
             "type": "api",
             "api": "gemini",
-            "keys_count": len(config.GEMINI_API_KEYS)
+            "keys_count": len(app_config.GEMINI_API_KEYS)
         }
     
-    if config.GROQ_API_KEYS:
+    if app_config.GROQ_API_KEYS:
         models["groq"] = {
             "type": "api",
             "api": "groq",
-            "keys_count": len(config.GROQ_API_KEYS)
+            "keys_count": len(app_config.GROQ_API_KEYS)
         }
     
     return models
+

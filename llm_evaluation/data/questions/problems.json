@@ -26,7 +26,7 @@
     {
       "id": 837,
       "type": "Bài toán chia kẹo",
-      "question": "Có 121 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 121 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 121. Giải ra: x = 17 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -46,7 +46,7 @@
     {
       "id": 789,
       "type": "Bài toán chia kẹo",
-      "question": "Có 143 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 143 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 143. Giải ra: x = 20 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -66,8 +66,8 @@
     {
       "id": 1609,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 82.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 16.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 28.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -152,8 +152,8 @@
     {
       "id": 1598,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 20 và tích các chữ số là 31.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 12 và tích các chữ số là 36.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 66.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -173,7 +173,7 @@
     {
       "id": 678,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (46+x)/(11+x)=3. Giải ra: x = 6 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -229,7 +229,7 @@
     {
       "id": 800,
       "type": "Bài toán chia kẹo",
-      "question": "Có 246 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 246 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 246. Giải ra: x = 35 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -262,8 +262,8 @@
     {
       "id": 1620,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 81.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 81.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 99.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -294,7 +294,7 @@
     {
       "id": 711,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (32+x)/(7+x)=2. Giải ra: x = 18 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -316,7 +316,7 @@
     {
       "id": 751,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (46+x)/(10+x)=3. Giải ra: x = 8 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -335,8 +335,8 @@
     {
       "id": 1636,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 12.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 12.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 34.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -419,7 +419,7 @@
     {
       "id": 782,
       "type": "Bài toán chia kẹo",
-      "question": "Có 111 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 111 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 111. Giải ra: x = 8 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -441,7 +441,7 @@
     {
       "id": 823,
       "type": "Bài toán chia kẹo",
-      "question": "Có 145 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 145 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 145. Giải ra: x = 11 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -451,8 +451,8 @@
     {
       "id": 1642,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 50.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 40.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 58.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -516,7 +516,7 @@
     {
       "id": 786,
       "type": "Bài toán chia kẹo",
-      "question": "Có 199 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 199 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 199. Giải ra: x = 28 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -572,7 +572,7 @@
     {
       "id": 688,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (44+x)/(7+x)=3. Giải ra: x = 11 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -689,7 +689,7 @@
     {
       "id": 740,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(15+x)=2. Giải ra: x = 20 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -700,7 +700,7 @@
     {
       "id": 753,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (48+x)/(8+x)=4. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -745,8 +745,8 @@
     {
       "id": 1590,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 81.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 49.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 77.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -777,7 +777,7 @@
     {
       "id": 669,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 30 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 30 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (30+x)/(15+x)=4. Giải ra: x = -10 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -834,7 +834,7 @@
     {
       "id": 727,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (40+x)/(8+x)=2. Giải ra: x = 24 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -888,7 +888,7 @@
     {
       "id": 836,
       "type": "Bài toán chia kẹo",
-      "question": "Có 298 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 298 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 298. Giải ra: x = 42 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -982,7 +982,7 @@
     {
       "id": 734,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 37 tuổi, tuổi con là 5 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 37 tuổi, tuổi con là 5 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (37+x)/(5+x)=2. Giải ra: x = 27 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -1122,7 +1122,7 @@
     {
       "id": 683,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(15+x)=2. Giải ra: x = 13 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -1189,8 +1189,8 @@
     {
       "id": 1595,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 96.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 81.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 99.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -1265,7 +1265,7 @@
     {
       "id": 670,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (33+x)/(11+x)=2. Giải ra: x = 11 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -1355,8 +1355,8 @@
     {
       "id": 1587,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 55.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 24.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 38.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -1477,7 +1477,7 @@
     {
       "id": 772,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(13+x)=4. Giải ra: x = -1 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -1499,7 +1499,7 @@
     {
       "id": 785,
       "type": "Bài toán chia kẹo",
-      "question": "Có 219 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 219 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 219. Giải ra: x = 31 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -1519,7 +1519,7 @@
     {
       "id": 700,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(15+x)=2. Giải ra: x = 13 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -1638,8 +1638,8 @@
     {
       "id": 1624,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 20 và tích các chữ số là 71.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 15 và tích các chữ số là 56.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 78.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -1837,7 +1837,7 @@
     {
       "id": 752,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (46+x)/(6+x)=4. Giải ra: x = 7 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -1870,7 +1870,7 @@
     {
       "id": 816,
       "type": "Bài toán chia kẹo",
-      "question": "Có 169 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 169 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 169. Giải ra: x = 24 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -1880,8 +1880,8 @@
     {
       "id": 1572,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 96.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 12 và tích các chữ số là 48.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 264.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -1891,7 +1891,7 @@
     {
       "id": 756,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 5 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 5 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (49+x)/(5+x)=3. Giải ra: x = 17 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -1913,8 +1913,8 @@
     {
       "id": 1605,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 72.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 35.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 75.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -2046,8 +2046,8 @@
     {
       "id": 1616,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 34.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 20.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 45.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -2068,7 +2068,7 @@
     {
       "id": 798,
       "type": "Bài toán chia kẹo",
-      "question": "Có 241 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 241 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 241. Giải ra: x = 18 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -2078,8 +2078,8 @@
     {
       "id": 1659,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 62.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 30.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 253.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -2121,7 +2121,7 @@
     {
       "id": 710,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 14 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 14 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(14+x)=2. Giải ra: x = 22 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -2217,8 +2217,8 @@
     {
       "id": 1646,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 20 và tích các chữ số là 30.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 100.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 455.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -2317,7 +2317,7 @@
     {
       "id": 682,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (45+x)/(10+x)=2. Giải ra: x = 25 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -2373,7 +2373,7 @@
     {
       "id": 861,
       "type": "Bài toán chia kẹo",
-      "question": "Có 169 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 169 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 169. Giải ra: x = 13 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -2426,7 +2426,7 @@
     {
       "id": 828,
       "type": "Bài toán chia kẹo",
-      "question": "Có 262 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 262 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 262. Giải ra: x = 37 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -2436,7 +2436,7 @@
     {
       "id": 725,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (38+x)/(9+x)=3. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -2502,7 +2502,7 @@
     {
       "id": 833,
       "type": "Bài toán chia kẹo",
-      "question": "Có 103 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 103 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 103. Giải ra: x = 7 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -2629,7 +2629,7 @@
     {
       "id": 860,
       "type": "Bài toán chia kẹo",
-      "question": "Có 106 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 106 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 106. Giải ra: x = 8 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -2671,7 +2671,7 @@
     {
       "id": 668,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (32+x)/(6+x)=2. Giải ra: x = 20 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -2705,7 +2705,7 @@
     {
       "id": 744,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (49+x)/(15+x)=4. Giải ra: x = -4 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -2716,8 +2716,8 @@
     {
       "id": 1602,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 22.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 6.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 23.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3109,8 +3109,8 @@
     {
       "id": 1647,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 43.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 54.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 239.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3159,7 +3159,7 @@
     {
       "id": 713,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (48+x)/(15+x)=4. Giải ra: x = -4 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -3285,8 +3285,8 @@
     {
       "id": 1586,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 92.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 15 và tích các chữ số là 72.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 249.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3296,7 +3296,7 @@
     {
       "id": 693,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 14 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 14 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(14+x)=2. Giải ra: x = 15 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -3341,8 +3341,8 @@
     {
       "id": 1619,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 15 và tích các chữ số là 95.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 4 chữ số, biết rằng tổng các chữ số là 19 và tích các chữ số là 270.",
+      "solution": "Ta thử các số có 4 chữ số thỏa mãn điều kiện. Số cần tìm là: 2359.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3414,8 +3414,8 @@
     {
       "id": 1638,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 12 và tích các chữ số là 98.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 12 và tích các chữ số là 35.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 75.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3479,8 +3479,8 @@
     {
       "id": 1614,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 71.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 45.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 59.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3501,7 +3501,7 @@
     {
       "id": 757,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (49+x)/(11+x)=3. Giải ra: x = 8 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -3522,7 +3522,7 @@
     {
       "id": 771,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 12 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 12 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(12+x)=3. Giải ra: x = 7 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -3565,7 +3565,7 @@
     {
       "id": 793,
       "type": "Bài toán chia kẹo",
-      "question": "Có 250 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 250 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 250. Giải ra: x = 35 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -3609,8 +3609,8 @@
     {
       "id": 1660,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 31.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 135.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 395.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3719,8 +3719,8 @@
     {
       "id": 1629,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 62.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 34.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 38.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3836,8 +3836,8 @@
     {
       "id": 1649,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 20 và tích các chữ số là 14.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 4 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 2.",
+      "solution": "Ta thử các số có 4 chữ số thỏa mãn điều kiện. Số cần tìm là: 1211.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3935,8 +3935,8 @@
     {
       "id": 1645,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 26.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 12.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 26.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -3989,7 +3989,7 @@
     {
       "id": 778,
       "type": "Bài toán chia kẹo",
-      "question": "Có 102 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 102 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 102. Giải ra: x = 14 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -4021,8 +4021,8 @@
     {
       "id": 1594,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 99.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 2 và tích các chữ số là 0.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 110.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -4032,7 +4032,7 @@
     {
       "id": 824,
       "type": "Bài toán chia kẹo",
-      "question": "Có 190 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 190 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 190. Giải ra: x = 14 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -4042,7 +4042,7 @@
     {
       "id": 814,
       "type": "Bài toán chia kẹo",
-      "question": "Có 109 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 109 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 109. Giải ra: x = 8 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -4087,7 +4087,7 @@
     {
       "id": 720,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 14 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 14 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (40+x)/(14+x)=4. Giải ra: x = -6 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -4191,7 +4191,7 @@
     {
       "id": 684,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (48+x)/(11+x)=3. Giải ra: x = 7 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -4222,8 +4222,8 @@
     {
       "id": 1656,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 62.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 4.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 14.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -4233,7 +4233,7 @@
     {
       "id": 664,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 14 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 14 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(14+x)=3. Giải ra: x = 0 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -4419,7 +4419,7 @@
     {
       "id": 728,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (40+x)/(7+x)=2. Giải ra: x = 26 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -4486,7 +4486,7 @@
     {
       "id": 706,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 36 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 36 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (36+x)/(9+x)=4. Giải ra: x = 0 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -4755,7 +4755,7 @@
     {
       "id": 797,
       "type": "Bài toán chia kẹo",
-      "question": "Có 203 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 203 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 203. Giải ra: x = 15 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -4841,7 +4841,7 @@
     {
       "id": 694,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (31+x)/(10+x)=3. Giải ra: x = 0 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -4852,7 +4852,7 @@
     {
       "id": 763,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (39+x)/(11+x)=2. Giải ra: x = 17 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -5070,8 +5070,8 @@
     {
       "id": 1597,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 35.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 0.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 170.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -5101,8 +5101,8 @@
     {
       "id": 1583,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 70.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 81.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 99.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -5289,7 +5289,7 @@
     {
       "id": 754,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (44+x)/(7+x)=2. Giải ra: x = 30 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -5300,8 +5300,8 @@
     {
       "id": 1640,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 40.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 4.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 14.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -5322,7 +5322,7 @@
     {
       "id": 764,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (45+x)/(7+x)=4. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -5377,7 +5377,7 @@
     {
       "id": 723,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (31+x)/(10+x)=4. Giải ra: x = -3 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -5418,7 +5418,7 @@
     {
       "id": 852,
       "type": "Bài toán chia kẹo",
-      "question": "Có 294 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 294 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 294. Giải ra: x = 42 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -5537,7 +5537,7 @@
     {
       "id": 776,
       "type": "Bài toán chia kẹo",
-      "question": "Có 226 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 226 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 226. Giải ra: x = 32 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -5547,8 +5547,8 @@
     {
       "id": 1596,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 28.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 18.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 29.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -5591,8 +5591,8 @@
     {
       "id": 1604,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 20 và tích các chữ số là 45.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 45.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 59.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -5602,7 +5602,7 @@
     {
       "id": 770,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 12 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 12 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (49+x)/(12+x)=2. Giải ra: x = 25 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -5659,7 +5659,7 @@
     {
       "id": 673,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (38+x)/(8+x)=4. Giải ra: x = 2 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -5670,8 +5670,8 @@
     {
       "id": 1617,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 15 và tích các chữ số là 28.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 15 và tích các chữ số là 56.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 78.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -5702,8 +5702,8 @@
     {
       "id": 1633,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 35.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 9.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 33.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -5757,7 +5757,7 @@
     {
       "id": 760,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (48+x)/(13+x)=3. Giải ra: x = 4 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -5778,7 +5778,7 @@
     {
       "id": 774,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (45+x)/(9+x)=3. Giải ra: x = 9 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -5897,7 +5897,7 @@
     {
       "id": 827,
       "type": "Bài toán chia kẹo",
-      "question": "Có 294 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 294 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 294. Giải ra: x = 42 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -5928,7 +5928,7 @@
     {
       "id": 795,
       "type": "Bài toán chia kẹo",
-      "question": "Có 206 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 206 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 206. Giải ra: x = 15 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -6223,7 +6223,7 @@
     {
       "id": 822,
       "type": "Bài toán chia kẹo",
-      "question": "Có 294 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 294 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 294. Giải ra: x = 42 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -6399,7 +6399,7 @@
     {
       "id": 775,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(10+x)=3. Giải ra: x = 10 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -6638,8 +6638,8 @@
     {
       "id": 1608,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 42.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 42.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 67.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -6692,7 +6692,7 @@
     {
       "id": 825,
       "type": "Bài toán chia kẹo",
-      "question": "Có 200 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 200 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 200. Giải ra: x = 15 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -6723,7 +6723,7 @@
     {
       "id": 750,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 12 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 12 tuổi. Hỏi trước (âm) hoặc sau (dương bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (48+x)/(12+x)=2. Giải ra: x = 24 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -6790,7 +6790,7 @@
     {
       "id": 707,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (33+x)/(15+x)=3. Giải ra: x = -6 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -6822,8 +6822,8 @@
     {
       "id": 1600,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 20 và tích các chữ số là 85.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 30.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 236.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -6833,7 +6833,7 @@
     {
       "id": 748,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 42 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 42 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (42+x)/(8+x)=3. Giải ra: x = 9 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -6973,7 +6973,7 @@
     {
       "id": 806,
       "type": "Bài toán chia kẹo",
-      "question": "Có 282 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 282 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 282. Giải ra: x = 21 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -7047,8 +7047,8 @@
     {
       "id": 1626,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 28.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 28.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -7081,7 +7081,7 @@
     {
       "id": 792,
       "type": "Bài toán chia kẹo",
-      "question": "Có 181 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 181 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 181. Giải ra: x = 13 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -7250,7 +7250,7 @@
     {
       "id": 675,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (46+x)/(8+x)=2. Giải ra: x = 30 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -7283,8 +7283,8 @@
     {
       "id": 1612,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 20 và tích các chữ số là 16.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 64.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 88.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -7302,8 +7302,8 @@
     {
       "id": 1655,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 91.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 15 và tích các chữ số là 49.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 177.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -7454,8 +7454,8 @@
     {
       "id": 1650,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 61.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 48.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 68.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -7465,7 +7465,7 @@
     {
       "id": 721,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(15+x)=3. Giải ra: x = -1 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -7488,7 +7488,7 @@
     {
       "id": 703,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(15+x)=2. Giải ra: x = 13 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -7529,8 +7529,8 @@
     {
       "id": 1582,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 33.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 72.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 89.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -7548,7 +7548,7 @@
     {
       "id": 679,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 36 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 36 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (36+x)/(6+x)=4. Giải ra: x = 4 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -7603,8 +7603,8 @@
     {
       "id": 1580,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 59.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 28.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 47.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -7625,7 +7625,7 @@
     {
       "id": 768,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (32+x)/(6+x)=2. Giải ra: x = 20 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -7719,7 +7719,7 @@
     {
       "id": 762,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (33+x)/(6+x)=4. Giải ra: x = 3 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -7763,7 +7763,7 @@
     {
       "id": 699,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 41 tuổi, tuổi con là 5 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 41 tuổi, tuổi con là 5 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (41+x)/(5+x)=3. Giải ra: x = 13 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -7774,7 +7774,7 @@
     {
       "id": 686,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 37 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 37 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (37+x)/(11+x)=3. Giải ra: x = 2 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -7874,7 +7874,7 @@
     {
       "id": 857,
       "type": "Bài toán chia kẹo",
-      "question": "Có 155 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 155 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 155. Giải ra: x = 11 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -7984,8 +7984,8 @@
     {
       "id": 1634,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 49.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 25.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 55.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -8124,7 +8124,7 @@
     {
       "id": 666,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 34 tuổi, tuổi con là 5 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 34 tuổi, tuổi con là 5 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (34+x)/(5+x)=2. Giải ra: x = 24 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -8198,7 +8198,7 @@
     {
       "id": 867,
       "type": "Bài toán chia kẹo",
-      "question": "Có 274 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 274 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 274. Giải ra: x = 21 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -8304,7 +8304,7 @@
     {
       "id": 726,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 37 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 37 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (37+x)/(15+x)=3. Giải ra: x = -4 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -8337,7 +8337,7 @@
     {
       "id": 681,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (45+x)/(10+x)=2. Giải ra: x = 25 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -8359,7 +8359,7 @@
     {
       "id": 818,
       "type": "Bài toán chia kẹo",
-      "question": "Có 285 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 285 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 285. Giải ra: x = 21 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -8369,7 +8369,7 @@
     {
       "id": 702,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (39+x)/(6+x)=4. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -8425,7 +8425,7 @@
     {
       "id": 787,
       "type": "Bài toán chia kẹo",
-      "question": "Có 127 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 127 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 127. Giải ra: x = 18 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -8435,7 +8435,7 @@
     {
       "id": 708,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 42 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 42 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (42+x)/(10+x)=2. Giải ra: x = 22 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -8457,7 +8457,7 @@
     {
       "id": 820,
       "type": "Bài toán chia kẹo",
-      "question": "Có 286 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 286 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 286. Giải ra: x = 40 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -8478,8 +8478,8 @@
     {
       "id": 1592,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 76.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 64.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 88.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -8531,8 +8531,8 @@
     {
       "id": 1654,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 82.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 16.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 28.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -8581,8 +8581,8 @@
     {
       "id": 1589,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 95.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 20.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 45.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -8722,7 +8722,7 @@
     {
       "id": 791,
       "type": "Bài toán chia kẹo",
-      "question": "Có 154 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 154 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 154. Giải ra: x = 22 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -8788,8 +8788,8 @@
     {
       "id": 1571,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 88.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 64.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 88.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -8854,7 +8854,7 @@
     {
       "id": 840,
       "type": "Bài toán chia kẹo",
-      "question": "Có 265 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 265 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 265. Giải ra: x = 37 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -8885,8 +8885,8 @@
     {
       "id": 1623,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 14.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 14.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 27.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -8915,7 +8915,7 @@
     {
       "id": 743,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 41 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 41 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (41+x)/(9+x)=2. Giải ra: x = 23 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -8926,7 +8926,7 @@
     {
       "id": 829,
       "type": "Bài toán chia kẹo",
-      "question": "Có 187 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 187 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 187. Giải ra: x = 26 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -9039,7 +9039,7 @@
     {
       "id": 665,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 42 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 42 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (42+x)/(11+x)=2. Giải ra: x = 20 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -9050,8 +9050,8 @@
     {
       "id": 1606,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 80.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 48.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 68.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -9316,7 +9316,7 @@
     {
       "id": 677,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (44+x)/(9+x)=3. Giải ra: x = 8 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -9464,8 +9464,8 @@
     {
       "id": 1601,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 18.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 18.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 36.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -9620,7 +9620,7 @@
     {
       "id": 773,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (32+x)/(11+x)=4. Giải ra: x = -4 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -9663,8 +9663,8 @@
     {
       "id": 1618,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 19 và tích các chữ số là 32.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 15 và tích các chữ số là 105.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 357.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -9737,7 +9737,7 @@
     {
       "id": 819,
       "type": "Bài toán chia kẹo",
-      "question": "Có 295 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 295 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 295. Giải ra: x = 42 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -9835,7 +9835,7 @@
     {
       "id": 803,
       "type": "Bài toán chia kẹo",
-      "question": "Có 127 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 127 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 127. Giải ra: x = 18 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -10055,7 +10055,7 @@
     {
       "id": 761,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 34 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 34 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (34+x)/(7+x)=2. Giải ra: x = 20 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -10247,7 +10247,7 @@
     {
       "id": 863,
       "type": "Bài toán chia kẹo",
-      "question": "Có 213 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 213 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 213. Giải ra: x = 16 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -10311,8 +10311,8 @@
     {
       "id": 1593,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 27.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 12 và tích các chữ số là 35.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 57.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -10364,7 +10364,7 @@
     {
       "id": 868,
       "type": "Bài toán chia kẹo",
-      "question": "Có 265 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 265 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 265. Giải ra: x = 20 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -10461,8 +10461,8 @@
     {
       "id": 1610,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 38.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 24.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 342.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -10494,8 +10494,8 @@
     {
       "id": 1611,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 62.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 64.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 88.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -10715,7 +10715,7 @@
     {
       "id": 696,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (49+x)/(13+x)=3. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -10769,8 +10769,8 @@
     {
       "id": 1585,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 45.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 45.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 59.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -10873,8 +10873,8 @@
     {
       "id": 1661,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 12.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 12.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 34.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -10940,8 +10940,8 @@
     {
       "id": 1663,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 19 và tích các chữ số là 22.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 27 và tích các chữ số là 729.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 999.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -10951,7 +10951,7 @@
     {
       "id": 758,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (32+x)/(9+x)=2. Giải ra: x = 14 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -10962,7 +10962,7 @@
     {
       "id": 672,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 42 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 42 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (42+x)/(7+x)=3. Giải ra: x = 10 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11104,7 +11104,7 @@
     {
       "id": 730,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(7+x)=3. Giải ra: x = 14 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11126,7 +11126,7 @@
     {
       "id": 741,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 5 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 5 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (40+x)/(5+x)=4. Giải ra: x = 6 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11193,7 +11193,7 @@
     {
       "id": 854,
       "type": "Bài toán chia kẹo",
-      "question": "Có 172 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 172 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 172. Giải ra: x = 13 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -11269,7 +11269,7 @@
     {
       "id": 765,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (49+x)/(8+x)=4. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11301,7 +11301,7 @@
     {
       "id": 704,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (39+x)/(13+x)=2. Giải ra: x = 13 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11397,7 +11397,7 @@
     {
       "id": 689,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (38+x)/(9+x)=3. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11440,8 +11440,8 @@
     {
       "id": 1578,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 35.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 6.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 16.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -11485,7 +11485,7 @@
     {
       "id": 796,
       "type": "Bài toán chia kẹo",
-      "question": "Có 224 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 224 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 224. Giải ra: x = 32 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -11550,7 +11550,7 @@
     {
       "id": 779,
       "type": "Bài toán chia kẹo",
-      "question": "Có 226 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 226 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 226. Giải ra: x = 32 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -11676,7 +11676,7 @@
     {
       "id": 690,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(8+x)=4. Giải ra: x = 6 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11719,7 +11719,7 @@
     {
       "id": 735,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 34 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 34 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (34+x)/(7+x)=2. Giải ra: x = 20 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11760,7 +11760,7 @@
     {
       "id": 808,
       "type": "Bài toán chia kẹo",
-      "question": "Có 151 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 151 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 151. Giải ra: x = 11 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -11781,7 +11781,7 @@
     {
       "id": 739,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 37 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 37 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (37+x)/(7+x)=4. Giải ra: x = 3 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11792,7 +11792,7 @@
     {
       "id": 831,
       "type": "Bài toán chia kẹo",
-      "question": "Có 297 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 297 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 297. Giải ra: x = 22 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -11834,7 +11834,7 @@
     {
       "id": 680,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 31 tuổi, tuổi con là 5 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 31 tuổi, tuổi con là 5 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (31+x)/(5+x)=3. Giải ra: x = 8 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11856,7 +11856,7 @@
     {
       "id": 715,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(13+x)=3. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11889,7 +11889,7 @@
     {
       "id": 849,
       "type": "Bài toán chia kẹo",
-      "question": "Có 220 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 220 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 220. Giải ra: x = 16 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -11899,7 +11899,7 @@
     {
       "id": 729,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (40+x)/(9+x)=4. Giải ra: x = 1 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -11910,8 +11910,8 @@
     {
       "id": 1591,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 31.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 4 và tích các chữ số là 3.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 31.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -11964,8 +11964,8 @@
     {
       "id": 1576,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 95.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 24.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 38.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -11975,7 +11975,7 @@
     {
       "id": 674,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 35 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 35 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (35+x)/(8+x)=4. Giải ra: x = 1 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -12040,7 +12040,7 @@
     {
       "id": 718,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(15+x)=4. Giải ra: x = -6 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -12108,8 +12108,8 @@
     {
       "id": 1648,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 71.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 9.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 33.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -12194,8 +12194,8 @@
     {
       "id": 1577,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 97.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 72.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 89.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -12238,8 +12238,8 @@
     {
       "id": 1575,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 89.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 36.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 49.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -12481,7 +12481,7 @@
     {
       "id": 830,
       "type": "Bài toán chia kẹo",
-      "question": "Có 273 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 273 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 273. Giải ra: x = 39 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -12491,7 +12491,7 @@
     {
       "id": 695,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 41 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 41 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (41+x)/(13+x)=3. Giải ra: x = 1 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -12524,8 +12524,8 @@
     {
       "id": 1603,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 42.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 42.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 67.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -12545,8 +12545,8 @@
     {
       "id": 1581,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 89.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 0.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 980.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -12641,7 +12641,7 @@
     {
       "id": 810,
       "type": "Bài toán chia kẹo",
-      "question": "Có 294 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 294 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 294. Giải ra: x = 42 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -12727,8 +12727,8 @@
     {
       "id": 1641,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 67.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 0.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 940.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -13118,8 +13118,8 @@
     {
       "id": 1657,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 73.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 0.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 107.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -13183,8 +13183,8 @@
     {
       "id": 1574,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 56.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 1 và tích các chữ số là 0.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 100.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -13204,8 +13204,8 @@
     {
       "id": 1625,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 76.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 0.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 150.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -13360,7 +13360,7 @@
     {
       "id": 864,
       "type": "Bài toán chia kẹo",
-      "question": "Có 119 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 119 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 119. Giải ra: x = 17 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -13580,7 +13580,7 @@
     {
       "id": 671,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (33+x)/(13+x)=4. Giải ra: x = -7 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -13602,7 +13602,7 @@
     {
       "id": 732,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (40+x)/(10+x)=2. Giải ra: x = 20 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -13862,7 +13862,7 @@
     {
       "id": 809,
       "type": "Bài toán chia kẹo",
-      "question": "Có 210 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 210 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 210. Giải ra: x = 30 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -13882,8 +13882,8 @@
     {
       "id": 1599,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 98.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 0.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 105.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -13929,8 +13929,8 @@
     {
       "id": 1622,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 43.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 4 và tích các chữ số là 3.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 13.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -14069,7 +14069,7 @@
     {
       "id": 746,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (46+x)/(8+x)=2. Giải ra: x = 30 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -14194,7 +14194,7 @@
     {
       "id": 687,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (46+x)/(15+x)=3. Giải ra: x = 0 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -14205,8 +14205,8 @@
     {
       "id": 1644,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 19.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 8.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 18.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -14227,8 +14227,8 @@
     {
       "id": 1628,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 95.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 14.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 127.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -14256,7 +14256,7 @@
     {
       "id": 767,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 12 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 12 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (38+x)/(12+x)=3. Giải ra: x = 1 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -14309,7 +14309,7 @@
     {
       "id": 766,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 49 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (49+x)/(9+x)=3. Giải ra: x = 11 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -14367,7 +14367,7 @@
     {
       "id": 705,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (39+x)/(15+x)=4. Giải ra: x = -7 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -14399,7 +14399,7 @@
     {
       "id": 685,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (39+x)/(13+x)=4. Giải ra: x = -5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -14444,7 +14444,7 @@
     {
       "id": 815,
       "type": "Bài toán chia kẹo",
-      "question": "Có 141 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 141 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 141. Giải ra: x = 10 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -14574,7 +14574,7 @@
     {
       "id": 714,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 35 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 35 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (35+x)/(11+x)=3. Giải ra: x = 1 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -14719,7 +14719,7 @@
     {
       "id": 804,
       "type": "Bài toán chia kẹo",
-      "question": "Có 247 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 247 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 247. Giải ra: x = 35 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -14741,7 +14741,7 @@
     {
       "id": 858,
       "type": "Bài toán chia kẹo",
-      "question": "Có 160 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 160 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 160. Giải ra: x = 22 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -14795,7 +14795,7 @@
     {
       "id": 731,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 9 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 9 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (44+x)/(9+x)=3. Giải ra: x = 8 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -14901,8 +14901,8 @@
     {
       "id": 1627,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 62.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 9.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 19.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -14946,8 +14946,8 @@
     {
       "id": 1607,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 70.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 14.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 217.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -15024,7 +15024,7 @@
     {
       "id": 712,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(11+x)=4. Giải ra: x = 2 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -15132,7 +15132,7 @@
     {
       "id": 801,
       "type": "Bài toán chia kẹo",
-      "question": "Có 225 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 225 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 225. Giải ra: x = 32 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -15152,7 +15152,7 @@
     {
       "id": 781,
       "type": "Bài toán chia kẹo",
-      "question": "Có 123 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 123 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 123. Giải ra: x = 9 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -15205,7 +15205,7 @@
     {
       "id": 850,
       "type": "Bài toán chia kẹo",
-      "question": "Có 141 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 141 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 141. Giải ra: x = 20 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -15225,8 +15225,8 @@
     {
       "id": 1635,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 56.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 4.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 14.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -15268,7 +15268,7 @@
     {
       "id": 697,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 36 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 36 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (36+x)/(8+x)=2. Giải ra: x = 20 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -15409,7 +15409,7 @@
     {
       "id": 769,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 48 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (48+x)/(15+x)=2. Giải ra: x = 18 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -15507,8 +15507,8 @@
     {
       "id": 1639,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 55.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 6.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 16.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -15529,8 +15529,8 @@
     {
       "id": 1653,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 89.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 9.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 19.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -15551,7 +15551,7 @@
     {
       "id": 724,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 47 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 47 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (47+x)/(6+x)=4. Giải ra: x = 7 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -15605,8 +15605,8 @@
     {
       "id": 1651,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 19 và tích các chữ số là 27.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 19 và tích các chữ số là 189.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 397.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -15656,7 +15656,7 @@
     {
       "id": 722,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(7+x)=3. Giải ra: x = 11 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -15722,7 +15722,7 @@
     {
       "id": 742,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 33 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (33+x)/(13+x)=3. Giải ra: x = -3 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -15843,7 +15843,7 @@
     {
       "id": 790,
       "type": "Bài toán chia kẹo",
-      "question": "Có 145 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 145 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 145. Giải ra: x = 20 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -15853,7 +15853,7 @@
     {
       "id": 692,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 41 tuổi, tuổi con là 12 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 41 tuổi, tuổi con là 12 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (41+x)/(12+x)=2. Giải ra: x = 17 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -16062,8 +16062,8 @@
     {
       "id": 1658,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 17 và tích các chữ số là 60.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 15.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 35.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -16095,8 +16095,8 @@
     {
       "id": 1664,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 28.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 81.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 99.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -16245,7 +16245,7 @@
     {
       "id": 738,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 47 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 47 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (47+x)/(13+x)=2. Giải ra: x = 21 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -16376,7 +16376,7 @@
     {
       "id": 805,
       "type": "Bài toán chia kẹo",
-      "question": "Có 188 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 188 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 188. Giải ra: x = 14 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -16408,7 +16408,7 @@
     {
       "id": 794,
       "type": "Bài toán chia kẹo",
-      "question": "Có 223 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 223 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 223. Giải ra: x = 17 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -16502,7 +16502,7 @@
     {
       "id": 848,
       "type": "Bài toán chia kẹo",
-      "question": "Có 151 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 151 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 151. Giải ra: x = 21 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -16534,7 +16534,7 @@
     {
       "id": 717,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 44 tuổi, tuổi con là 10 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (44+x)/(10+x)=3. Giải ra: x = 7 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -16587,7 +16587,7 @@
     {
       "id": 716,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 15 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 39 tuổi, tuổi con là 15 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (39+x)/(15+x)=3. Giải ra: x = -3 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -16598,7 +16598,7 @@
     {
       "id": 842,
       "type": "Bài toán chia kẹo",
-      "question": "Có 158 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 158 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 158. Giải ra: x = 22 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -16630,7 +16630,7 @@
     {
       "id": 676,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 5 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 5 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (40+x)/(5+x)=3. Giải ra: x = 12 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -16641,7 +16641,7 @@
     {
       "id": 859,
       "type": "Bài toán chia kẹo",
-      "question": "Có 135 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 135 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 135. Giải ra: x = 10 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -16726,8 +16726,8 @@
     {
       "id": 1631,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 76.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 11 và tích các chữ số là 28.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 47.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -16878,7 +16878,7 @@
     {
       "id": 749,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (46+x)/(6+x)=3. Giải ra: x = 14 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -16889,7 +16889,7 @@
     {
       "id": 719,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 6 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 6 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(6+x)=2. Giải ra: x = 31 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -16974,8 +16974,8 @@
     {
       "id": 1662,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 62.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 6.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 123.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -17407,8 +17407,8 @@
     {
       "id": 1615,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 14 và tích các chữ số là 97.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 8 và tích các chữ số là 12.",
+      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: 134.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -17536,7 +17536,7 @@
     {
       "id": 755,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(7+x)=4. Giải ra: x = 5 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -17799,7 +17799,7 @@
     {
       "id": 759,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 36 tuổi, tuổi con là 13 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 36 tuổi, tuổi con là 13 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (36+x)/(13+x)=3. Giải ra: x = -2 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -17958,7 +17958,7 @@
     {
       "id": 851,
       "type": "Bài toán chia kẹo",
-      "question": "Có 133 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 133 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 133. Giải ra: x = 19 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -18246,8 +18246,8 @@
     {
       "id": 1643,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 74.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 7 và tích các chữ số là 6.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 16.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -18268,8 +18268,8 @@
     {
       "id": 1573,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 18 và tích các chữ số là 26.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 16 và tích các chữ số là 63.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 79.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -18290,7 +18290,7 @@
     {
       "id": 843,
       "type": "Bài toán chia kẹo",
-      "question": "Có 115 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 115 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 115. Giải ra: x = 16 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -18333,7 +18333,7 @@
     {
       "id": 838,
       "type": "Bài toán chia kẹo",
-      "question": "Có 236 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 236 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 236. Giải ra: x = 33 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -18464,7 +18464,7 @@
     {
       "id": 856,
       "type": "Bài toán chia kẹo",
-      "question": "Có 262 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 262 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 262. Giải ra: x = 37 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -18495,8 +18495,8 @@
     {
       "id": 1584,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 5 và tích các chữ số là 64.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 15 và tích các chữ số là 56.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 78.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -18785,7 +18785,7 @@
     {
       "id": 733,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 5 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 45 tuổi, tuổi con là 5 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (45+x)/(5+x)=4. Giải ra: x = 8 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -18851,7 +18851,7 @@
     {
       "id": 865,
       "type": "Bài toán chia kẹo",
-      "question": "Có 170 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 170 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 170. Giải ra: x = 13 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -18884,8 +18884,8 @@
     {
       "id": 1652,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 23.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 13 và tích các chữ số là 36.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 49.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -18895,8 +18895,8 @@
     {
       "id": 1621,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 85.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 10 và tích các chữ số là 9.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 91.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -18940,8 +18940,8 @@
     {
       "id": 1630,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 12 và tích các chữ số là 60.",
-      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 12 và tích các chữ số là 35.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: 75.",
       "difficulty": "Dễ",
       "tags": [
         "số học",
@@ -18973,7 +18973,7 @@
     {
       "id": 691,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 14 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 14 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(14+x)=2. Giải ra: x = 22 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19053,7 +19053,7 @@
     {
       "id": 736,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(8+x)=4. Giải ra: x = 6 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19234,7 +19234,7 @@
     {
       "id": 667,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 35 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 35 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (35+x)/(8+x)=2. Giải ra: x = 19 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19287,7 +19287,7 @@
     {
       "id": 807,
       "type": "Bài toán chia kẹo",
-      "question": "Có 135 viên kẹo chia cho 4 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 135 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 135. Giải ra: x = 19 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -19420,7 +19420,7 @@
     {
       "id": 709,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 32 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 2 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (32+x)/(8+x)=2. Giải ra: x = 16 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19453,7 +19453,7 @@
     {
       "id": 737,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 14 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 50 tuổi, tuổi con là 14 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (50+x)/(14+x)=3. Giải ra: x = 4 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19464,7 +19464,7 @@
     {
       "id": 698,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 8 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 43 tuổi, tuổi con là 8 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (43+x)/(8+x)=3. Giải ra: x = 9 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19529,7 +19529,7 @@
     {
       "id": 745,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 47 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 47 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (47+x)/(7+x)=3. Giải ra: x = 13 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19573,7 +19573,7 @@
     {
       "id": 845,
       "type": "Bài toán chia kẹo",
-      "question": "Có 287 viên kẹo chia cho 4 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 287 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 287. Giải ra: x = 22 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -19604,7 +19604,7 @@
     {
       "id": 747,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 7 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 40 tuổi, tuổi con là 7 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (40+x)/(7+x)=4. Giải ra: x = 4 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19714,7 +19714,7 @@
     {
       "id": 701,
       "type": "Bài toán về tuổi",
-      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 11 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
+      "question": "Hiện nay tuổi cha là 38 tuổi, tuổi con là 11 tuổi. Hỏi trước (âm) hoặc sau (dương) bao nhiêu năm nữa thì tuổi cha gấp 4 lần tuổi con?",
       "solution": "Gọi số năm cần tìm là x. Ta có: (38+x)/(11+x)=4. Giải ra: x = -2 năm.",
       "difficulty": "Dễ",
       "tags": [
@@ -19939,7 +19939,7 @@
     {
       "id": 826,
       "type": "Bài toán chia kẹo",
-      "question": "Có 144 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 144 viên kẹo chia cho 3 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 2^2x = 144. Giải ra: x = 20 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -19970,7 +19970,7 @@
     {
       "id": 784,
       "type": "Bài toán chia kẹo",
-      "question": "Có 215 viên kẹo chia cho 5 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
+      "question": "Có 215 viên kẹo chia cho 3 người. Người thứ hai được gấp 3 lần người thứ nhất, người thứ ba được gấp 3 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
       "solution": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 3x + 3^2x = 215. Giải ra: x = 16 viên.",
       "difficulty": "Dễ",
       "tags": [
@@ -19980,8 +19980,8 @@
     {
       "id": 1579,
       "type": "Bài toán số học",
-      "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 46.",
-      "solution": "Ta thử các số có 3 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
+      "question": "Tìm số tự nhiên có 2 chữ số, biết rằng tổng các chữ số là 9 và tích các chữ số là 46.",
+      "solution": "Ta thử các số có 2 chữ số thỏa mãn điều kiện. Số cần tìm là: Không có số thỏa mãn.",
       "difficulty": "Dễ",
       "tags": [
         "số học",

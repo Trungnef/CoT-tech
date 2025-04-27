@@ -1507,3 +1507,110 @@ def calculate_bertscore(predictions: List[str],
             "bertscore_f1": 0.0,
             "error": str(e)
         } 
+
+def calculate_consistency_metrics(
+    responses: List[List[str]],
+    final_answers: Optional[List[List[str]]] = None,
+    groupby_keys: Optional[List[str]] = None
+) -> Dict[str, Dict[str, float]]:
+    """
+    Tính toán các chỉ số nhất quán (consistency) từ nhiều lần chạy của mô hình.
+    
+    Args:
+        responses: Danh sách các nhóm câu trả lời, mỗi nhóm là các câu trả lời từ cùng một mô hình cho cùng một câu hỏi
+        final_answers: Tùy chọn danh sách các nhóm câu trả lời cuối cùng (có thể là trích xuất từ responses)
+        groupby_keys: Danh sách các khóa đã dùng để nhóm dữ liệu (model, question_id, v.v.)
+        
+    Returns:
+        Dict chứa các metrics về tính nhất quán:
+            - consistency_score: Điểm từ 0-1 thể hiện mức độ nhất quán
+            - agreement_rate: Tỷ lệ của câu trả lời phổ biến nhất
+            - unique_answers: Số lượng câu trả lời khác nhau
+            - most_common_answer: Câu trả lời phổ biến nhất
+    """
+    try:
+        from collections import Counter
+        import numpy as np
+        import logging
+        
+        # Thiết lập logging
+        logger = logging.getLogger(__name__)
+        
+        if not responses:
+            logger.warning("Không có dữ liệu responses để tính toán consistency metrics")
+            return {}
+        
+        # Sử dụng final_answers nếu được cung cấp, nếu không thì dùng responses
+        answers_to_check = final_answers if final_answers is not None else responses
+        
+        # Kiểm tra nếu số lượng nhóm trong responses và final_answers không khớp nhau
+        if final_answers is not None and len(responses) != len(final_answers):
+            logger.error("Số lượng nhóm trong responses và final_answers phải bằng nhau")
+            raise ValueError("Số lượng nhóm trong responses và final_answers phải bằng nhau")
+        
+        results = {}
+        
+        # Xử lý từng nhóm câu trả lời
+        for idx, answer_group in enumerate(answers_to_check):
+            # Bỏ qua nếu nhóm rỗng hoặc chỉ có một câu trả lời
+            if not answer_group or len(answer_group) <= 1:
+                logger.debug(f"Bỏ qua nhóm {idx} vì không có đủ dữ liệu (cần ít nhất 2 câu trả lời)")
+                continue
+            
+            # Đếm tần suất xuất hiện của các câu trả lời
+            answer_counts = Counter(answer_group)
+            
+            # Xác định câu trả lời phổ biến nhất
+            most_common_answer, most_common_count = answer_counts.most_common(1)[0]
+            agreement_rate = most_common_count / len(answer_group)
+            
+            # Số lượng câu trả lời khác nhau
+            unique_answers = len(answer_counts)
+            
+            # Tính điểm nhất quán:
+            # - 1.0 nếu tất cả câu trả lời giống nhau
+            # - Giảm dần khi có nhiều câu trả lời khác nhau
+            # - Cân nhắc thêm tỷ lệ của câu trả lời phổ biến nhất
+            consistency_score = 1.0 if unique_answers == 1 else agreement_rate
+            
+            # Tạo khóa cho kết quả
+            key = f"group_{idx}"
+            if groupby_keys and idx < len(groupby_keys):
+                key = groupby_keys[idx]
+            
+            # Lưu kết quả cho nhóm này
+            results[key] = {
+                "consistency_score": float(consistency_score),
+                "agreement_rate": float(agreement_rate),
+                "unique_answers": int(unique_answers),
+                "most_common_answer": most_common_answer
+            }
+            
+            logger.debug(f"Đã tính toán metrics cho nhóm {key}: score={consistency_score:.2f}, agreement={agreement_rate:.2f}, unique={unique_answers}")
+        
+        # Tính toán metrics tổng thể nếu có nhiều nhóm
+        if results:
+            # Lấy danh sách các điểm consistency và agreement_rate
+            consistency_scores = [group_result["consistency_score"] for group_result in results.values()]
+            agreement_rates = [group_result["agreement_rate"] for group_result in results.values()]
+            
+            # Tính trung bình
+            avg_consistency = np.mean(consistency_scores)
+            avg_agreement = np.mean(agreement_rates)
+            
+            # Thêm metrics tổng thể
+            results["overall"] = {
+                "avg_consistency_score": float(avg_consistency),
+                "avg_agreement_rate": float(avg_agreement),
+                "total_groups": len(consistency_scores)
+            }
+            
+            logger.debug(f"Metrics tổng thể: avg_score={avg_consistency:.2f}, avg_agreement={avg_agreement:.2f}, nhóm={len(consistency_scores)}")
+        
+        return results
+        
+    except Exception as e:
+        import traceback
+        logging.getLogger(__name__).error(f"Lỗi khi tính toán consistency metrics: {str(e)}")
+        logging.getLogger(__name__).error(traceback.format_exc())
+        return {"error": str(e)} 
