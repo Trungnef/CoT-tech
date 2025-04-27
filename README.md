@@ -1,62 +1,62 @@
-# Framework Đánh Giá Mô Hình Ngôn Ngữ Lớn (LLM)
+# Large Language Model (LLM) Evaluation Framework
 
-Framework này cung cấp một bộ công cụ để đánh giá hiệu suất của các Mô hình Ngôn ngữ Lớn (LLM), đặc biệt tập trung vào các mô hình và bài toán liên quan đến tiếng Việt. Nó cho phép so sánh các mô hình khác nhau dựa trên nhiều loại prompt kỹ thuật và các metrics đánh giá đa dạng.
+This framework provides a toolset for evaluating the performance of Large Language Models (LLMs), with a particular focus on models and tasks related to Vietnamese language. It allows for comparing different models based on various prompt techniques and diverse evaluation metrics.
 
-## Tính Năng Nổi Bật
+## Key Features
 
-*   **Hỗ trợ Đa Mô Hình**: Dễ dàng tích hợp và đánh giá các LLM phổ biến, bao gồm:
-    *   **Mô hình Cục bộ (Local)**: Llama, Qwen (yêu cầu tải model về máy).
-    *   **Mô hình API**: Gemini (Google), Groq.
-*   **Kỹ Thuật Prompt Đa Dạng**: Hỗ trợ nhiều phương pháp prompt tiên tiến để đánh giá khả năng của mô hình trong các tình huống khác nhau:
+*   **Multi-Model Support**: Easily integrate and evaluate popular LLMs, including:
+    *   **Local Models**: Llama, Qwen (require downloading the model to your machine).
+    *   **API Models**: Gemini (Google), Groq.
+*   **Diverse Prompting Techniques**: Support for advanced prompting methods to evaluate model capabilities in different situations:
     *   Zero-shot
-    *   Few-shot (với số lượng ví dụ tùy chỉnh, ví dụ: `few_shot_3`, `few_shot_5`)
+    *   Few-shot (with customizable example counts, e.g., `few_shot_3`, `few_shot_5`)
     *   Chain-of-Thought (`chain_of_thought`)
     *   Self-Consistency (`cot_self_consistency_3`, `cot_self_consistency_5`)
     *   ReAct (`react`)
-*   **Đánh Giá Toàn Diện**: Cung cấp nhiều loại metrics:
-    *   **Metrics Cơ Bản**: Accuracy, Latency (thời gian xử lý), Token Count, Tokens Per Second.
-    *   **Đánh Giá Suy Luận (Reasoning)**: Sử dụng LLM (mặc định là Groq `llama3-70b`) để đánh giá chất lượng suy luận logic, toán học, độ rõ ràng, đầy đủ và liên quan của câu trả lời (có thể cấu hình).
-    *   **Đánh Giá Tính Nhất Quán (Consistency)**: Phân tích sự nhất quán trong các câu trả lời của mô hình khi sử dụng kỹ thuật self-consistency.
-    *   **Đánh Giá Tính Đầy Đủ (Completeness)**: Đánh giá xem câu trả lời có bao phủ hết các khía cạnh của câu hỏi không.
-    *   **Đánh Giá Độ Tương Đồng (Similarity)**: Tính toán ROUGE, BLEU và tùy chọn cosine similarity của embeddings (nếu cung cấp mô hình) để so sánh câu trả lời với đáp án chuẩn.
-    *   **Phân Tích Lỗi (Error Analysis)**: Tự động phân loại các câu trả lời sai vào các nhóm lỗi (Kiến thức, Suy luận, Tính toán, Lạc đề, v.v.) sử dụng LLM.
-*   **Tối Ưu Hóa Hiệu Suất**:
-    *   **Quantization**: Tự động áp dụng quantization 4-bit (BitsAndBytes) cho model cục bộ để giảm yêu cầu bộ nhớ GPU.
-    *   **Memory Management**: Tự động tính toán và phân bổ bộ nhớ GPU/CPU (`device_map="auto"`), hỗ trợ CPU offload.
+*   **Comprehensive Evaluation**: Provides multiple types of metrics:
+    *   **Basic Metrics**: Accuracy, Latency (processing time), Token Count, Tokens Per Second.
+    *   **Reasoning Evaluation**: Uses an LLM (default is Groq `llama3-70b`) to evaluate the quality of logical reasoning, mathematics, clarity, completeness, and relevance of answers (configurable).
+    *   **Consistency Evaluation**: Analyzes consistency in model responses when using self-consistency techniques.
+    *   **Completeness Evaluation**: Assesses whether the answer covers all aspects of the question.
+    *   **Similarity Evaluation**: Calculates ROUGE, BLEU, and optionally cosine similarity of embeddings (if a model is provided) to compare answers with standard solutions.
+    *   **Error Analysis**: Automatically categorizes incorrect answers into error groups (Knowledge, Reasoning, Calculation, Off-topic, etc.) using LLM.
+*   **Performance Optimization**:
+    *   **Quantization**: Automatically applies 4-bit quantization (BitsAndBytes) for local models to reduce GPU memory requirements.
+    *   **Memory Management**: Automatically calculates and allocates GPU/CPU memory (`device_map="auto"`), supports CPU offloading.
     *   **Model Caching**:
-        *   *Memory Cache*: Giữ các model thường dùng trong RAM/VRAM để truy cập nhanh.
-        *   *Disk Cache*: Lưu trữ model đã tải và quantized trên đĩa để khởi động nhanh hơn trong các lần chạy sau (có thể bật/tắt).
-    *   **API Resilience**: Tự động retry khi gọi API lỗi với cơ chế exponential backoff, quản lý rate limiting.
-*   **Checkpointing**: Tự động lưu trạng thái đánh giá định kỳ hoặc khi bị ngắt, cho phép tiếp tục (`--resume`) từ lần chạy trước.
-*   **Báo Cáo Chi Tiết**: Tự động tạo báo cáo tổng hợp kết quả:
-    *   **HTML**: Báo cáo tương tác với bảng biểu, thống kê và các biểu đồ trực quan (accuracy, latency, reasoning scores, heatmap, v.v.).
-    *   **CSV/JSON**: Dữ liệu tổng hợp và kết quả thô để phân tích sâu hơn.
-*   **Linh Hoạt**: Dễ dàng mở rộng để hỗ trợ thêm mô hình, loại prompt, metrics đánh giá, hoặc nguồn dữ liệu câu hỏi mới.
+        *   *Memory Cache*: Keeps frequently used models in RAM/VRAM for quick access.
+        *   *Disk Cache*: Stores loaded and quantized models on disk for faster startup in subsequent runs (can be enabled/disabled).
+    *   **API Resilience**: Automatic retry when API calls fail with exponential backoff mechanism, rate limiting management.
+*   **Checkpointing**: Automatically saves evaluation state periodically or when interrupted, allowing to continue (`--resume`) from previous runs.
+*   **Detailed Reporting**: Automatically generates result summary reports:
+    *   **HTML**: Interactive reports with tables, statistics, and visualizations (accuracy, latency, reasoning scores, heatmap, etc.).
+    *   **CSV/JSON**: Aggregated data and raw results for deeper analysis.
+*   **Flexibility**: Easily extensible to support additional models, prompt types, evaluation metrics, or new question data sources.
 
-## Tính Năng Mới
+## New Features
 
-* **CLI Filtering**: Bộ lọc câu hỏi nâng cao từ command line theo tags, difficulty và loại câu hỏi:
-  * `--include-tags`: Chỉ bao gồm câu hỏi có ít nhất một trong các tags được chỉ định
-  * `--exclude-tags`: Loại trừ câu hỏi có bất kỳ tag nào trong danh sách này
-  * `--difficulty-levels`: Lọc câu hỏi theo độ khó (Dễ, Trung bình, Khó)
-  * `--question-types`: Lọc câu hỏi theo loại (ví dụ: logic, math, text)
+* **CLI Filtering**: Advanced question filtering from command line by tags, difficulty, and question types:
+  * `--include-tags`: Include only questions with at least one of the specified tags
+  * `--exclude-tags`: Exclude questions with any tag in this list
+  * `--difficulty-levels`: Filter questions by difficulty (Easy, Medium, Hard)
+  * `--question-types`: Filter questions by type (e.g., logic, math, text)
 
-* **Xử Lý Lỗi Nâng Cao**: 
-  * API errors được phân loại chi tiết và xử lý gracefully
-  * Error recovery cải tiến để tránh crash khi gặp lỗi trong một phần của quá trình phân tích
-  * Logging chi tiết hơn để dễ dàng debug
+* **Advanced Error Handling**: 
+  * API errors are categorized in detail and handled gracefully
+  * Improved error recovery to avoid crashes when encountering errors in one part of the analysis process
+  * More detailed logging for easier debugging
 
-* **Kiểm Tra Cấu Hình Toàn Diện**:
-  * Phân biệt rõ ràng giữa lỗi nghiêm trọng và cảnh báo 
-  * Kiểm tra cấu hình model phù hợp với danh sách model đã chọn
-  * Kiểm tra định dạng file câu hỏi và cấu trúc dữ liệu
+* **Comprehensive Configuration Checks**:
+  * Clear distinction between critical errors and warnings
+  * Checks that model configuration matches the selected model list
+  * Validates question file format and data structure
 
-* **Metrics Nâng Cao**:
-  * ROUGE và BLEU metrics cho đánh giá sinh văn bản
-  * Token overlap F1 cải tiến với xử lý tiếng Việt tốt hơn
-  * Exact Match với tùy chọn normalize linh hoạt
+* **Enhanced Metrics**:
+  * ROUGE and BLEU metrics for text generation evaluation
+  * Improved token overlap F1 with better Vietnamese language processing
+  * Exact Match with flexible normalization options
 
-## Cài Đặt
+## Installation
 
 1.  **Clone Repository**:
     ```bash
@@ -64,7 +64,7 @@ Framework này cung cấp một bộ công cụ để đánh giá hiệu suất 
     cd llm_evaluation
     ```
 
-2.  **Tạo Môi Trường (Khuyến nghị)**:
+2.  **Create Environment (Recommended)**:
     ```bash
     python -m venv venv
     # Linux/macOS
@@ -73,137 +73,137 @@ Framework này cung cấp một bộ công cụ để đánh giá hiệu suất 
     .\venv\Scripts\activate
     ```
 
-3.  **Cài Đặt Dependencies**:
-    *   **Cài đặt**:
+3.  **Install Dependencies**:
+    *   **Installation**:
         ```bash
         pip install -r requirements.txt
-        # Cài đặt torch phù hợp với hệ thống CUDA của bạn nếu cần
-        # Ví dụ: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+        # Install torch compatible with your CUDA system if needed
+        # Example: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
         ```
-    *   **Download dữ liệu NLTK (nếu chưa có)**: Cần cho tính BLEU score.
+    *   **Download NLTK data (if not already available)**: Required for BLEU score calculation.
         ```python
         import nltk
         nltk.download('punkt')
         ```
 
-4.  **Cấu Hình Môi Trường (`.env`)**:
-    *   Sao chép file `.env.example` (nếu có) thành `.env` hoặc tạo file `.env` mới trong thư mục gốc của dự án.
-    *   Điền các thông tin cần thiết:
+4.  **Environment Configuration (`.env`)**:
+    *   Copy the `.env.example` file (if available) to `.env` or create a new `.env` file in the project root directory.
+    *   Fill in the necessary information:
         ```dotenv
         # --- API Keys ---
-        # Cấu hình API keys trong file .env
-        # Hỗ trợ nhiều API keys để tự động chuyển đổi khi gặp lỗi hết quota
+        # Configure API keys in the .env file
+        # Supports multiple API keys for automatic switching when quota is exhausted
 
-        # Định dạng: danh sách các API keys phân tách bằng dấu phẩy
+        # Format: comma-separated list of API keys
         GEMINI_API_KEYS="KEY1,KEY2,KEY3"
         GROQ_API_KEYS="KEY1,KEY2,KEY3"
         OPENAI_API_KEYS="KEY1,KEY2,KEY3"
 
         # --- Local Model Paths ---
-        # Đường dẫn tuyệt đối hoặc tương đối đến thư mục chứa model và tokenizer đã tải về
-        # Bắt buộc nếu sử dụng model local tương ứng
+        # Absolute or relative path to the directory containing downloaded model and tokenizer
+        # Required if using the corresponding local model
         LLAMA_MODEL_PATH="/path/to/your/llama/model"
-        LLAMA_TOKENIZER_PATH="/path/to/your/llama/tokenizer" # Thường cùng đường dẫn với model
+        LLAMA_TOKENIZER_PATH="/path/to/your/llama/tokenizer" # Usually same path as model
         QWEN_MODEL_PATH="/path/to/your/qwen/model"
-        QWEN_TOKENIZER_PATH="/path/to/your/qwen/tokenizer" # Thường cùng đường dẫn với model
+        QWEN_TOKENIZER_PATH="/path/to/your/qwen/tokenizer" # Usually same path as model
 
-        # --- GPU & Memory Configuration (Optional - Điều chỉnh nếu cần) ---
-        # Dung lượng GPU tối đa (GB) cho mỗi card, framework sẽ tự tính toán phần còn lại
-        # MAX_GPU_MEMORY_GB=140 # Ví dụ cho A100 80GB x 2
-        # Dung lượng GPU (GB) dự trữ cho hệ thống/OS
+        # --- GPU & Memory Configuration (Optional - Adjust if needed) ---
+        # Maximum GPU memory (GB) per card, framework will calculate the rest
+        # MAX_GPU_MEMORY_GB=140 # Example for A100 80GB x 2
+        # GPU memory (GB) reserved for system/OS
         SYSTEM_RESERVE_MEMORY_GB=2.5
-        # Dung lượng RAM (GB) sử dụng cho CPU offloading khi GPU không đủ
+        # RAM (GB) to use for CPU offloading when GPU is insufficient
         CPU_OFFLOAD_GB=24
 
         # --- Disk Cache Configuration (Optional) ---
-        # Thư mục lưu cache model trên đĩa
+        # Directory to store model cache on disk
         MODEL_CACHE_DIR="./model_cache"
-        # Bật/tắt disk cache (true/false)
+        # Enable/disable disk cache (true/false)
         ENABLE_DISK_CACHE=true
-        # Số lượng model tối đa lưu trong disk cache (LRU)
+        # Maximum number of models to keep in disk cache (LRU)
         MAX_CACHED_MODELS=2
         ```
 
-5.  **Chuẩn Bị Dữ Liệu Câu Hỏi**:
-    *   Đảm bảo file câu hỏi (`data/questions/problems.json` theo mặc định trong `config.py`) tồn tại và có định dạng JSON hợp lệ. Mỗi câu hỏi nên là một object JSON chứa ít nhất trường `id` (duy nhất) và `question`.
-    *   Các trường tùy chọn khác có thể bao gồm: `correct_answer` (đáp án đúng), `category` (chủ đề), `difficulty` (độ khó), `task_type` (loại tác vụ), `examples` (ví dụ cho few-shot).
+5.  **Prepare Question Data**:
+    *   Ensure that the questions file (`data/questions/problems.json` by default in `config.py`) exists and has a valid JSON format. Each question should be a JSON object containing at least the fields `id` (unique) and `question`.
+    *   Other optional fields may include: `correct_answer`, `category`, `difficulty`, `task_type`, `examples` (for few-shot).
 
-## Cách Sử Dụng
+## Usage
 
-### Chạy Đánh Giá
+### Running Evaluation
 
-Sử dụng script `main.py` từ dòng lệnh.
+Use the `main.py` script from the command line.
 
-**Cú pháp cơ bản**:
+**Basic Syntax**:
 
 ```bash
 python main.py [--models MODEL1 MODEL2 ...] [--prompts PROMPT1 PROMPT2 ...] [OPTIONS]
 ```
 
-**Các tham số chính**:
+**Main Parameters**:
 
-*   `--models`: (Bắt buộc nếu không dùng mặc định) Danh sách các model cần đánh giá (ví dụ: `llama qwen gemini`). Tên model phải khớp với key trong `config.MODEL_CONFIGS` hoặc `.env`.
-*   `--prompts`: (Bắt buộc nếu không dùng mặc định) Danh sách các loại prompt cần đánh giá (ví dụ: `zero_shot few_shot_3 cot_self_consistency_5`).
-*   `--questions-file`: Đường dẫn đến file JSON chứa câu hỏi (mặc định: `data/questions/problems.json`).
-*   `--results-dir`: Thư mục lưu kết quả (mặc định: `results`).
-*   `--max-questions`: Số lượng câu hỏi tối đa cần đánh giá từ file (mặc định: tất cả).
-*   `--batch-size`: Kích thước batch khi xử lý câu hỏi (ảnh hưởng đến việc sử dụng bộ nhớ, mặc định: 5).
-*   `--checkpoint-frequency`: Tần suất lưu checkpoint (số câu hỏi, mặc định: 5).
-*   `--resume`: Tiếp tục từ checkpoint tự động gần nhất trong `results/checkpoints`.
-*   `--checkpoint <path>`: Tiếp tục từ một file checkpoint cụ thể.
-*   `--test-run`: Chạy thử nghiệm nhanh với 1 model, 1 prompt, và 2 câu hỏi.
-*   `--skip-reasoning-eval`: Bỏ qua bước đánh giá suy luận (ngay cả khi được bật trong `config.py`).
-*   `--no-cache`: Vô hiệu hóa memory cache (luôn tải lại model).
-*   `--question-ids ID1 ID2 ...`: Chỉ đánh giá các câu hỏi có ID cụ thể.
-*   `--parallel`: **(Chưa triển khai)** Bật chế độ đánh giá song song.
-*   `--gpu-ids ID1 ID2 ...`: Chỉ định các GPU ID để sử dụng (mặc định: 0).
-*   `--report-only`: Chỉ tạo báo cáo từ file kết quả đã có mà không chạy đánh giá mới. Yêu cầu dùng kèm `--results-file`.
-*   `--results-file <path>`: Đường dẫn đến file kết quả (`.csv` hoặc `.json`) để tạo báo cáo khi dùng `--report-only`.
-*   `--log-level`: Mức độ log cho console (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, mặc định: `INFO`).
-*   `--log-file <name>`: Tên file log cụ thể (mặc định: tự tạo tên với timestamp trong `results/logs`).
-*   `--debug`: Bật chế độ debug (tương đương `--log-level DEBUG`).
+*   `--models`: (Required if not using default) List of models to evaluate (e.g., `llama qwen gemini`). Model names must match keys in `config.MODEL_CONFIGS` or `.env`.
+*   `--prompts`: (Required if not using default) List of prompt types to evaluate (e.g., `zero_shot few_shot_3 cot_self_consistency_5`).
+*   `--questions-file`: Path to JSON file containing questions (default: `data/questions/problems.json`).
+*   `--results-dir`: Directory to save results (default: `results`).
+*   `--max-questions`: Maximum number of questions to evaluate from the file (default: all).
+*   `--batch-size`: Batch size when processing questions (affects memory usage, default: 5).
+*   `--checkpoint-frequency`: Frequency of saving checkpoints (number of questions, default: 5).
+*   `--resume`: Continue from the most recent automatic checkpoint in `results/checkpoints`.
+*   `--checkpoint <path>`: Continue from a specific checkpoint file.
+*   `--test-run`: Run a quick test with 1 model, 1 prompt, and 2 questions.
+*   `--skip-reasoning-eval`: Skip the reasoning evaluation step (even if enabled in `config.py`).
+*   `--no-cache`: Disable memory cache (always reload models).
+*   `--question-ids ID1 ID2 ...`: Only evaluate questions with specific IDs.
+*   `--parallel`: **(Not yet implemented)** Enable parallel evaluation mode.
+*   `--gpu-ids ID1 ID2 ...`: Specify GPU IDs to use (default: 0).
+*   `--report-only`: Only generate a report from an existing results file without running new evaluations. Requires using with `--results-file`.
+*   `--results-file <path>`: Path to results file (`.csv` or `.json`) to generate a report when using `--report-only`.
+*   `--log-level`: Log level for console (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, default: `INFO`).
+*   `--log-file <name>`: Specific log file name (default: auto-generated name with timestamp in `results/logs`).
+*   `--debug`: Enable debug mode (equivalent to `--log-level DEBUG`).
 
-**Ví dụ**:
+**Examples**:
 
 ```bash
-# Đánh giá Llama và Gemini với prompt zero_shot và few_shot_3 cho 50 câu hỏi đầu tiên
+# Evaluate Llama and Gemini with zero_shot and few_shot_3 prompts for the first 50 questions
 python main.py --models llama gemini --prompts zero_shot few_shot_3 --max-questions 50
 
-# Tiếp tục đánh giá từ lần chạy trước
+# Continue evaluation from previous run
 python main.py --resume
 
-# Chỉ tạo báo cáo từ file kết quả đã lưu
+# Only generate report from saved results file
 python main.py --report-only --results-file results/raw_results/evaluation_results_xxxx.csv
 ```
 
-### Xem Kết Quả
+### Viewing Results
 
-Kết quả đánh giá và báo cáo sẽ được lưu trong thư mục `--results-dir` (mặc định là `results/`) với cấu trúc con:
+Evaluation results and reports will be saved in the `--results-dir` directory (default is `results/`) with the following sub-structure:
 
-*   `raw_results/`: Chứa các file kết quả thô dạng CSV và JSON.
-*   `reports/`: Chứa báo cáo tổng hợp dạng HTML.
-*   `plots/`: Chứa các file ảnh biểu đồ được tạo cho báo cáo HTML.
-*   `checkpoints/`: Chứa các file checkpoint (`.json`).
-*   `logs/`: Chứa các file log (`.log`).
+*   `raw_results/`: Contains raw result files in CSV and JSON formats.
+*   `reports/`: Contains summary reports in HTML format.
+*   `plots/`: Contains image files of charts created for the HTML report.
+*   `checkpoints/`: Contains checkpoint files (`.json`).
+*   `logs/`: Contains log files (`.log`).
 
-Mở file `.html` trong thư mục `reports/` bằng trình duyệt để xem báo cáo tương tác.
+Open the `.html` file in the `reports/` directory with a browser to view the interactive report.
 
-## Cấu Trúc Dự Án
+## Project Structure
 
 ```
 llm_evaluation/
-├── core/                  # Logic cốt lõi
-│   ├── evaluator.py         # Điều phối đánh giá
-│   ├── model_interface.py   # Giao diện tương tác LLM
-│   ├── prompt_builder.py    # Xây dựng prompt
-│   ├── result_analyzer.py   # Phân tích kết quả, metrics
-│   ├── reporting.py         # Tạo báo cáo
-│   ├── checkpoint_manager.py# Quản lý checkpoint
+├── core/                  # Core logic
+│   ├── evaluator.py         # Evaluation coordination
+│   ├── model_interface.py   # LLM interaction interface
+│   ├── prompt_builder.py    # Prompt building
+│   ├── result_analyzer.py   # Result analysis, metrics
+│   ├── reporting.py         # Report generation
+│   ├── checkpoint_manager.py# Checkpoint management
 │   └── __init__.py
-├── data/                  # Dữ liệu đầu vào
+├── data/                  # Input data
 │   └── questions/
-│       └── problems.json    # File câu hỏi mẫu
-├── results/               # Thư mục lưu kết quả (mặc định)
+│       └── problems.json    # Sample questions file
+├── results/               # Results directory (default)
 │   ├── raw_results/
 │   ├── reports/
 │   ├── plots/
@@ -212,33 +212,33 @@ llm_evaluation/
 ├── tests/                 # Unit tests
 │   ├── test_checkpoint_manager.py
 │   └── test_utils.py
-├── utils/                 # Các module tiện ích
-│   ├── config_utils.py    # Tiện ích cấu hình (dataclasses)
-│   ├── data_loader.py     # Tải dữ liệu (CẦN KIỂM TRA/TRIỂN KHAI)
-│   ├── file_utils.py      # Tiện ích file I/O
-│   ├── logging_setup.py   # Thiết lập logging
-│   ├── logging_utils.py   # Các hàm log chuyên biệt
-│   ├── memory_utils.py    # Tiện ích quản lý bộ nhớ
-│   ├── metrics_utils.py   # Tính toán metrics cụ thể
-│   ├── text_utils.py      # Xử lý văn bản
-│   ├── visualization_utils.py # Tạo biểu đồ (có thể tích hợp vào reporting)
+├── utils/                 # Utility modules
+│   ├── config_utils.py    # Configuration utilities (dataclasses)
+│   ├── data_loader.py     # Data loading (NEEDS CHECKING/IMPLEMENTATION)
+│   ├── file_utils.py      # File I/O utilities
+│   ├── logging_setup.py   # Logging setup
+│   ├── logging_utils.py   # Specialized logging functions
+│   ├── memory_utils.py    # Memory management utilities
+│   ├── metrics_utils.py   # Specific metrics calculation
+│   ├── text_utils.py      # Text processing
+│   ├── visualization_utils.py # Chart generation (may be integrated into reporting)
 │   └── __init__.py
-├── model_cache/           # Cache model trên đĩa (nếu bật)
-├── main.py                # Điểm vào chính
-├── config.py              # Cấu hình mặc định và tải .env
-├── requirements.txt       # Danh sách dependencies (CẦN CẬP NHẬT)
-├── README.md              # Tài liệu hướng dẫn (file này)
-└── .env                   # File cấu hình môi trường (cần tự tạo)
+├── model_cache/           # Disk model cache (if enabled)
+├── main.py                # Main entry point
+├── config.py              # Default configuration and .env loading
+├── requirements.txt       # Dependencies list (NEEDS UPDATING)
+├── README.md              # Documentation (this file)
+└── .env                   # Environment configuration file (needs to be created)
 ```
 
-## Đóng Góp
+## Contributing
 
-Chào mừng các đóng góp! Vui lòng tạo Pull Request hoặc Issue trên repository.
+Contributions are welcome! Please create Pull Requests or Issues on the repository.
 
-## Tác Giả
+## Author
 
 TRUNE
 
-## Giấy Phép
+<!-- ## License
 
-Aloneee
+Aloneee -->
