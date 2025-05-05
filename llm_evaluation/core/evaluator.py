@@ -175,12 +175,28 @@ class Evaluator:
         with tqdm(total=total_combinations, initial=completed_count, 
                  desc="Tổng tiến trình") as pbar:
             
-            # Vòng lặp qua các model
-            for model_name in self.models:
+            # Xác định vị trí bắt đầu dựa trên checkpoint
+            start_model_index = 0
+            start_prompt_index = 0
+            
+            # Nếu có thông tin về model và prompt từ checkpoint, tìm vị trí bắt đầu
+            if self.current_model and self.current_prompt:
+                if self.current_model in self.models:
+                    start_model_index = self.models.index(self.current_model)
+                if self.current_prompt in self.prompts:
+                    start_prompt_index = self.prompts.index(self.current_prompt)
+            
+            # Vòng lặp qua các model, bắt đầu từ vị trí được khôi phục
+            for model_idx in range(start_model_index, len(self.models)):
+                model_name = self.models[model_idx]
                 self.current_model = model_name
                 
-                # Vòng lặp qua các loại prompt
-                for prompt_type in self.prompts:
+                # Xác định prompt bắt đầu cho model này
+                prompt_start_idx = start_prompt_index if model_idx == start_model_index else 0
+                
+                # Vòng lặp qua các loại prompt, bắt đầu từ vị trí được khôi phục
+                for prompt_idx in range(prompt_start_idx, len(self.prompts)):
+                    prompt_type = self.prompts[prompt_idx]
                     self.current_prompt = prompt_type
                     
                     # Log bắt đầu đánh giá model/prompt
@@ -197,6 +213,20 @@ class Evaluator:
                     
                     logger.info(f"Đánh giá {len(self.questions)} câu hỏi theo {batch_count} batch, mỗi batch {self.batch_size} câu hỏi")
                     
+                    # Kiểm tra xem tất cả các câu hỏi đã hoàn thành chưa
+                    all_completed = True
+                    for question in self.questions:
+                        question_id = question.get('id', 0)
+                        if (model_name, prompt_type, question_id) not in self.completed_combinations:
+                            all_completed = False
+                            break
+                    
+                    # Nếu tất cả câu hỏi đã hoàn thành cho tổ hợp model/prompt này, bỏ qua
+                    if all_completed:
+                        logger.info(f"Bỏ qua {model_name}/{prompt_type} - tất cả câu hỏi đã được đánh giá")
+                        continue
+                    
+                    # Phần còn lại của hàm giữ nguyên như cũ
                     for batch_idx, batch in enumerate(question_batches):
                         # Tính và hiển thị thời gian còn lại
                         if batch_idx > 0:

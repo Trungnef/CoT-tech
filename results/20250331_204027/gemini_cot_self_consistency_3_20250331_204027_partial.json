@@ -1,0 +1,14 @@
+{
+    "gemini_cot_self_consistency_3": [
+        {
+            "question": "Thợ A làm một công việc hết 9 giờ, thợ B làm hết 12 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",
+            "response": "Bài toán: Thợ A làm một công việc hết 9 giờ, thợ B làm hết 12 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?\n\n**Phương pháp #1: Sử dụng tỷ lệ công việc**\n\n* **Bước 1: Tính năng suất của mỗi thợ:**\n    * Thợ A: 1 công việc / 9 giờ = 1/9 công việc/giờ\n    * Thợ B: 1 công việc / 12 giờ = 1/12 công việc/giờ\n\n* **Bước 2: Tính tổng năng suất của cả hai thợ:**\n    * Tổng năng suất = 1/9 + 1/12 = (4 + 3) / 36 = 7/36 công việc/giờ\n\n* **Bước 3: Tính thời gian hoàn thành công việc khi cả hai cùng làm:**\n    * Thời gian = 1 công việc / (7/36 công việc/giờ) = 36/7 giờ ≈ 5.14 giờ\n\n* **Bước 4: Chuyển đổi thời gian sang giờ và phút:**\n    * 0.14 giờ * 60 phút/giờ ≈ 8.4 phút\n    * Vậy thời gian hoàn thành là xấp xỉ 5 giờ 8 phút.\n\n\n**Phương pháp #2: Sử dụng phương trình**\n\n* **Bước 1: Gọi x là thời gian hoàn thành công việc khi cả hai thợ cùng làm (tính bằng giờ).**\n\n* **Bước 2: Lập phương trình:**\n    * Phần công việc thợ A làm được trong x giờ: x/9\n    * Phần công việc thợ B làm được trong x giờ: x/12\n    * Tổng phần công việc cả hai làm được trong x giờ phải bằng 1 công việc hoàn chỉnh:  x/9 + x/12 = 1\n\n* **Bước 3: Giải phương trình:**\n    * Nhân cả hai vế với 36 (bội số chung nhỏ nhất của 9 và 12): 4x + 3x = 36\n    * 7x = 36\n    * x = 36/7 giờ ≈ 5.14 giờ\n\n* **Bước 4: Chuyển đổi thời gian sang giờ và phút (giống như bước 4 ở phương pháp 1):**  xấp xỉ 5 giờ 8 phút.\n\n\n**Phương pháp #3: Sử dụng quy tắc công việc chung**\n\n* **Bước 1: Tìm thời gian trung bình:**  (9 + 12) / 2 = 10.5 giờ.  Đây không phải là đáp án chính xác, nhưng là một điểm khởi đầu để ước lượng.\n\n* **Bước 2: Sử dụng công thức gần đúng (không chính xác tuyệt đối nhưng cho kết quả khá sát):**\n    * Thời gian hoàn thành chung ≈ (Thời gian A * Thời gian B) / (Thời gian A + Thời gian B)\n    * Thời gian hoàn thành chung ≈ (9 * 12) / (9 + 12) = 108 / 21 ≈ 5.14 giờ\n\n* **Bước 3: Chuyển đổi thời gian sang giờ và phút (giống như bước 4 ở phương pháp 1):** xấp xỉ 5 giờ 8 phút.\n\n\n**So sánh kết quả và câu trả lời đáng tin cậy nhất:**\n\nCả ba phương pháp đều cho kết quả xấp xỉ 5 giờ 8 phút.  Phương pháp 1 và 2 là chính xác và chặt chẽ hơn phương pháp 3. Phương pháp 3 chỉ là một ước lượng gần đúng.  Do đó, **câu trả lời đáng tin cậy nhất là xấp xỉ 5 giờ 8 phút**, dựa trên kết quả nhất quán từ phương pháp 1 và 2.  Phương pháp 1 và 2 sử dụng các nguyên tắc toán học chính xác hơn, dẫn đến kết quả đáng tin cậy hơn.\n",
+            "model": "gemini",
+            "prompt_type": "cot_self_consistency_3",
+            "elapsed_time": 7.177911758422852,
+            "token_count": 135,
+            "response_length": 549,
+            "timestamp": "20250331_204045"
+        }
+    ]
+}

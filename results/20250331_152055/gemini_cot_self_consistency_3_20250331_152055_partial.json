@@ -1,0 +1,14 @@
+{
+    "gemini_cot_self_consistency_3": [
+        {
+            "question": "Một cửa hàng bán sách với giá 8613đ một cuốn. Nếu mua 10 cuốn, sau đó được giảm 14%, hỏi phải trả bao nhiêu tiền?",
+            "response": "**Cách 1: Tính giá gốc của 10 cuốn, rồi trừ đi phần giảm giá.**\n\n* Giá gốc của 10 cuốn sách: 8613đ/cuốn * 10 cuốn = 86130đ\n* Số tiền được giảm: 86130đ * 14% = 12058.2đ\n* Tổng số tiền phải trả: 86130đ - 12058.2đ = 74071.8đ\n\n**Cách 2: Tính giá mỗi cuốn sau khi giảm giá, rồi nhân với số lượng.**\n\n* Phần trăm giá còn lại sau khi giảm: 100% - 14% = 86%\n* Giá mỗi cuốn sau khi giảm: 8613đ * 86% = 7397.18đ\n* Tổng số tiền phải trả: 7397.18đ/cuốn * 10 cuốn = 73971.8đ  (Sai số nhỏ do làm tròn)\n\n\n**Cách 3: Sử dụng hệ số nhân để tính toán nhanh.**\n\n* Hệ số nhân tương ứng với 86% giảm giá là 0.86\n* Tổng số tiền phải trả: 8613đ/cuốn * 10 cuốn * 0.86 = 73971.8đ\n\n\n**Kết luận:**\n\nCả ba cách tiếp cận đều dẫn đến kết quả gần như nhau, với sự khác biệt nhỏ do làm tròn trong cách 2.  Cách 3 cho kết quả chính xác nhất vì không có làm tròn trung gian.  Tuy nhiên, sự khác biệt là rất nhỏ (khoảng 0.2đ).  Vì vậy, **câu trả lời nhất quán nhất là 73971.8đ** (hoặc làm tròn lên 73972đ tùy thuộc vào yêu cầu chính xác của bài toán).  Sai số nhỏ xuất phát từ việc làm tròn số trong quá trình tính toán.",
+            "model": "gemini",
+            "prompt_type": "cot_self_consistency_3",
+            "elapsed_time": 3.317858934402466,
+            "token_count": 60,
+            "response_length": 235,
+            "timestamp": "20250331_152105"
+        }
+    ]
+}

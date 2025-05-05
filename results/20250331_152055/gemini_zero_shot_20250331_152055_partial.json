@@ -1,0 +1,14 @@
+{
+    "gemini_zero_shot": [
+        {
+            "question": "Một cửa hàng bán sách với giá 8613đ một cuốn. Nếu mua 10 cuốn, sau đó được giảm 14%, hỏi phải trả bao nhiêu tiền?",
+            "response": "Giá tiền 10 cuốn sách là: 8613đ/cuốn * 10 cuốn = 86130đ\n\nSố tiền được giảm là: 86130đ * 14% = 12058.2đ\n\nSố tiền phải trả là: 86130đ - 12058.2đ = 74071.8đ\n\nVậy phải trả **74071.8 đồng**.",
+            "model": "gemini",
+            "prompt_type": "zero_shot",
+            "elapsed_time": 1.2590758800506592,
+            "token_count": 34,
+            "response_length": 37,
+            "timestamp": "20250331_152056"
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+model_name,prompt_type,question_id,question,answer,token_count,elapsed_time,tokens_per_second,response_length,example_selection
+qwen,zero_shot,0,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",[Error: Failed to load qwen model],61,1.0950357913970947,55.70594174111289,34,
+qwen,few_shot_3,0,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",[Error: Failed to load qwen model],539,0.7963142395019531,676.8684688309884,34,default
+qwen,few_shot_5,0,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",[Error: Failed to load qwen model],820,0.7902424335479736,1037.6562497642944,34,default
+qwen,few_shot_7,0,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",[Error: Failed to load qwen model],1044,0.7768709659576416,1343.8525131558636,34,default
+qwen,cot,0,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",[Error: Failed to load qwen model],199,0.784548282623291,253.6491435996832,34,
+qwen,cot_self_consistency_3,0,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?","Generated 3 different solutions using Chain-of-Thought reasoning.
+
+The most consistent answer appeared 3/3 times:
+[error failed to load qwen model]
+
+Individual solution summaries:
+Solution 1: [Error: Failed to load qwen model]
+
+Solution 2: [Error: Failed to load qwen model]
+
+Solution 3: [Error: Failed to load qwen model]
+
+",196,2.3346846103668213,83.95138218228323,324,
+qwen,cot_self_consistency_5,0,"Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?","Generated 5 different solutions using Chain-of-Thought reasoning.
+
+The most consistent answer appeared 5/5 times:
+[error failed to load qwen model]
+
+Individual solution summaries:
+Solution 1: [Error: Failed to load qwen model]
+
+Solution 2: [Error: Failed to load qwen model]
+
+Solution 3: [Error: Failed to load qwen model]
+
+Solution 4: [Error: Failed to load qwen model]
+
+Solution 5: [Error: Failed to load qwen model]
+
+",196,3.9826912879943848,49.21295320850797,420,

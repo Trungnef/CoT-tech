@@ -1,0 +1,4 @@
+,model_name,prompt_type,elapsed_time,response_length,has_error,tokens_per_second,response_quality_score,quality_index
+0,gemini,standard,4.689165949821472,322.5,0.0,68.77555698626497,0.68,0.40800000000000003
+1,llama,standard,112.37166428565979,240.5,0.0,2.140219258376608,0.05,0.03
+2,qwen,standard,113.85143375396729,292.0,0.0,2.5647459181850216,0.41500000000000004,0.249

@@ -1,0 +1,828 @@
+question,response,model,prompt_type,elapsed_time,token_count,response_length,timestamp,model_name,correctness_score,reasoning_score,num_reasoning_steps,confidence_score,subject_score,bias_correction,result_type,consistency_score,efficiency_score,has_calculation_error,has_logic_error,complexity_score,subject_type,question_type,question_difficulty,question_tags,is_correct
+"Cho tam giác có ba cạnh lần lượt là 12cm, 12cm và 9cm. Tính diện tích tam giác.","Đây là tam giác cân có hai cạnh bằng 12cm và một cạnh bằng 9cm.  Để tính diện tích, ta có thể sử dụng công thức Heron.
+
+**1. Tính nửa chu vi (s):**
+
+s = (12 + 12 + 9) / 2 = 16.5 cm
+
+**2. Áp dụng công thức Heron:**
+
+Diện tích (A) = √[s(s-a)(s-b)(s-c)]
+
+với a, b, c là độ dài ba cạnh của tam giác.
+
+A = √[16.5(16.5-12)(16.5-12)(16.5-9)]
+A = √[16.5 * 4.5 * 4.5 * 7.5]
+A = √[2477.8125]
+A ≈ 50 cm²
+
+**Vậy diện tích của tam giác là xấp xỉ 50 cm²**",gemini,zero_shot,4.139213228225708,31,98,20250331_153018,gemini,0.0,0.0,0,0.7,0.0,0.0,incorrect,0.0,0.0,False,False,0.196,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",False
+Hòa tan 380g muối vào 1567ml nước được dung dịch 19.52%. Hỏi phải thêm bao nhiêu gam muối nữa để được dung dịch 24.52%?,"**1. Tính khối lượng nước:**
+
+* Thể tích nước = 1567 ml = 1567 cm³
+* Khối lượng riêng của nước ≈ 1 g/cm³
+* Khối lượng nước = Thể tích nước × Khối lượng riêng = 1567 g
+
+**2. Tính khối lượng dung dịch ban đầu:**
+
+* Khối lượng dung dịch ban đầu = Khối lượng muối + Khối lượng nước = 380g + 1567g = 1947g
+
+**3. Tính khối lượng muối trong dung dịch ban đầu (theo %):**
+
+* Khối lượng muối ban đầu = 1947g × 19.52% = 379.96g (xấp xỉ 380g)
+
+**4. Tính khối lượng dung dịch cần đạt được (24.52%):**
+
+* Gọi x là khối lượng muối cần thêm.
+* Khối lượng muối sau khi thêm = 380g + x
+* Khối lượng dung dịch sau khi thêm = 1947g + x
+* Tỉ lệ phần trăm muối sau khi thêm:  [(380 + x) / (1947 + x)] × 100% = 24.52%
+
+**5. Giải phương trình:**
+
+* (380 + x) / (1947 + x) = 0.2452
+* 380 + x = 0.2452 × (1947 + x)
+* 380 + x = 477.2684 + 0.2452x
+* x - 0.2452x = 477.2684 - 380
+* 0.7548x = 97.2684
+* x ≈ 128.76g
+
+**Kết luận:**
+
+Cần thêm khoảng **128.76 gam** muối nữa để được dung dịch 24.52%.  Lưu ý rằng kết quả có thể chênh lệch nhỏ do làm tròn số.",gemini,zero_shot,4.139213228225708,37,233,20250331_153018,gemini,0.36000000000000004,0.0,0,0.7,0.0,0.0,related,0.0,0.0,False,False,0.2,arithmetic,Bài toán hỗn hợp,Trung bình,logic,False
+"Cho hình vuông có cạnh 12cm. Tính chu vi, diện tích và độ dài đường chéo của hình vuông.","**1. Chu vi:**
+
+* Hình vuông có 4 cạnh bằng nhau.
+* Chu vi hình vuông = cạnh x 4
+* Chu vi = 12cm x 4 = 48cm
+
+**2. Diện tích:**
+
+* Diện tích hình vuông = cạnh x cạnh
+* Diện tích = 12cm x 12cm = 144cm²
+
+**3. Độ dài đường chéo:**
+
+* Sử dụng định lý Pytago:  Trong một tam giác vuông, bình phương của cạnh huyền bằng tổng bình phương của hai cạnh góc vuông.
+* Đường chéo của hình vuông tạo thành hai tam giác vuông cân có cạnh huyền là đường chéo và hai cạnh góc vuông là hai cạnh của hình vuông.
+* Gọi đường chéo là d.  Ta có: d² = 12² + 12² = 144 + 144 = 288
+* d = √288 = √(144 x 2) = 12√2 cm
+
+**Kết luận:**
+
+* Chu vi hình vuông: 48cm
+* Diện tích hình vuông: 144cm²
+* Độ dài đường chéo hình vuông: 12√2 cm  (xấp xỉ 16.97 cm)",gemini,zero_shot,4.139213228225708,32,167,20250331_153018,gemini,0.73,0.0,0,1.0,1.0,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",True
+"Kết quả của phép tính 30 + 4 × 7 là bao nhiêu?
+A. 63
+B. 58
+C. 55
+D. 840","Theo quy tắc thứ tự thực hiện phép tính, ta thực hiện phép nhân trước, rồi đến phép cộng:
+
+4 × 7 = 28
+
+30 + 28 = 58
+
+Vậy kết quả của phép tính 30 + 4 × 7 là 58.
+
+**Đáp án B**",gemini,zero_shot,4.139213228225708,34,45,20250331_153018,gemini,1.0,0.0,0,1.0,1.0,0.0,correct,0.0,0.0,False,False,0.09,arithmetic,Câu hỏi trắc nghiệm,Trung bình,,True
+"Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?","Gọi x là số năm nữa thì tuổi cha gấp 3 lần tuổi con.
+
+Sau x năm nữa:
+
+* Tuổi cha là: 31 + x
+* Tuổi con là: 10 + x
+
+Theo đề bài, sau x năm nữa tuổi cha gấp 3 lần tuổi con, ta có phương trình:
+
+31 + x = 3(10 + x)
+
+Giải phương trình:
+
+31 + x = 30 + 3x
+31 - 30 = 3x - x
+1 = 2x
+x = 1/2
+
+Vậy sau 1/2 năm nữa, tuổi cha sẽ gấp 3 lần tuổi con.  Tuy nhiên, đáp án này không thực tế vì thời gian tính bằng năm thường là số nguyên.
+
+Để tìm số năm nguyên, ta có thể kiểm tra:
+
+* **Sau 0 năm:** Tuổi cha 31, tuổi con 10.  Cha không gấp 3 lần tuổi con.
+* **Sau 1 năm:** Tuổi cha 32, tuổi con 11. Cha không gấp 3 lần tuổi con.
+* **Sau 2 năm:** Tuổi cha 33, tuổi con 12. Cha không gấp 3 lần tuổi con.
+* **Sau 3 năm:** Tuổi cha 34, tuổi con 13. Cha không gấp 3 lần tuổi con.
+* **Sau 4 năm:** Tuổi cha 35, tuổi con 14. Cha không gấp 3 lần tuổi con.
+* **Sau 5 năm:** Tuổi cha 36, tuổi con 15. Cha gấp 2.4 lần tuổi con.
+* **Sau 6 năm:** Tuổi cha 37, tuổi con 16. Cha gấp 2.3125 lần tuổi con.
+* **Sau 7 năm:** Tuổi cha 38, tuổi con 17. Cha gấp xấp xỉ 2.24 lần tuổi con.
+
+Không có số năm nguyên nào thỏa mãn điều kiện bài toán.  Phương trình ban đầu cho ra kết quả là 1/2 năm, tức là 6 tháng.  Tuy nhiên, nếu yêu cầu tìm năm nguyên thì **không có đáp án**.",gemini,zero_shot,4.139213228225708,39,296,20250331_153018,gemini,0.63,0.0,0,0.8666666666666667,0.0,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Bài toán về tuổi,Dễ,"logic,thực tế",False
+"Cho tam giác có ba cạnh lần lượt là 12cm, 12cm và 9cm. Tính diện tích tam giác.","**1. Đầu tiên, tôi sẽ xác định các khái niệm và công thức toán học cần thiết.**
+
+Chúng ta cần công thức tính diện tích tam giác.  Vì ta biết độ dài ba cạnh,  ta có thể sử dụng công thức Heron.  Công thức Heron tính diện tích tam giác khi biết độ dài ba cạnh a, b, c:
+
+* **Công thức Heron:**  S = √[p(p-a)(p-b)(p-c)]  với p là nửa chu vi tam giác (p = (a+b+c)/2)
+
+
+**2. Tiếp theo, tôi sẽ tổ chức thông tin đã cho và xác định những gì cần tìm.**
+
+* Thông tin đã cho: a = 12cm, b = 12cm, c = 9cm
+* Cần tìm: Diện tích tam giác (S)
+
+
+**3. Tôi sẽ áp dụng các kỹ thuật toán học phù hợp.**
+
+Chúng ta sẽ sử dụng công thức Heron.
+
+
+**4. Tôi sẽ giải các phương trình hoặc thực hiện tính toán một cách có hệ thống.**
+
+* **Tính nửa chu vi (p):**
+   p = (a + b + c) / 2 = (12 + 12 + 9) / 2 = 33 / 2 = 16.5 cm
+
+* **Áp dụng công thức Heron:**
+   S = √[p(p-a)(p-b)(p-c)] = √[16.5(16.5-12)(16.5-12)(16.5-9)]
+   S = √[16.5 * 4.5 * 4.5 * 7.5]
+   S = √[2496.5625]
+   S ≈ 50 cm²
+
+
+**5. Cuối cùng, tôi sẽ kiểm tra lại lời giải để đảm bảo tính chính xác.**
+
+Kiểm tra lại các phép tính, đảm bảo không có lỗi sai sót trong quá trình tính toán.  Các bước tính toán đã được thực hiện cẩn thận, và kết quả có vẻ hợp lý cho một tam giác có các cạnh như vậy.
+
+
+**Kết luận:** Diện tích của tam giác là xấp xỉ 50 cm².",gemini,cot,5.878927326202392,124,283,20250331_153048,gemini,0.4071984679089027,0.6744824016563147,4,0.8666666666666667,1.0,-0.00283,incorrect,1.0,0.41407867494824013,False,False,0.5264,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",False
+Hòa tan 380g muối vào 1567ml nước được dung dịch 19.52%. Hỏi phải thêm bao nhiêu gam muối nữa để được dung dịch 24.52%?,"**1. Xác định các khái niệm và công thức toán học cần thiết:**
+
+* **Nồng độ phần trăm (%)**:  (khối lượng chất tan / khối lượng dung dịch) x 100%
+* **Khối lượng dung dịch**: Khối lượng chất tan + Khối lượng dung môi (nước)
+
+**2. Tổ chức thông tin đã cho và xác định những gì cần tìm:**
+
+* Khối lượng muối ban đầu (m<sub>muối ban đầu</sub>) = 380g
+* Thể tích nước (V<sub>nước</sub>) = 1567 ml  (Giả sử khối lượng riêng của nước là 1 g/ml, thì khối lượng nước (m<sub>nước</sub>) = 1567g)
+* Nồng độ dung dịch ban đầu (C<sub>1</sub>) = 19.52%
+* Nồng độ dung dịch cần đạt được (C<sub>2</sub>) = 24.52%
+* Khối lượng muối cần thêm (x) = ? (Đây là đại lượng cần tìm)
+
+**3. Áp dụng các kỹ thuật toán học phù hợp:**
+
+Ta có khối lượng dung dịch ban đầu: m<sub>dd1</sub> = m<sub>muối ban đầu</sub> + m<sub>nước</sub> = 380g + 1567g = 1947g
+
+Áp dụng công thức nồng độ phần trăm cho dung dịch ban đầu:
+
+C<sub>1</sub> = (m<sub>muối ban đầu</sub> / m<sub>dd1</sub>) x 100%
+
+19.52% = (380g / 1947g) x 100%  (Kiểm tra lại xem dữ liệu đầu vào có chính xác không)
+
+
+Sau khi thêm x gam muối, khối lượng muối mới là (380 + x) gam và khối lượng dung dịch mới là (1947 + x) gam.  Nồng độ dung dịch mới là 24.52%:
+
+C<sub>2</sub> = ((380 + x) / (1947 + x)) x 100% = 24.52%
+
+**4. Giải các phương trình hoặc thực hiện tính toán một cách có hệ thống:**
+
+Ta có phương trình:
+
+(380 + x) / (1947 + x) = 0.2452
+
+Giải phương trình trên:
+
+380 + x = 0.2452 * (1947 + x)
+380 + x = 477.2364 + 0.2452x
+x - 0.2452x = 477.2364 - 380
+0.7548x = 97.2364
+x = 97.2364 / 0.7548
+x ≈ 128.76 g
+
+**5. Kiểm tra lại lời giải:**
+
+Khối lượng muối sau khi thêm: 380g + 128.76g = 508.76g
+Khối lượng dung dịch sau khi thêm: 1947g + 128.76g = 2075.76g
+Nồng độ phần trăm mới: (508.76g / 2075.76g) x 100% ≈ 24.52%
+
+Kết quả kiểm tra khớp với yêu cầu bài toán.
+
+**Kết luận:** Phải thêm khoảng 128.76 gam muối nữa để được dung dịch 24.52%.",gemini,cot,5.878927326202392,130,381,20250331_153048,gemini,0.5402519349005426,0.6754159132007234,5,0.9,0.0,-0.0038100000000000005,related,1.0,0.4520795660036167,False,False,0.6048,arithmetic,Bài toán hỗn hợp,Trung bình,logic,False
+"Cho hình vuông có cạnh 12cm. Tính chu vi, diện tích và độ dài đường chéo của hình vuông.","**1. Xác định các khái niệm và công thức toán học cần thiết:**
+
+* **Chu vi hình vuông:**  Chu vi = 4 x cạnh
+* **Diện tích hình vuông:** Diện tích = cạnh x cạnh
+* **Định lý Pitago:** Trong một tam giác vuông, bình phương của cạnh huyền bằng tổng bình phương của hai cạnh góc vuông.  (a² + b² = c²)  Chúng ta sẽ sử dụng định lý này để tính độ dài đường chéo.
+
+**2. Tổ chức thông tin đã cho và xác định những gì cần tìm:**
+
+* **Thông tin đã cho:** Cạnh hình vuông = 12 cm
+* **Những gì cần tìm:**
+    * Chu vi hình vuông
+    * Diện tích hình vuông
+    * Độ dài đường chéo hình vuông
+
+**3. Áp dụng các kỹ thuật toán học phù hợp:**
+
+* **Chu vi:**  Sử dụng công thức chu vi hình vuông.
+* **Diện tích:** Sử dụng công thức diện tích hình vuông.
+* **Độ dài đường chéo:**  Hình vuông có hai đường chéo bằng nhau và vuông góc với nhau.  Mỗi đường chéo chia hình vuông thành hai tam giác vuông cân.  Ta có thể sử dụng định lý Pitago cho một trong hai tam giác vuông này, với hai cạnh góc vuông là hai cạnh của hình vuông (12 cm) và cạnh huyền là đường chéo.
+
+**4. Giải các phương trình hoặc thực hiện tính toán một cách có hệ thống:**
+
+* **Chu vi:** Chu vi = 4 x 12 cm = 48 cm
+* **Diện tích:** Diện tích = 12 cm x 12 cm = 144 cm²
+* **Độ dài đường chéo:**  Gọi độ dài đường chéo là d. Theo định lý Pitago:
+    d² = 12² + 12²
+    d² = 144 + 144
+    d² = 288
+    d = √288  cm
+    d ≈ 16.97 cm (làm tròn đến hai chữ số thập phân)
+
+
+**5. Kiểm tra lại lời giải để đảm bảo tính chính xác:**
+
+Các phép tính đều khá đơn giản, dễ kiểm tra lại.  Kết quả hợp lý với dữ liệu đã cho.
+
+
+**Kết luận:**
+
+* Chu vi hình vuông: 48 cm
+* Diện tích hình vuông: 144 cm²
+* Độ dài đường chéo hình vuông: xấp xỉ 16.97 cm",gemini,cot,5.878927326202392,125,367,20250331_153048,gemini,0.7341125745682888,0.7380690737833595,3,0.6,0.0,0.04633,partially_correct,1.0,0.3826530612244898,False,False,0.4736,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",True
+"Kết quả của phép tính 30 + 4 × 7 là bao nhiêu?
+A. 63
+B. 58
+C. 55
+D. 840","**1. Đầu tiên, tôi sẽ xác định các khái niệm và công thức toán học cần thiết.**
+
+Chúng ta cần biết thứ tự thực hiện các phép toán:  trong một biểu thức toán học không có dấu ngoặc, ta thực hiện phép nhân và phép chia trước, rồi đến phép cộng và phép trừ.  Đây còn được gọi là quy tắc BODMAS (Brackets, Orders, Division and Multiplication, Addition and Subtraction) hoặc PEMDAS (Parentheses, Exponents, Multiplication and Division, Addition and Subtraction).
+
+**2. Tiếp theo, tôi sẽ tổ chức thông tin đã cho và xác định những gì cần tìm.**
+
+Thông tin đã cho: Phép tính 30 + 4 × 7
+Những gì cần tìm: Kết quả của phép tính 30 + 4 × 7
+
+**3. Tôi sẽ áp dụng các kỹ thuật toán học phù hợp.**
+
+Theo quy tắc BODMAS/PEMDAS, ta thực hiện phép nhân trước phép cộng.
+
+**4. Tôi sẽ giải các phương trình hoặc thực hiện tính toán một cách có hệ thống.**
+
+Bước 1: Thực hiện phép nhân: 4 × 7 = 28
+
+Bước 2: Thực hiện phép cộng: 30 + 28 = 58
+
+**5. Cuối cùng, tôi sẽ kiểm tra lại lời giải để đảm bảo tính chính xác.**
+
+Ta đã thực hiện phép nhân trước phép cộng đúng theo quy tắc.  Kết quả 58 là hợp lý.
+
+**Kết luận:**
+
+Kết quả của phép tính 30 + 4 × 7 là 58.  Vậy đáp án đúng là **B**.",gemini,cot,5.878927326202392,127,241,20250331_153048,gemini,0.7727415151515152,0.7383838383838384,6,1.0,1.0,0.04759,partially_correct,0.8,0.5555555555555556,False,False,0.5528,arithmetic,Câu hỏi trắc nghiệm,Trung bình,,True
+"Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?","**1. Đầu tiên, tôi sẽ xác định các khái niệm và công thức toán học cần thiết.**
+
+Chúng ta cần sử dụng phép toán cộng và phép toán trừ để tính toán tuổi của cha và con sau một số năm nữa.  Không cần công thức phức tạp nào khác.
+
+**2. Tiếp theo, tôi sẽ tổ chức thông tin đã cho và xác định những gì cần tìm.**
+
+* Thông tin đã cho:
+    * Tuổi cha hiện nay: 31 tuổi
+    * Tuổi con hiện nay: 10 tuổi
+* Cần tìm: Số năm nữa để tuổi cha gấp 3 lần tuổi con.
+
+**3. Tôi sẽ áp dụng các kỹ thuật toán học phù hợp.**
+
+Để giải quyết bài toán này, chúng ta sẽ đặt x là số năm cần tìm. Sau x năm nữa:
+
+* Tuổi cha sẽ là: 31 + x
+* Tuổi con sẽ là: 10 + x
+
+Theo đề bài, tuổi cha gấp 3 lần tuổi con, nên ta có phương trình:
+
+31 + x = 3(10 + x)
+
+**4. Tôi sẽ giải các phương trình hoặc thực hiện tính toán một cách có hệ thống.**
+
+Giải phương trình:
+
+31 + x = 30 + 3x
+31 - 30 = 3x - x
+1 = 2x
+x = 1/2  hoặc 0.5
+
+Vậy sau 0.5 năm (hay 6 tháng) nữa thì tuổi cha sẽ gấp 3 lần tuổi con.
+
+
+**5. Cuối cùng, tôi sẽ kiểm tra lại lời giải để đảm bảo tính chính xác.**
+
+Sau 0.5 năm:
+
+* Tuổi cha: 31 + 0.5 = 31.5 tuổi
+* Tuổi con: 10 + 0.5 = 10.5 tuổi
+
+31.5 / 10.5 = 3
+
+Kết quả chính xác.  Tuổi cha gấp 3 lần tuổi con sau 0.5 năm (6 tháng).",gemini,cot,5.878927326202392,132,288,20250331_153048,gemini,0.38997164271047224,0.657135523613963,4,0.7,0.75,-0.00288,incorrect,1.0,0.4106776180698152,True,False,0.7103999999999999,arithmetic,Bài toán về tuổi,Dễ,"logic,thực tế",False
+"Cho tam giác có ba cạnh lần lượt là 12cm, 12cm và 9cm. Tính diện tích tam giác.","Bài toán này có thể giải bằng công thức Heron để tính diện tích tam giác khi biết độ dài ba cạnh.
+
+**1. Tính nửa chu vi (s):**
+
+* Chu vi (P) = 12cm + 12cm + 9cm = 33cm
+* Nửa chu vi (s) = P/2 = 33cm / 2 = 16.5cm
+
+**2. Áp dụng công thức Heron:**
+
+Công thức Heron:  Diện tích (A) = √[s(s-a)(s-b)(s-c)]
+
+Trong đó:
+* s là nửa chu vi
+* a, b, c là độ dài ba cạnh của tam giác
+
+Thay các giá trị vào công thức:
+
+* A = √[16.5(16.5 - 12)(16.5 - 12)(16.5 - 9)]
+* A = √[16.5 × 4.5 × 4.5 × 7.5]
+* A = √[2477.8125]
+* A ≈ 50 cm²
+
+**Vậy diện tích của tam giác là xấp xỉ 50 cm²**",gemini,few_shot_3,4.351032781600952,370,134,20250331_153109,gemini,0.0,0.0,0,0.7,0.0,0.0,incorrect,0.0,0.0,False,False,0.2,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",False
+Hòa tan 380g muối vào 1567ml nước được dung dịch 19.52%. Hỏi phải thêm bao nhiêu gam muối nữa để được dung dịch 24.52%?,"Lời giải:
+
+Gọi khối lượng muối ban đầu là m1 = 380g.
+Thể tích nước ban đầu là V1 = 1567 ml ≈ 1567 g (vì khối lượng riêng của nước gần bằng 1 g/ml).
+Nồng độ dung dịch ban đầu là C1 = 19.52% = 0.1952.
+
+Khối lượng dung dịch ban đầu là:  M1 = m1 + V1 = 380g + 1567g = 1947g
+
+Khối lượng muối trong dung dịch ban đầu là: m_muối1 = m1 = 380g
+
+Khối lượng nước trong dung dịch ban đầu là: m_nước1 = V1 = 1567g
+
+Giả sử cần thêm x gam muối để đạt nồng độ 24.52% = 0.2452.
+
+Khối lượng muối sau khi thêm là: m2 = m1 + x = 380 + x (g)
+Khối lượng dung dịch sau khi thêm là: M2 = M1 + x = 1947 + x (g)
+
+Nồng độ dung dịch sau khi thêm muối là:
+C2 = m2 / M2 = (380 + x) / (1947 + x) = 0.2452
+
+Giải phương trình trên để tìm x:
+0.2452 * (1947 + x) = 380 + x
+476.6364 + 0.2452x = 380 + x
+476.6364 - 380 = x - 0.2452x
+96.6364 = 0.7548x
+x = 96.6364 / 0.7548 
+x ≈ 128.01 g
+
+Vậy cần thêm khoảng 128.01 gam muối nữa.",gemini,few_shot_3,4.351032781600952,376,216,20250331_153109,gemini,0.36000000000000004,0.0,0,1.0,0.0,0.0,related,0.0,0.0,False,False,0.2,arithmetic,Bài toán hỗn hợp,Trung bình,logic,False
+"Cho hình vuông có cạnh 12cm. Tính chu vi, diện tích và độ dài đường chéo của hình vuông.","**1. Chu vi:**
+
+* Công thức tính chu vi hình vuông: Chu vi = 4 * cạnh
+* Thay cạnh = 12cm vào công thức: Chu vi = 4 * 12cm = 48cm
+
+**2. Diện tích:**
+
+* Công thức tính diện tích hình vuông: Diện tích = cạnh * cạnh
+* Thay cạnh = 12cm vào công thức: Diện tích = 12cm * 12cm = 144 cm²
+
+**3. Độ dài đường chéo:**
+
+* Định lý Pitago áp dụng cho tam giác vuông tạo bởi hai cạnh và đường chéo của hình vuông:  đường chéo² = cạnh² + cạnh² = 2 * cạnh²
+* Thay cạnh = 12cm vào công thức: đường chéo² = 2 * (12cm)² = 288 cm²
+* Đường chéo = √288 cm² ≈ 16.97 cm
+
+
+**Kết luận:**
+
+Hình vuông có cạnh 12cm có:
+
+* Chu vi: 48cm
+* Diện tích: 144 cm²
+* Độ dài đường chéo: xấp xỉ 16.97 cm",gemini,few_shot_3,4.351032781600952,371,154,20250331_153109,gemini,0.63,0.0,0,1.0,0.0,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",False
+"Kết quả của phép tính 30 + 4 × 7 là bao nhiêu?
+A. 63
+B. 58
+C. 55
+D. 840","Theo quy tắc thứ tự thực hiện phép tính (nhân chia trước, cộng trừ sau), ta thực hiện phép nhân trước:
+
+4 × 7 = 28
+
+Sau đó, ta thực hiện phép cộng:
+
+30 + 28 = 58
+
+Vậy kết quả của phép tính 30 + 4 × 7 là 58.
+
+**Đáp án B**",gemini,few_shot_3,4.351032781600952,373,54,20250331_153109,gemini,1.0,0.0,0,1.0,1.0,0.0,correct,0.0,0.0,False,False,0.108,arithmetic,Câu hỏi trắc nghiệm,Trung bình,,True
+"Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?","Lời giải:
+
+Gọi x là số năm nữa thì tuổi cha gấp 3 lần tuổi con.
+
+Sau x năm nữa:
+
+* Tuổi cha là 31 + x
+* Tuổi con là 10 + x
+
+Theo đề bài, sau x năm nữa tuổi cha gấp 3 lần tuổi con, ta có phương trình:
+
+31 + x = 3(10 + x)
+
+Giải phương trình:
+
+31 + x = 30 + 3x
+31 - 30 = 3x - x
+1 = 2x
+x = 1/2
+
+Vì số năm phải là số nguyên, nên ta xem xét lại bài toán.  Phương trình trên cho kết quả là 0.5 năm, không hợp lý trong ngữ cảnh này.  Điều này có nghĩa là tuổi cha không bao giờ chính xác gấp 3 lần tuổi con.
+
+Tuy nhiên, ta có thể tìm số năm gần nhất để tuổi cha xấp xỉ gấp 3 lần tuổi con.
+
+Nếu x = 0 (hiện tại): 31/10 = 3.1
+Nếu x = 1: (31+1)/(10+1) = 32/11 ≈ 2.9
+Nếu x = 2: (31+2)/(10+2) = 33/12 ≈ 2.75
+Nếu x = 3: (31+3)/(10+3) = 34/13 ≈ 2.6
+
+Ta thấy rằng, càng nhiều năm trôi qua, tỉ lệ tuổi cha/tuổi con càng nhỏ hơn 3.  Không có một số năm nguyên nào làm cho tuổi cha gấp đúng 3 lần tuổi con.",gemini,few_shot_3,4.351032781600952,378,219,20250331_153109,gemini,0.68,0.0,0,0.7,0.5,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Bài toán về tuổi,Dễ,"logic,thực tế",False
+"Cho tam giác có ba cạnh lần lượt là 12cm, 12cm và 9cm. Tính diện tích tam giác.","Bài toán: Cho tam giác có ba cạnh lần lượt là 12cm, 12cm và 9cm. Tính diện tích tam giác.
+
+**Phương pháp #1: Công thức Heron**
+
+1. **Tính nửa chu vi (s):**  s = (12 + 12 + 9) / 2 = 16.5 cm
+
+2. **Áp dụng công thức Heron:**  Diện tích (A) = √[s(s-a)(s-b)(s-c)]  với a, b, c là độ dài ba cạnh.
+
+3. **Tính diện tích:** A = √[16.5(16.5-12)(16.5-12)(16.5-9)] = √[16.5 * 4.5 * 4.5 * 7.5] ≈ √2475.9375 ≈ 50 cm²
+
+
+**Phương pháp #2: Chia tam giác thành hai tam giác vuông**
+
+1. **Vẽ đường cao:** Vẽ đường cao từ đỉnh giữa hai cạnh bằng nhau (12cm) xuống cạnh đáy (9cm). Đường cao này chia tam giác thành hai tam giác vuông bằng nhau.
+
+2. **Tính độ dài đường cao:**  Đường cao chia cạnh đáy thành hai đoạn bằng nhau, mỗi đoạn dài 4.5cm.  Ta có một tam giác vuông với cạnh huyền 12cm và cạnh góc vuông 4.5cm.  Áp dụng định lý Pytago:  h² + 4.5² = 12² => h² = 144 - 20.25 = 123.75 => h ≈ 11.12 cm
+
+3. **Tính diện tích:** Diện tích tam giác = (1/2) * đáy * cao = (1/2) * 9 * 11.12 ≈ 50 cm²
+
+
+**Phương pháp #3: Sử dụng lượng giác**
+
+1. **Tính góc:**  Đây là tam giác cân, nên ta có thể tính góc ở đỉnh bằng cách sử dụng định lý cosin:  9² = 12² + 12² - 2 * 12 * 12 * cos(θ) => cos(θ) = (144 + 144 - 81) / (288) ≈ 0.708 => θ ≈ 45°
+
+2. **Tính diện tích:** Diện tích tam giác = (1/2) * a * b * sin(θ) = (1/2) * 12 * 12 * sin(45°) ≈ (1/2) * 144 * 0.707 ≈ 50.9 cm²
+
+
+**So sánh kết quả và kết luận:**
+
+Phương pháp 1 (Heron): 50 cm²
+Phương pháp 2 (Chia tam giác): 50 cm²
+Phương pháp 3 (Lượng giác): 50.9 cm²
+
+Phương pháp 1 và 2 cho kết quả gần như giống nhau (50 cm²).  Phương pháp 3 cho kết quả hơi khác (50.9 cm²), có thể do sai số làm tròn trong quá trình tính toán góc.  Vì phương pháp 1 và 2 cho kết quả nhất quán hơn, nên kết quả đáng tin cậy nhất là **50 cm²**.  Sự khác biệt nhỏ giữa các phương pháp cho thấy độ chính xác của phép tính, đặc biệt là khi sử dụng các số gần đúng.",gemini,cot_self_consistency_3,6.926040363311768,123,413,20250331_153144,gemini,0.1,0.0,0,0.6,1.0,0.0,incorrect,0.0,0.0,False,False,0.2,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",False
+Hòa tan 380g muối vào 1567ml nước được dung dịch 19.52%. Hỏi phải thêm bao nhiêu gam muối nữa để được dung dịch 24.52%?,"Bài toán yêu cầu tìm khối lượng muối cần thêm vào để tăng nồng độ dung dịch từ 19.52% lên 24.52%.  Chúng ta sẽ giải bằng 3 phương pháp:
+
+**Phương pháp #1: Sử dụng tỷ lệ phần trăm và phương trình đại số**
+
+* **Bước 1: Tính khối lượng dung dịch ban đầu:**  Khối lượng riêng của nước gần bằng 1 g/ml.  Do đó, khối lượng nước là 1567g. Khối lượng dung dịch ban đầu là 380g (muối) + 1567g (nước) = 1947g.
+
+* **Bước 2: Tính khối lượng muối trong dung dịch ban đầu:**  Khối lượng muối chiếm 19.52% khối lượng dung dịch, nên khối lượng muối là 1947g * 0.1952 ≈ 380g (giá trị này đã cho sẵn trong đề bài).
+
+* **Bước 3: Đặt ẩn:**  Gọi x là khối lượng muối cần thêm (gam).
+
+* **Bước 4: Lập phương trình:**  Sau khi thêm x gam muối, khối lượng muối sẽ là 380 + x gam, và khối lượng dung dịch là 1947 + x gam.  Nồng độ mới là 24.52%, nên ta có phương trình:
+
+(380 + x) / (1947 + x) = 0.2452
+
+* **Bước 5: Giải phương trình:**
+
+0.2452(1947 + x) = 380 + x
+476.7684 + 0.2452x = 380 + x
+96.7684 = 0.7548x
+x ≈ 128.16g
+
+**Phương pháp #2: Sử dụng quy tắc tam suất**
+
+* **Bước 1: Tính khối lượng dung môi (nước):** 1567g (giả sử khối lượng riêng của nước là 1 g/ml)
+
+* **Bước 2: Tính khối lượng dung dịch ban đầu:** 380g (muối) + 1567g (nước) = 1947g
+
+* **Bước 3:  Tính khối lượng muối cần thiết để có dung dịch 24.52%:**  Giả sử có 100g dung dịch 24.52%, thì chứa 24.52g muối và 75.48g nước.  Ta lập tỉ lệ:
+
+(Khối lượng muối cần thiết) / (Khối lượng nước) = 24.52 / 75.48
+
+(Khối lượng muối cần thiết) / 1567g = 24.52 / 75.48
+
+Khối lượng muối cần thiết ≈ 508.16g
+
+* **Bước 4: Tính khối lượng muối cần thêm:** 508.16g - 380g ≈ 128.16g
+
+**Phương pháp #3:  Sử dụng phương pháp chênh lệch nồng độ**
+
+* **Bước 1: Tính chênh lệch nồng độ:** 24.52% - 19.52% = 5%
+
+* **Bước 2: Tính khối lượng dung dịch ban đầu:** 1947g (như ở phương pháp 1)
+
+* **Bước 3:  Tính khối lượng muối cần thiết để tăng 5% nồng độ:**  5% của 1947g là 1947g * 0.05 = 97.35g
+
+* **Bước 4:  Điều chỉnh kết quả:**  Phương pháp này đơn giản hóa vấn đề.  Kết quả 97.35g chỉ là lượng muối cần thêm nếu khối lượng dung dịch không đổi.  Vì thêm muối vào làm tăng khối lượng dung dịch, nên cần điều chỉnh.  Để chính xác hơn, ta cần giải phương trình tương tự như phương pháp 1.
+
+**So sánh kết quả và kết luận:**
+
+Cả phương pháp 1 và 2 đều cho kết quả xấp xỉ 128.16g. Phương pháp 3 cung cấp một ước lượng thô, không chính xác. Do đó, **câu trả lời đáng tin cậy nhất là xấp xỉ 128.16g muối**.  Phương pháp 1 và 2 là chính xác hơn vì chúng giải quyết bài",gemini,cot_self_consistency_3,6.926040363311768,129,519,20250331_153144,gemini,0.36000000000000004,0.0,0,0.9,0.0,0.0,related,0.0,0.0,False,False,0.2,arithmetic,Bài toán hỗn hợp,Trung bình,logic,False
+"Cho hình vuông có cạnh 12cm. Tính chu vi, diện tích và độ dài đường chéo của hình vuông.","**Bài toán:** Cho hình vuông có cạnh 12cm. Tính chu vi, diện tích và độ dài đường chéo của hình vuông.
+
+**Phương pháp #1: Sử dụng công thức hình học cơ bản**
+
+* **Chu vi:** Chu vi hình vuông = 4 * cạnh = 4 * 12cm = 48cm
+* **Diện tích:** Diện tích hình vuông = cạnh * cạnh = 12cm * 12cm = 144cm²
+* **Độ dài đường chéo:**  Áp dụng định lý Pitago: Đường chéo² = cạnh² + cạnh² = 12² + 12² = 288  => Đường chéo = √288 ≈ 16.97cm
+
+**Phương pháp #2: Sử dụng tỉ lệ và tương tự**
+
+Giả sử ta có một hình vuông nhỏ với cạnh 1cm.  Chu vi là 4cm, diện tích là 1cm², đường chéo là √2 cm.
+
+Hình vuông lớn có cạnh 12cm, tức là gấp 12 lần hình vuông nhỏ.
+
+* **Chu vi:** Chu vi hình vuông lớn = 4cm * 12 = 48cm
+* **Diện tích:** Diện tích hình vuông lớn = 1cm² * 12² = 144cm²
+* **Độ dài đường chéo:** Đường chéo hình vuông lớn = √2 cm * 12 = 12√2 cm ≈ 16.97cm
+
+**Phương pháp #3: Sử dụng hình học phân tích (tọa độ)**
+
+Đặt một đỉnh của hình vuông tại gốc tọa độ (0,0).  Các đỉnh còn lại sẽ có tọa độ (12,0), (12,12), (0,12).
+
+* **Chu vi:**  Chu vi vẫn tính như phương pháp 1: 4 * 12cm = 48cm
+* **Diện tích:** Diện tích tính bằng tích phân (dù hơi thừa trong trường hợp này) hoặc công thức diện tích hình chữ nhật: 12cm * 12cm = 144cm²
+* **Độ dài đường chéo:**  Khoảng cách giữa (0,0) và (12,12) được tính bằng công thức khoảng cách: √((12-0)² + (12-0)²) = √288 ≈ 16.97cm
+
+
+**So sánh và kết luận:**
+
+Cả ba phương pháp đều cho ra cùng một kết quả:
+
+* **Chu vi:** 48cm
+* **Diện tích:** 144cm²
+* **Độ dài đường chéo:** ≈ 16.97cm
+
+Sự nhất quán của kết quả từ ba phương pháp khác nhau cho thấy độ tin cậy cao.  Do đó, câu trả lời cuối cùng là:
+
+**Hình vuông có cạnh 12cm có chu vi là 48cm, diện tích là 144cm² và độ dài đường chéo xấp xỉ 16.97cm.**",gemini,cot_self_consistency_3,6.926040363311768,124,373,20250331_153144,gemini,0.63,0.0,0,0.9,0.0,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",False
+"Kết quả của phép tính 30 + 4 × 7 là bao nhiêu?
+A. 63
+B. 58
+C. 55
+D. 840","**Bài toán:** Kết quả của phép tính 30 + 4 × 7 là bao nhiêu?
+
+**Phương pháp #1: Sử dụng thứ tự ưu tiên của các phép toán (PEMDAS/BODMAS)**
+
+PEMDAS (hoặc BODMAS) là viết tắt của Parentheses/Brackets, Exponents/Orders, Multiplication and Division (from left to right), Addition and Subtraction (from left to right).  Theo quy tắc này, phép nhân được thực hiện trước phép cộng.
+
+* **Bước 1:** Thực hiện phép nhân: 4 × 7 = 28
+* **Bước 2:** Thực hiện phép cộng: 30 + 28 = 58
+
+**Kết luận Phương pháp #1:** Kết quả là 58.
+
+
+**Phương pháp #2: Sử dụng tính chất phân phối (chỉ áp dụng được trong trường hợp đặc biệt)**
+
+Phương pháp này không áp dụng trực tiếp được cho bài toán này vì không có nhân tử chung giữa 30 và 4.  Tuy nhiên, ta có thể biến đổi bài toán thành một dạng khác để áp dụng tính chất phân phối (nhưng không hiệu quả và không nên áp dụng trong trường hợp này):
+
+Ví dụ:  Nếu bài toán là (30 + 4) x 7, ta sẽ áp dụng tính chất phân phối: 30 x 7 + 4 x 7 = 210 + 28 = 238.  Nhưng bài toán gốc không cho phép điều này.
+
+
+**Phương pháp #3: Sử dụng máy tính**
+
+Sử dụng máy tính để tính toán 30 + 4 × 7.  Hầu hết các máy tính đều tuân theo thứ tự ưu tiên của các phép toán.
+
+* **Bước 1:** Nhập phép tính 30 + 4 × 7 vào máy tính.
+* **Bước 2:** Máy tính sẽ tự động thực hiện phép nhân trước, rồi đến phép cộng.
+
+**Kết luận Phương pháp #3:** Kết quả là 58.
+
+
+**So sánh và kết luận:**
+
+Cả Phương pháp #1 và Phương pháp #3 đều cho kết quả là 58. Phương pháp #2 không áp dụng được một cách trực tiếp và hiệu quả cho bài toán này.  Do đó, kết quả đáng tin cậy nhất là **58 (B)**.  Câu trả lời này được hỗ trợ bởi hai phương pháp giải toán khác nhau, đều tuân thủ các quy tắc toán học cơ bản.",gemini,cot_self_consistency_3,6.926040363311768,126,360,20250331_153144,gemini,0.73,0.0,0,0.85,1.0,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Câu hỏi trắc nghiệm,Trung bình,,True
+"Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?","**Bài toán:** Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?
+
+**Phương pháp #1: Sử dụng phương trình**
+
+* **Bước 1: Đặt ẩn:** Gọi x là số năm cần tìm.
+* **Bước 2: Lập phương trình:** Sau x năm nữa, tuổi cha là 31 + x và tuổi con là 10 + x.  Theo đề bài, tuổi cha gấp 3 lần tuổi con, ta có phương trình:
+   31 + x = 3(10 + x)
+* **Bước 3: Giải phương trình:**
+   31 + x = 30 + 3x
+   31 - 30 = 3x - x
+   1 = 2x
+   x = 1/2  (0.5 năm)
+
+**Phương pháp #2: Sử dụng lập luận logic và thử nghiệm**
+
+* **Bước 1: Quan sát:**  Hiện tại, tuổi cha gấp khoảng 3 lần tuổi con (31/10 ≈ 3.1).  Vì cha già đi chậm hơn con, cần tìm số năm để tuổi cha gấp đúng 3 lần tuổi con.
+* **Bước 2: Thử nghiệm:**  Hãy thử một vài giá trị x:
+    * Nếu x = 1 năm: Cha 32 tuổi, con 11 tuổi (32/11 ≈ 2.9)
+    * Nếu x = 2 năm: Cha 33 tuổi, con 12 tuổi (33/12 ≈ 2.75)
+    * ... và cứ tiếp tục cho đến khi tìm được giá trị gần đúng.  Phương pháp này không cho kết quả chính xác mà chỉ là xấp xỉ.
+
+
+**Phương pháp #3: Sử dụng bảng tính (hoặc lập bảng)**
+
+* **Bước 1: Tạo bảng:** Tạo một bảng với các cột: Năm (x), Tuổi cha (31+x), Tuổi con (10+x), Tỷ lệ (Tuổi cha/Tuổi con).
+* **Bước 2: Điền dữ liệu:** Bắt đầu từ x = 0, tăng dần giá trị x và tính toán các cột còn lại.
+* **Bước 3: Tìm kết quả:** Quan sát cột ""Tỷ lệ"" để tìm giá trị gần bằng 3.  Giống như phương pháp 2, phương pháp này cũng cho kết quả xấp xỉ.
+
+
+**So sánh kết quả và đưa ra câu trả lời cuối cùng:**
+
+Phương pháp 1 cho kết quả chính xác là x = 0.5 năm (6 tháng).  Tuy nhiên, trong thực tế, ta không thể nói ""sau 6 tháng nữa"".
+
+Phương pháp 2 và 3 chỉ cho kết quả xấp xỉ, không chính xác.
+
+Vì vậy,  **không có một năm cụ thể nào** mà tuổi cha gấp đúng 3 lần tuổi con.  Kết quả 0.5 năm từ phương pháp 1 là chính xác về mặt toán học, nhưng không thực tế trong ngữ cảnh của vấn đề.  Câu trả lời đáng tin cậy nhất là **không có năm nào thỏa mãn điều kiện bài toán**.  Hoặc ta có thể nói gần nhất là sau 1 năm, tuổi cha gần gấp 3 lần tuổi con.",gemini,cot_self_consistency_3,6.926040363311768,131,463,20250331_153144,gemini,0.63,0.0,0,0.7666666666666667,0.0,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Bài toán về tuổi,Dễ,"logic,thực tế",False
+"Cho tam giác có ba cạnh lần lượt là 12cm, 12cm và 9cm. Tính diện tích tam giác.","Bước 1:
+SUY NGHĨ: Tôi cần hiểu bài toán đang yêu cầu gì và xác định các khái niệm toán học liên quan.
+HÀNH ĐỘNG: Phân tích đề bài để xác định các biến, hằng số và mối quan hệ.
+QUAN SÁT: Bài toán cho một tam giác có ba cạnh a = 12cm, b = 12cm, c = 9cm.  Yêu cầu tính diện tích tam giác.  Đây là tam giác cân vì có hai cạnh bằng nhau (a = b).  Tôi cần sử dụng công thức tính diện tích tam giác.
+
+
+Bước 2:
+SUY NGHĨ:  Tôi cần tìm một công thức thích hợp để tính diện tích tam giác khi biết độ dài ba cạnh.
+HÀNH ĐỘNG:  Sử dụng công thức Heron.
+QUAN SÁT: Công thức Heron:  $S = \sqrt{p(p-a)(p-b)(p-c)}$, trong đó p là nửa chu vi tam giác, $p = \frac{a+b+c}{2}$.
+
+
+Bước 3:
+SUY NGHĨ: Tôi cần tính nửa chu vi p trước khi áp dụng công thức Heron.
+HÀNH ĐỘNG: Tính nửa chu vi p.
+QUAN SÁT: $p = \frac{12 + 12 + 9}{2} = \frac{33}{2} = 16.5$ cm
+
+
+Bước 4:
+SUY NGHĨ:  Bây giờ tôi có đủ thông tin để áp dụng công thức Heron.
+HÀNH ĐỘNG: Áp dụng công thức Heron để tính diện tích.
+QUAN SÁT: $S = \sqrt{16.5(16.5-12)(16.5-12)(16.5-9)} = \sqrt{16.5 \times 4.5 \times 4.5 \times 7.5} = \sqrt{2493.75} \approx 50$ cm²
+
+
+Bước 5:
+SUY NGHĨ: Tôi đã tính được diện tích.  Tôi cần kiểm tra lại kết quả.
+HÀNH ĐỘNG: Kiểm tra lại các phép tính.
+QUAN SÁT: Các phép tính dường như chính xác.
+
+
+Bước 6:
+SUY NGHĨ:  Tôi đã hoàn thành bài toán.
+HÀNH ĐỘNG: Viết câu trả lời cuối cùng.
+QUAN SÁT: Diện tích của tam giác là xấp xỉ 50 cm².",gemini,react,6.291967582702637,166,292,20250331_153216,gemini,0.0,0.0,0,0.2,0.0,0.0,incorrect,0.0,0.0,False,False,0.2,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",False
+Hòa tan 380g muối vào 1567ml nước được dung dịch 19.52%. Hỏi phải thêm bao nhiêu gam muối nữa để được dung dịch 24.52%?,"Bước 1:
+SUY NGHĨ: Tôi cần hiểu bài toán đang yêu cầu gì và xác định các khái niệm toán học liên quan.  Bài toán liên quan đến nồng độ dung dịch và yêu cầu tính toán khối lượng muối cần thêm vào để tăng nồng độ dung dịch.  Tôi cần sử dụng công thức tính nồng độ phần trăm.
+HÀNH ĐỘNG: Phân tích đề bài để xác định các biến, hằng số và mối quan hệ.
+QUAN SÁT:  Biết khối lượng muối ban đầu (m1 = 380g), thể tích nước (V = 1567ml ≈ 1567g, giả sử khối lượng riêng của nước là 1g/ml), nồng độ ban đầu (C1 = 19.52%), và nồng độ cần đạt (C2 = 24.52%).  Yêu cầu tìm khối lượng muối cần thêm (x).
+
+
+Bước 2:
+SUY NGHĨ: Tôi cần tính khối lượng dung dịch ban đầu.  Sau đó, tôi sẽ sử dụng công thức nồng độ phần trăm để thiết lập phương trình liên hệ giữa khối lượng muối và khối lượng dung dịch.
+HÀNH ĐỘNG: Tính khối lượng dung dịch ban đầu (m_dung_dịch_ban_đầu) và thiết lập phương trình dựa trên công thức nồng độ phần trăm.
+QUAN SÁT: Khối lượng dung dịch ban đầu = khối lượng muối + khối lượng nước = 380g + 1567g = 1947g.  Công thức nồng độ phần trăm: C = (m_chất_tan / m_dung_dịch) * 100%.  Phương trình:  19.52% = (380g / 1947g) * 100% (kiểm tra lại xem có đúng không).
+
+
+Bước 3:
+SUY NGHĨ: Tôi cần thiết lập phương trình để tính khối lượng muối cần thêm (x) sao cho nồng độ đạt 24.52%.  Khối lượng dung dịch sẽ tăng thêm x gam.
+HÀNH ĐỘNG: Thiết lập phương trình dựa trên công thức nồng độ phần trăm với khối lượng muối mới là (380 + x) gam và khối lượng dung dịch mới là (1947 + x) gam.
+QUAN SÁT: Phương trình: 24.52% = ((380 + x) / (1947 + x)) * 100%
+
+
+Bước 4:
+SUY NGHĨ: Tôi cần giải phương trình để tìm giá trị của x.
+HÀNH ĐỘNG: Giải phương trình trên.
+QUAN SÁT:
+0.2452 = (380 + x) / (1947 + x)
+0.2452 * (1947 + x) = 380 + x
+476.6764 + 0.2452x = 380 + x
+476.6764 - 380 = x - 0.2452x
+96.6764 = 0.7548x
+x = 96.6764 / 0.7548
+x ≈ 128.07 g
+
+
+Bước 5:
+SUY NGHĨ: Tôi đã tìm được kết quả.  Tôi cần kiểm tra lại xem kết quả có hợp lý không.
+HÀNH ĐỘNG: Kiểm tra lại kết quả bằng cách thay x vào phương trình ban đầu.
+QUAN SÁT:  Nồng độ mới: ((380 + 128.07) / (1947 + 128.07)) * 100% ≈ 24.52%. Kết quả hợp lý.
+
+
+Kết luận: Phải thêm khoảng 128.07 gam muối nữa để được dung dịch 24.52%.",gemini,react,6.291967582702637,172,466,20250331_153216,gemini,0.36000000000000004,0.0,0,0.9,0.0,0.0,related,0.0,0.0,False,False,0.2,arithmetic,Bài toán hỗn hợp,Trung bình,logic,False
+"Cho hình vuông có cạnh 12cm. Tính chu vi, diện tích và độ dài đường chéo của hình vuông.","**Bước 1:**
+
+SUY NGHĨ: Tôi cần hiểu bài toán đang yêu cầu gì và xác định các khái niệm toán học liên quan. Bài toán cho cạnh của hình vuông và yêu cầu tính chu vi, diện tích và độ dài đường chéo.  Các khái niệm toán học liên quan là công thức tính chu vi, diện tích và định lý Pitago cho hình vuông.
+
+HÀNH ĐỘNG: Phân tích đề bài để xác định các biến, hằng số và mối quan hệ.  Biến: chu vi (P), diện tích (S), độ dài đường chéo (d). Hằng số: cạnh hình vuông (a) = 12cm. Mối quan hệ: P = 4a; S = a²; d = a√2 (theo định lý Pitago).
+
+QUAN SÁT:  Đề bài đã cung cấp cạnh a = 12cm.  Tôi cần áp dụng các công thức trên để tính P, S và d.
+
+
+**Bước 2:**
+
+SUY NGHĨ: Tôi cần tính chu vi của hình vuông.
+
+HÀNH ĐỘNG: Áp dụng công thức chu vi hình vuông: P = 4a, với a = 12cm.
+
+QUAN SÁT: P = 4 * 12cm = 48cm. Chu vi hình vuông là 48cm.
+
+
+**Bước 3:**
+
+SUY NGHĨ: Tôi cần tính diện tích của hình vuông.
+
+HÀNH ĐỘNG: Áp dụng công thức diện tích hình vuông: S = a², với a = 12cm.
+
+QUAN SÁT: S = 12cm * 12cm = 144cm². Diện tích hình vuông là 144cm².
+
+
+**Bước 4:**
+
+SUY NGHĨ: Tôi cần tính độ dài đường chéo của hình vuông.
+
+HÀNH ĐỘNG: Áp dụng định lý Pitago: d² = a² + a²,  với a = 12cm.  Do đó d = a√2.
+
+QUAN SÁT: d = 12cm * √2 ≈ 16.97cm. Độ dài đường chéo của hình vuông xấp xỉ 16.97cm.
+
+
+**Kết luận:**
+
+Chu vi hình vuông là 48cm, diện tích là 144cm² và độ dài đường chéo xấp xỉ 16.97cm.",gemini,react,6.291967582702637,167,305,20250331_153216,gemini,0.63,0.0,0,0.9,0.0,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Bài toán hình học,Dễ,"số học,hình học,logic",False
+"Kết quả của phép tính 30 + 4 × 7 là bao nhiêu?
+A. 63
+B. 58
+C. 55
+D. 840","Bước 1:
+SUY NGHĨ: Tôi cần hiểu bài toán đang yêu cầu gì và xác định các khái niệm toán học liên quan.  Đây là một phép tính toán học cơ bản bao gồm phép cộng và phép nhân.  Tôi cần nhớ thứ tự thực hiện phép tính (nhân trước, cộng sau).
+HÀNH ĐỘNG: Phân tích đề bài để xác định các biến, hằng số và mối quan hệ.  Bài toán có ba số: 30, 4 và 7.  Mối quan hệ là 30 cộng với tích của 4 và 7.
+QUAN SÁT:  Bài toán yêu cầu tính 30 + 4 × 7.  Thứ tự thực hiện phép tính là quan trọng.
+
+
+Bước 2:
+SUY NGHĨ: Theo thứ tự thực hiện phép tính (PEMDAS/BODMAS), phép nhân phải được thực hiện trước phép cộng.
+HÀNH ĐỘNG: Tính 4 × 7.
+QUAN SÁT: 4 × 7 = 28
+
+
+Bước 3:
+SUY NGHĨ: Bây giờ tôi đã tính được tích của 4 và 7, tôi có thể tiến hành phép cộng.
+HÀNH ĐỘNG: Thực hiện phép tính 30 + 28.
+QUAN SÁT: 30 + 28 = 58
+
+
+Bước 4:
+SUY NGHĨ: Tôi đã tính toán xong và tìm được kết quả.  Tôi cần so sánh kết quả với các đáp án được cung cấp.
+HÀNH ĐỘNG: So sánh kết quả 58 với các đáp án A, B, C, D.
+QUAN SÁT: Kết quả 58 khớp với đáp án B.
+
+
+Bước 5:
+SUY NGHĨ: Tôi đã tìm được đáp án chính xác.
+HÀNH ĐỘNG: Kết luận.
+QUAN SÁT: Đáp án đúng là B. 58",gemini,react,6.291967582702637,169,259,20250331_153216,gemini,0.73,0.0,0,0.7,1.0,0.0,partially_correct,0.0,0.0,False,False,0.2,arithmetic,Câu hỏi trắc nghiệm,Trung bình,,True
+"Hiện nay tuổi cha là 31 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?","Bước 1:
+SUY NGHĨ: Tôi cần hiểu bài toán đang yêu cầu gì và xác định các khái niệm toán học liên quan.
+HÀNH ĐỘNG: Phân tích đề bài để xác định các biến, hằng số và mối quan hệ.
+QUAN SÁT: Bài toán cho biết tuổi cha hiện tại (31 tuổi) và tuổi con hiện tại (10 tuổi).  Yêu cầu tìm số năm cần thêm để tuổi cha gấp 3 lần tuổi con.  Các biến là số năm cần thêm (gọi là x), tuổi cha sau x năm và tuổi con sau x năm.  Mối quan hệ là tuổi cha sau x năm = 3 lần tuổi con sau x năm.
+
+
+Bước 2:
+SUY NGHĨ: Tôi cần thiết lập phương trình dựa trên mối quan hệ giữa tuổi cha và tuổi con sau x năm.
+HÀNH ĐỘNG: Lập phương trình toán học biểu diễn mối quan hệ giữa tuổi cha và tuổi con sau x năm.
+QUAN SÁT: Phương trình là: 31 + x = 3(10 + x)
+
+
+Bước 3:
+SUY NGHĨ: Tôi cần giải phương trình để tìm giá trị của x.
+HÀNH ĐỘNG: Giải phương trình 31 + x = 3(10 + x)
+QUAN SÁT:
+31 + x = 30 + 3x
+31 - 30 = 3x - x
+1 = 2x
+x = 1/2
+
+
+Bước 4:
+SUY NGHĨ:  Kết quả x = 1/2 năm có vẻ không hợp lý trong ngữ cảnh tuổi tác.  Tôi cần kiểm tra lại quá trình giải và xem xét lại phương trình.
+HÀNH ĐỘNG: Kiểm tra lại các bước giải và xem xét lại cách lập phương trình.
+QUAN SÁT:  Phương trình được lập đúng. Tuy nhiên, kết quả là một số thập phân, không phù hợp với ngữ cảnh thực tế (không thể có nửa năm).  Điều này có nghĩa là không có số năm nguyên nào làm cho tuổi cha gấp đúng 3 lần tuổi con.
+
+
+Bước 5:
+SUY NGHĨ:  Tôi cần tìm hiểu xem có cách nào khác để giải quyết bài toán này hay không.  Có lẽ cần phải tìm số năm gần nhất để tuổi cha xấp xỉ gấp 3 lần tuổi con.
+HÀNH ĐỘNG: Thử nghiệm với các giá trị x nguyên khác nhau.
+QUAN SÁT:
+Nếu x = 1: Tuổi cha = 32, tuổi con = 11 (32/11 ≈ 2.9)
+Nếu x = 2: Tuổi cha = 33, tuổi con = 12 (33/12 ≈ 2.75)
+Nếu x = 3: Tuổi cha = 34, tuổi con = 13 (34/13 ≈ 2.6)
+Nếu x = 10: Tuổi cha = 41, tuổi con = 20 (41/20 = 2.05)
+...và cứ tiếp tục cho đến khi tìm được giá trị x thỏa mãn yêu cầu.
+
+
+Bước 6:
+SUY NGHĨ:  Không có giá trị x nguyên nào làm cho tuổi cha gấp đúng 3 lần tuổi con.  Tuy nhiên, ta có thể tìm x để tuổi cha gần gấp 3 lần tuổi con nhất.
+HÀNH ĐỘNG: Tìm giá trị x gần nhất sao cho 31 + x ≈ 3(10 + x)
+QUAN SÁT:  Không có đáp án chính xác.  Có thể cần phải điều chỉnh đề bài hoặc giải thích rằng không có lời giải nguyên đúng cho bài toán này.
+
+
+**Kết luận:** Bài toán này không có lời giải nguyên.  Không có số năm nguyên nào khiến tuổi cha gấp đúng 3 lần tuổi con.",gemini,react,6.291967582702637,174,558,20250331_153216,gemini,0.41000000000000003,0.0,0,0.6,0.5,0.0,related,0.0,0.0,False,False,0.2,arithmetic,Bài toán về tuổi,Dễ,"logic,thực tế",False

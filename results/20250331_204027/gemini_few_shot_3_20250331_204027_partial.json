@@ -1,0 +1,14 @@
+{
+    "gemini_few_shot_3": [
+        {
+            "question": "Thợ A làm một công việc hết 9 giờ, thợ B làm hết 12 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",
+            "response": "Lời giải:\n\nGọi lượng công việc là 1 đơn vị.\n\nTrong 1 giờ, thợ A làm được 1/9 công việc.\nTrong 1 giờ, thợ B làm được 1/12 công việc.\n\nNếu hai thợ cùng làm, trong 1 giờ họ làm được: 1/9 + 1/12 = (4 + 3)/36 = 7/36 công việc.\n\nThời gian để hai thợ cùng làm xong công việc là: 1 / (7/36) = 36/7 giờ.\n\nĐể chuyển đổi sang giờ và phút, ta có:\n\n36/7 giờ ≈ 5.14 giờ\n\nPhần thập phân 0.14 giờ tương đương với 0.14 * 60 = 8.4 phút.\n\nVậy, nếu hai thợ cùng làm thì sẽ hoàn thành công việc trong khoảng 5 giờ 8 phút.  (hoặc chính xác hơn là 36/7 giờ)\n",
+            "model": "gemini",
+            "prompt_type": "few_shot_3",
+            "elapsed_time": 2.760512113571167,
+            "token_count": 382,
+            "response_length": 122,
+            "timestamp": "20250331_204038"
+        }
+    ]
+}

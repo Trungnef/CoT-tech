@@ -1,0 +1,14 @@
+{
+    "gemini_zero_shot": [
+        {
+            "question": "Thợ A làm một công việc hết 9 giờ, thợ B làm hết 12 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",
+            "response": "**1. Tìm năng suất của mỗi thợ:**\n\n* Thợ A: Trong 1 giờ làm được 1/9 công việc.\n* Thợ B: Trong 1 giờ làm được 1/12 công việc.\n\n**2. Tìm năng suất chung của hai thợ:**\n\nKhi cả hai thợ cùng làm, năng suất chung của họ là tổng năng suất của mỗi người:\n\n1/9 + 1/12 = (4 + 3) / 36 = 7/36 công việc/giờ\n\n**3. Tìm thời gian hoàn thành công việc khi cả hai thợ cùng làm:**\n\nThời gian hoàn thành = Tổng công việc / Năng suất chung\n\nThời gian hoàn thành = 1 công việc / (7/36 công việc/giờ) = 36/7 giờ\n\n**4. Chuyển đổi kết quả sang giờ và phút:**\n\n36/7 giờ ≈ 5.14 giờ\n\nĐể chuyển sang giờ và phút, ta lấy phần nguyên là 5 giờ.  Phần thập phân 0.14 giờ ta nhân với 60 phút/giờ:\n\n0.14 giờ * 60 phút/giờ ≈ 8.4 phút\n\nVậy, thời gian hoàn thành công việc khi cả hai thợ cùng làm là xấp xỉ **5 giờ 8 phút**.  Nếu cần chính xác hơn, ta có thể ghi là 36/7 giờ.\n",
+            "model": "gemini",
+            "prompt_type": "zero_shot",
+            "elapsed_time": 3.6126396656036377,
+            "token_count": 43,
+            "response_length": 186,
+            "timestamp": "20250331_204030"
+        }
+    ]
+}

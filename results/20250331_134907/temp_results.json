@@ -1,0 +1,24 @@
+{
+    "gemini_standard": [
+        {
+            "question": "Giải thích tại sao khi chia một số cho 9, nếu tổng các chữ số của số đó chia hết cho 9 thì số đó cũng chia hết cho 9?",
+            "response": "Để giải thích tại sao khi chia một số cho 9, nếu tổng các chữ số của số đó chia hết cho 9 thì số đó cũng chia hết cho 9, ta cần hiểu về hệ thập phân và tính chất chia hết cho 9.\n\n**1. Hệ thập phân:**\n\nMột số trong hệ thập phân được biểu diễn dưới dạng:\n\na<sub>n</sub>10<sup>n</sup> + a<sub>n-1</sub>10<sup>n-1</sup> + ... + a<sub>1</sub>10<sup>1</sup> + a<sub>0</sub>10<sup>0</sup>\n\ntrong đó a<sub>i</sub> (i = 0, 1, ..., n) là các chữ số từ 0 đến 9.\n\n**2. Tính chất chia hết cho 9:**\n\nMột số chia hết cho 9 khi và chỉ khi tổng các chữ số của nó chia hết cho 9.  Để chứng minh điều này, ta cần xem xét tính chất chia hết cho 9 của lũy thừa của 10:\n\n* 10 = 9 + 1  ≡ 1 (mod 9)\n* 10<sup>2</sup> = 100 = 99 + 1 ≡ 1 (mod 9)\n* 10<sup>3</sup> = 1000 = 999 + 1 ≡ 1 (mod 9)\n* ...\n* 10<sup>k</sup> ≡ 1 (mod 9)  với mọi số nguyên dương k\n\nNhư vậy, bất kỳ lũy thừa nào của 10 khi chia cho 9 đều dư 1.\n\n**3. Chứng minh chính thức:**\n\nCho số N có dạng:\n\nN = a<sub>n</sub>10<sup>n</sup> + a<sub>n-1</sub>10<sup>n-1</sup> + ... + a<sub>1</sub>10<sup>1</sup> + a<sub>0</sub>10<sup>0</sup>\n\nTheo tính chất đồng dư, ta có:\n\nN ≡ a<sub>n</sub>(1)<sup>n</sup> + a<sub>n-1</sub>(1)<sup>n-1</sup> + ... + a<sub>1</sub>(1)<sup>1</sup> + a<sub>0</sub>(1)<sup>0</sup> (mod 9)\n\nN ≡ a<sub>n</sub> + a<sub>n-1</sub> + ... + a<sub>1</sub> + a<sub>0</sub> (mod 9)\n\nTổng a<sub>n</sub> + a<sub>n-1</sub> + ... + a<sub>1</sub> + a<sub>0</sub> chính là tổng các chữ số của N.  Ký hiệu tổng này là S(N).\n\nVậy, N ≡ S(N) (mod 9).\n\nĐiều này có nghĩa là N và S(N) có cùng số dư khi chia cho 9.\n\nNếu S(N) chia hết cho 9 (S(N) ≡ 0 (mod 9)), thì N cũng chia hết cho 9 (N ≡ 0 (mod 9)).\n\n**Kết luận:**\n\nVì N và tổng các chữ số của nó có cùng số dư khi chia cho 9, nên nếu tổng các chữ số của một số chia hết cho 9 thì số đó cũng chia hết cho 9.  Điều này được chứng minh bằng cách sử dụng tính chất đồng dư và tính chất chia hết của lũy thừa của 10 cho 9.",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 5.120257377624512,
+            "token_count": 47,
+            "response_length": 385,
+            "timestamp": "20250331_134912"
+        },
+        {
+            "question": "Cho hình vuông có cạnh 7cm. Tính chu vi, diện tích và độ dài đường chéo của hình vuông.",
+            "response": "**1. Chu vi hình vuông:**\n\n* **Công thức:** Chu vi hình vuông = cạnh x 4\n* **Áp dụng:** Chu vi hình vuông = 7cm x 4 = 28cm\n\n**Kết luận:** Chu vi hình vuông là 28cm.\n\n\n**2. Diện tích hình vuông:**\n\n* **Công thức:** Diện tích hình vuông = cạnh x cạnh\n* **Áp dụng:** Diện tích hình vuông = 7cm x 7cm = 49cm²\n\n**Kết luận:** Diện tích hình vuông là 49cm².\n\n\n**3. Độ dài đường chéo hình vuông:**\n\n* **Công thức:**  Độ dài đường chéo hình vuông = cạnh x √2  (√2 là căn bậc hai của 2, xấp xỉ 1.414)\n* **Áp dụng:** Độ dài đường chéo hình vuông = 7cm x √2 ≈ 7cm x 1.414 ≈ 9.898cm\n\n**Kết luận:** Độ dài đường chéo hình vuông xấp xỉ 9.898cm.  (Ta có thể làm tròn kết quả tùy theo yêu cầu độ chính xác của bài toán, ví dụ làm tròn đến một chữ số thập phân là 9.9cm)\n\n\n**Tóm tắt kết quả:**\n\n* Chu vi: 28cm\n* Diện tích: 49cm²\n* Độ dài đường chéo: ≈ 9.898cm (hoặc ≈ 9.9cm nếu làm tròn)",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 2.6516377925872803,
+            "token_count": 36,
+            "response_length": 188,
+            "timestamp": "20250331_134914"
+        }
+    ]
+}

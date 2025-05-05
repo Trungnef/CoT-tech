@@ -1,0 +1,88 @@
+question,response,model,prompt_type,elapsed_time,token_count,response_length,timestamp,model_name,correctness_score,reasoning_score,num_reasoning_steps,confidence_score,subject_score,bias_correction,result_type,consistency_score,efficiency_score,has_calculation_error,has_logic_error,complexity_score,subject_type,question_type,question_difficulty,question_tags,is_correct
+"Một cửa hàng bán sách với giá 8613đ một cuốn. Nếu mua 10 cuốn, sau đó được giảm 14%, hỏi phải trả bao nhiêu tiền?","Giá tiền 10 cuốn sách là: 8613đ/cuốn * 10 cuốn = 86130đ
+
+Số tiền được giảm là: 86130đ * 14% = 12058.2đ
+
+Số tiền phải trả là: 86130đ - 12058.2đ = 74071.8đ
+
+Vậy phải trả **74071.8 đồng**.",gemini,zero_shot,1.2590758800506592,34,37,20250331_152056,gemini,0.36000000000000004,0.0,0,1.0,0,0.0,related,0.0,0.0,False,False,0.074,arithmetic,Bài toán từ vựng toán học,Dễ,"logic,thực tế",False
+"Một cửa hàng bán sách với giá 8613đ một cuốn. Nếu mua 10 cuốn, sau đó được giảm 14%, hỏi phải trả bao nhiêu tiền?","1) **Phân tích bài toán:** Bài toán yêu cầu tính tổng số tiền phải trả khi mua 10 cuốn sách, với giá gốc mỗi cuốn là 8613 đồng và được giảm giá 14% khi mua 10 cuốn.
+
+2) **Xác định thông tin quan trọng:**
+    * Giá gốc mỗi cuốn sách: 8613 đồng
+    * Số lượng sách mua: 10 cuốn
+    * Tỷ lệ giảm giá: 14%
+
+3) **Lên kế hoạch giải quyết:**
+    * Tính tổng giá trị ban đầu của 10 cuốn sách (trước khi giảm giá).
+    * Tính số tiền được giảm giá.
+    * Trừ số tiền giảm giá khỏi tổng giá trị ban đầu để tìm ra số tiền phải trả cuối cùng.
+
+4) **Thực hiện từng bước tính toán:**
+    * **Bước 1:** Tính tổng giá trị ban đầu của 10 cuốn sách:
+       8613 đồng/cuốn * 10 cuốn = 86130 đồng
+
+    * **Bước 2:** Tính số tiền được giảm giá:
+       86130 đồng * 14% = 86130 đồng * 0.14 = 12058.2 đồng
+
+    * **Bước 3:** Tính số tiền phải trả sau khi giảm giá:
+       86130 đồng - 12058.2 đồng = 74071.8 đồng
+
+5) **Kết quả cuối cùng:**  Phải trả 74071.8 đồng khi mua 10 cuốn sách.  Do tiền thường được tính tròn, nên có thể làm tròn kết quả thành 74072 đồng.",gemini,cot,4.196819543838501,93,213,20250331_152101,gemini,0.6929625925925926,0.6734567901234568,3,0.2,0,-0.00213,partially_correct,1.0,0.6172839506172839,False,False,0.3504,arithmetic,Bài toán từ vựng toán học,Dễ,"logic,thực tế",False
+"Một cửa hàng bán sách với giá 8613đ một cuốn. Nếu mua 10 cuốn, sau đó được giảm 14%, hỏi phải trả bao nhiêu tiền?","Giá của 10 cuốn sách là: 8613đ/cuốn * 10 cuốn = 86130đ
+
+Số tiền được giảm là: 86130đ * 14% = 12058.2đ
+
+Số tiền phải trả là: 86130đ - 12058.2đ = 74071.8đ
+
+Vậy phải trả **74071.8 đồng**.",gemini,few_shot_3,1.2206342220306396,355,37,20250331_152102,gemini,0.36000000000000004,0.0,0,1.0,0,0.0,related,0.0,0.0,False,False,0.074,arithmetic,Bài toán từ vựng toán học,Dễ,"logic,thực tế",False
+"Một cửa hàng bán sách với giá 8613đ một cuốn. Nếu mua 10 cuốn, sau đó được giảm 14%, hỏi phải trả bao nhiêu tiền?","**Cách 1: Tính giá gốc của 10 cuốn, rồi trừ đi phần giảm giá.**
+
+* Giá gốc của 10 cuốn sách: 8613đ/cuốn * 10 cuốn = 86130đ
+* Số tiền được giảm: 86130đ * 14% = 12058.2đ
+* Tổng số tiền phải trả: 86130đ - 12058.2đ = 74071.8đ
+
+**Cách 2: Tính giá mỗi cuốn sau khi giảm giá, rồi nhân với số lượng.**
+
+* Phần trăm giá còn lại sau khi giảm: 100% - 14% = 86%
+* Giá mỗi cuốn sau khi giảm: 8613đ * 86% = 7397.18đ
+* Tổng số tiền phải trả: 7397.18đ/cuốn * 10 cuốn = 73971.8đ  (Sai số nhỏ do làm tròn)
+
+
+**Cách 3: Sử dụng hệ số nhân để tính toán nhanh.**
+
+* Hệ số nhân tương ứng với 86% giảm giá là 0.86
+* Tổng số tiền phải trả: 8613đ/cuốn * 10 cuốn * 0.86 = 73971.8đ
+
+
+**Kết luận:**
+
+Cả ba cách tiếp cận đều dẫn đến kết quả gần như nhau, với sự khác biệt nhỏ do làm tròn trong cách 2.  Cách 3 cho kết quả chính xác nhất vì không có làm tròn trung gian.  Tuy nhiên, sự khác biệt là rất nhỏ (khoảng 0.2đ).  Vì vậy, **câu trả lời nhất quán nhất là 73971.8đ** (hoặc làm tròn lên 73972đ tùy thuộc vào yêu cầu chính xác của bài toán).  Sai số nhỏ xuất phát từ việc làm tròn số trong quá trình tính toán.",gemini,cot_self_consistency_3,3.317858934402466,60,235,20250331_152105,gemini,0.36000000000000004,0.0,0,1.0,0,0.0,related,0.0,0.0,False,False,0.2,arithmetic,Bài toán từ vựng toán học,Dễ,"logic,thực tế",False
+"Một cửa hàng bán sách với giá 8613đ một cuốn. Nếu mua 10 cuốn, sau đó được giảm 14%, hỏi phải trả bao nhiêu tiền?","Bước 1:
+SUY NGHĨ: Tôi cần hiểu bài toán đang hỏi gì và xác định các khái niệm và công thức liên quan.
+HÀNH ĐỘNG: Phân tích đề bài và xác định các biến và mối quan hệ chính.
+KẾT QUẢ: Bài toán yêu cầu tính tổng số tiền phải trả khi mua 10 cuốn sách với giá gốc 8613đ/cuốn và được giảm giá 14%.  Các biến chính bao gồm: giá gốc mỗi cuốn sách (8613đ), số lượng sách (10 cuốn), phần trăm giảm giá (14%).  Công thức cần sử dụng là tính tổng tiền gốc, sau đó tính số tiền giảm và cuối cùng trừ số tiền giảm khỏi tổng tiền gốc.
+
+
+Bước 2:
+SUY NGHĨ: Tôi cần tính tổng số tiền phải trả trước khi giảm giá.
+HÀNH ĐỘNG: Nhân giá gốc mỗi cuốn sách với số lượng sách.
+KẾT QUẢ: 8613đ/cuốn * 10 cuốn = 86130đ
+
+
+Bước 3:
+SUY NGHĨ: Tôi cần tính số tiền được giảm giá.
+HÀNH ĐỘNG: Tính 14% của tổng số tiền trước khi giảm giá.
+KẾT QUẢ: 86130đ * 14% = 86130đ * 0.14 = 12058.2đ
+
+
+Bước 4:
+SUY NGHĨ: Tôi cần tính tổng số tiền phải trả sau khi giảm giá.
+HÀNH ĐỘNG: Trừ số tiền giảm giá khỏi tổng số tiền ban đầu.
+KẾT QUẢ: 86130đ - 12058.2đ = 74071.8đ
+
+
+Bước 5:
+SUY NGHĨ: Tôi cần kiểm tra lại kết quả và trình bày đáp án.
+HÀNH ĐỘNG: Xem lại các phép tính và viết câu trả lời cuối cùng.
+KẾT QUẢ:  Tổng số tiền phải trả sau khi giảm giá là 74071.8đ.",gemini,react,3.738800287246704,116,263,20250331_152109,gemini,0.0,0.0,0,0.7,0,0.0,incorrect,0.0,0.0,False,False,0.2,arithmetic,Bài toán từ vựng toán học,Dễ,"logic,thực tế",False

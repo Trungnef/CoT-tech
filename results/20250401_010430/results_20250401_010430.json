@@ -1,0 +1,86 @@
+[
+  {
+    "model_name":"qwen",
+    "prompt_type":"zero_shot",
+    "question_id":"0",
+    "question":"Th\u1ee3 A l\u00e0m m\u1ed9t c\u00f4ng vi\u1ec7c h\u1ebft 6 gi\u1edd, th\u1ee3 B l\u00e0m h\u1ebft 4 gi\u1edd. H\u1ecfi n\u1ebfu hai th\u1ee3 c\u00f9ng l\u00e0m th\u00ec sau bao l\u00e2u s\u1ebd ho\u00e0n th\u00e0nh c\u00f4ng vi\u1ec7c?",
+    "answer":"[Error: Failed to load qwen model]",
+    "token_count":61,
+    "elapsed_time":1.0950357914,
+    "tokens_per_second":55.7059417411,
+    "response_length":34,
+    "example_selection":null
+  },
+  {
+    "model_name":"qwen",
+    "prompt_type":"few_shot_3",
+    "question_id":"0",
+    "question":"Th\u1ee3 A l\u00e0m m\u1ed9t c\u00f4ng vi\u1ec7c h\u1ebft 6 gi\u1edd, th\u1ee3 B l\u00e0m h\u1ebft 4 gi\u1edd. H\u1ecfi n\u1ebfu hai th\u1ee3 c\u00f9ng l\u00e0m th\u00ec sau bao l\u00e2u s\u1ebd ho\u00e0n th\u00e0nh c\u00f4ng vi\u1ec7c?",
+    "answer":"[Error: Failed to load qwen model]",
+    "token_count":539,
+    "elapsed_time":0.7963142395,
+    "tokens_per_second":676.868468831,
+    "response_length":34,
+    "example_selection":"default"
+  },
+  {
+    "model_name":"qwen",
+    "prompt_type":"few_shot_5",
+    "question_id":"0",
+    "question":"Th\u1ee3 A l\u00e0m m\u1ed9t c\u00f4ng vi\u1ec7c h\u1ebft 6 gi\u1edd, th\u1ee3 B l\u00e0m h\u1ebft 4 gi\u1edd. H\u1ecfi n\u1ebfu hai th\u1ee3 c\u00f9ng l\u00e0m th\u00ec sau bao l\u00e2u s\u1ebd ho\u00e0n th\u00e0nh c\u00f4ng vi\u1ec7c?",
+    "answer":"[Error: Failed to load qwen model]",
+    "token_count":820,
+    "elapsed_time":0.7902424335,
+    "tokens_per_second":1037.6562497643,
+    "response_length":34,
+    "example_selection":"default"
+  },
+  {
+    "model_name":"qwen",
+    "prompt_type":"few_shot_7",
+    "question_id":"0",
+    "question":"Th\u1ee3 A l\u00e0m m\u1ed9t c\u00f4ng vi\u1ec7c h\u1ebft 6 gi\u1edd, th\u1ee3 B l\u00e0m h\u1ebft 4 gi\u1edd. H\u1ecfi n\u1ebfu hai th\u1ee3 c\u00f9ng l\u00e0m th\u00ec sau bao l\u00e2u s\u1ebd ho\u00e0n th\u00e0nh c\u00f4ng vi\u1ec7c?",
+    "answer":"[Error: Failed to load qwen model]",
+    "token_count":1044,
+    "elapsed_time":0.776870966,
+    "tokens_per_second":1343.8525131559,
+    "response_length":34,
+    "example_selection":"default"
+  },
+  {
+    "model_name":"qwen",
+    "prompt_type":"cot",
+    "question_id":"0",
+    "question":"Th\u1ee3 A l\u00e0m m\u1ed9t c\u00f4ng vi\u1ec7c h\u1ebft 6 gi\u1edd, th\u1ee3 B l\u00e0m h\u1ebft 4 gi\u1edd. H\u1ecfi n\u1ebfu hai th\u1ee3 c\u00f9ng l\u00e0m th\u00ec sau bao l\u00e2u s\u1ebd ho\u00e0n th\u00e0nh c\u00f4ng vi\u1ec7c?",
+    "answer":"[Error: Failed to load qwen model]",
+    "token_count":199,
+    "elapsed_time":0.7845482826,
+    "tokens_per_second":253.6491435997,
+    "response_length":34,
+    "example_selection":null
+  },
+  {
+    "model_name":"qwen",
+    "prompt_type":"cot_self_consistency_3",
+    "question_id":"0",
+    "question":"Th\u1ee3 A l\u00e0m m\u1ed9t c\u00f4ng vi\u1ec7c h\u1ebft 6 gi\u1edd, th\u1ee3 B l\u00e0m h\u1ebft 4 gi\u1edd. H\u1ecfi n\u1ebfu hai th\u1ee3 c\u00f9ng l\u00e0m th\u00ec sau bao l\u00e2u s\u1ebd ho\u00e0n th\u00e0nh c\u00f4ng vi\u1ec7c?",
+    "answer":"Generated 3 different solutions using Chain-of-Thought reasoning.\n\nThe most consistent answer appeared 3\/3 times:\n[error failed to load qwen model]\n\nIndividual solution summaries:\nSolution 1: [Error: Failed to load qwen model]\n\nSolution 2: [Error: Failed to load qwen model]\n\nSolution 3: [Error: Failed to load qwen model]\n\n",
+    "token_count":196,
+    "elapsed_time":2.3346846104,
+    "tokens_per_second":83.9513821823,
+    "response_length":324,
+    "example_selection":null
+  },
+  {
+    "model_name":"qwen",
+    "prompt_type":"cot_self_consistency_5",
+    "question_id":"0",
+    "question":"Th\u1ee3 A l\u00e0m m\u1ed9t c\u00f4ng vi\u1ec7c h\u1ebft 6 gi\u1edd, th\u1ee3 B l\u00e0m h\u1ebft 4 gi\u1edd. H\u1ecfi n\u1ebfu hai th\u1ee3 c\u00f9ng l\u00e0m th\u00ec sau bao l\u00e2u s\u1ebd ho\u00e0n th\u00e0nh c\u00f4ng vi\u1ec7c?",
+    "answer":"Generated 5 different solutions using Chain-of-Thought reasoning.\n\nThe most consistent answer appeared 5\/5 times:\n[error failed to load qwen model]\n\nIndividual solution summaries:\nSolution 1: [Error: Failed to load qwen model]\n\nSolution 2: [Error: Failed to load qwen model]\n\nSolution 3: [Error: Failed to load qwen model]\n\nSolution 4: [Error: Failed to load qwen model]\n\nSolution 5: [Error: Failed to load qwen model]\n\n",
+    "token_count":196,
+    "elapsed_time":3.982691288,
+    "tokens_per_second":49.2129532085,
+    "response_length":420,
+    "example_selection":null
+  }
+]

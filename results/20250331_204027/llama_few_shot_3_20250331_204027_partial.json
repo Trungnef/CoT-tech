@@ -1,0 +1,14 @@
+{
+    "llama_few_shot_3": [
+        {
+            "question": "Thợ A làm một công việc hết 9 giờ, thợ B làm hết 12 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",
+            "response": "Giả sử công việc có 36 đơn vị (lcm) để dễ tính toán.\nThợ A làm 36 đơn vị trong 9 giờ, nên tốc độ làm việc của thợ A là 36/9 = 4 đơn vị/giờ.\nThợ B làm 36 đơn vị trong 12 giờ, nên tốc độ làm việc của thợ B là 36/12 = 3 đơn vị/giờ.\nKhi làm việc cùng nhau, tốc độ làm việc tổng cộng của hai thợ là 4 + 3 = 7 đơn vị/giờ.\nThời gian cần thiết để hoàn thành công việc khi hai thợ làm cùng nhau là 36 đơn vị / 7 đơn vị/giờ = 36/7 giờ.\nVậy, hai thợ sẽ hoàn thành công việc trong 36/7 giờ, hay khoảng 5,14 giờ. \n\nĐáp án cuối cùng là 36/7 giờ.",
+            "model": "llama",
+            "prompt_type": "few_shot_3",
+            "elapsed_time": 44.31212329864502,
+            "token_count": 382,
+            "response_length": 129,
+            "timestamp": "20250331_205842"
+        }
+    ]
+}

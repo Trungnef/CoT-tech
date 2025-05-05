@@ -1,0 +1,14 @@
+{
+    "gemini_standard": [
+        {
+            "question": "Một hồ bơi có 3694 m³ nước. Có 2 ống nước chảy vào với lưu lượng 58 m³/giờ và 1 ống thoát với lưu lượng 23 m³/giờ. Hỏi sau bao lâu hồ sẽ đầy?",
+            "response": "**1. Xác định lưu lượng nước chảy vào tổng thể:**\n\n* Ống 1 chảy vào với lưu lượng: 58 m³/giờ\n* Ống 2 chảy vào với lưu lượng: 58 m³/giờ\n* Tổng lưu lượng nước chảy vào: 58 m³/giờ + 58 m³/giờ = 116 m³/giờ\n\n**2. Xác định lưu lượng nước thực tế tăng lên trong hồ:**\n\n* Lưu lượng nước chảy vào: 116 m³/giờ\n* Lưu lượng nước chảy ra: 23 m³/giờ\n* Lưu lượng nước thực tế tăng lên trong hồ: 116 m³/giờ - 23 m³/giờ = 93 m³/giờ\n\n**3. Tính thời gian để hồ đầy:**\n\n* Thể tích hồ: 3694 m³\n* Lưu lượng nước tăng lên mỗi giờ: 93 m³/giờ\n* Thời gian để hồ đầy: 3694 m³ / 93 m³/giờ = 39,67 giờ (xấp xỉ)\n\n**4. Chuyển đổi thời gian sang giờ và phút:**\n\n* Số giờ nguyên: 39 giờ\n* Số phút còn lại: (39,67 - 39) giờ * 60 phút/giờ ≈ 40 phút\n\n**5. Kết luận:**\n\nSau khoảng **39 giờ 40 phút**, hồ bơi sẽ đầy nước.\n\n\n**Tóm tắt lời giải:**\n\n* **Bước 1:** Tính tổng lưu lượng nước chảy vào.\n* **Bước 2:** Tính lưu lượng nước thực tế tăng trong hồ (lưu lượng vào - lưu lượng ra).\n* **Bước 3:** Chia thể tích hồ cho lưu lượng nước tăng thực tế để tìm thời gian.\n* **Bước 4:** Chuyển đổi thời gian sang giờ và phút để có kết quả dễ hiểu hơn.\n* **Bước 5:** Kết luận.",
+            "model": "gemini",
+            "prompt_type": "standard",
+            "elapsed_time": 4.503185749053955,
+            "token_count": 51,
+            "response_length": 248,
+            "timestamp": "20250331_140242"
+        }
+    ]
+}

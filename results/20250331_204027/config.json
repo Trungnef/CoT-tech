@@ -1,0 +1,25 @@
+{
+    "questions_json": "db/questions/problems.json",
+    "models": [
+        "gemini",
+        "llama",
+        "qwen"
+    ],
+    "prompt_types": [
+        "zero_shot",
+        "cot",
+        "few_shot_3",
+        "cot_self_consistency_3",
+        "react"
+    ],
+    "batch_size": 10,
+    "max_questions": 1,
+    "results_dir": "results",
+    "use_4bit": true,
+    "max_workers": 3,
+    "resume": false,
+    "results_file": null,
+    "parallel": false,
+    "gpu_ids": "0,1,2",
+    "gpu_allocation": "llama:0,qwen:1,gemini:2"
+}
