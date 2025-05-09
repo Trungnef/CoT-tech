@@ -1,0 +1,71 @@
+{
+  "meta": {
+    "timestamp": "20250505_133228",
+    "total_questions": 7400,
+    "total_correct": 7383
+  },
+  "models": {
+    "llama": {
+      "correct": 1988,
+      "total": 2000,
+      "accuracy": 0.994
+    },
+    "qwen": {
+      "correct": 3598,
+      "total": 3600,
+      "accuracy": 0.9994444444444445
+    },
+    "gemini": {
+      "correct": 1797,
+      "total": 1800,
+      "accuracy": 0.9983333333333333
+    }
+  },
+  "prompts": {
+    "zero_shot": {
+      "correct": 800,
+      "total": 800,
+      "accuracy": 1.0
+    },
+    "few_shot_3": {
+      "correct": 798,
+      "total": 800,
+      "accuracy": 0.9975
+    },
+    "few_shot_5": {
+      "correct": 796,
+      "total": 800,
+      "accuracy": 0.995
+    },
+    "few_shot_7": {
+      "correct": 799,
+      "total": 800,
+      "accuracy": 0.99875
+    },
+    "cot": {
+      "correct": 798,
+      "total": 800,
+      "accuracy": 0.9975
+    },
+    "cot_self_consistency_3": {
+      "correct": 800,
+      "total": 800,
+      "accuracy": 1.0
+    },
+    "cot_self_consistency_5": {
+      "correct": 798,
+      "total": 800,
+      "accuracy": 0.9975
+    },
+    "cot_self_consistency_7": {
+      "correct": 800,
+      "total": 800,
+      "accuracy": 1.0
+    },
+    "react": {
+      "correct": 994,
+      "total": 1000,
+      "accuracy": 0.994
+    }
+  }
+}

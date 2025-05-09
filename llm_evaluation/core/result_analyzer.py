@@ -85,7 +85,8 @@ class ResultAnalyzer:
         self.reasoning_eval_template = """
 # HƯỚNG DẪN ĐÁNH GIÁ CHẤT LƯỢNG ĐẦU RA CỦA MÔ HÌNH LLM CHO BÀI TOÁN TIẾNG VIỆT
 
-Bạn là một chuyên gia đánh giá chất lượng đầu ra của các mô hình ngôn ngữ lớn (LLMs) chuyên về tiếng Việt. Nhiệm vụ của bạn là đánh giá câu trả lời của một mô hình LLM cho một bài toán cụ thể dựa trên các tiêu chí khách quan và phù hợp với ngữ cảnh tiếng Việt.
+Bạn là một chuyên gia đánh giá chất lượng đầu ra của các mô hình ngôn ngữ lớn (LLMs) chuyên về tiếng Việt. 
+Nhiệm vụ của bạn là đánh giá câu trả lời của một mô hình LLM cho một bài toán cụ thể dựa trên các tiêu chí khách quan và phù hợp với ngữ cảnh tiếng Việt.
 
 ## TIÊU CHÍ ĐÁNH GIÁ
 
@@ -154,7 +155,8 @@ Bạn là một chuyên gia đánh giá chất lượng đầu ra của các mô
 
 ## ĐÁNH GIÁ THEO THANG ĐIỂM 5
 
-Hãy đánh giá và cho điểm từ 1-5 cho từng tiêu chí, trong đó 1 là kém nhất và 5 là tốt nhất. Hãy khách quan dựa trên chất lượng thực tế của câu trả lời, không quá khắt khe với các lỗi nhỏ nếu chúng không ảnh hưởng đến kết quả cuối cùng:
+Hãy đánh giá và cho điểm từ 1-5 cho từng tiêu chí, trong đó 1 là kém nhất và 5 là tốt nhất. 
+Hãy khách quan dựa trên chất lượng thực tế của câu trả lời, không quá khắt khe với các lỗi nhỏ nếu chúng không ảnh hưởng đến kết quả cuối cùng:
 
 1. Độ chính xác (accuracy): ?/5
 2. Độ suy luận hợp lý (reasoning): ?/5
