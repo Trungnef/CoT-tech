@@ -1,0 +1,4 @@
+2025-10-25 14:24:06,922 - root - INFO - Đã tìm thấy NLTK resource punkt
+2025-10-25 14:24:06,973 - root - INFO - Đã tìm thấy NLTK resource wordnet
+2025-10-25 14:26:31,934 - utils.memory_utils - INFO - Đã bắt đầu giám sát bộ nhớ
+Tổng tiến trình:   0%|          | 0/2700 [00:00<?, ?it/s]Tổng tiến trình:   0%|          | 1/2700 [04:47<215:13:30, 287.07s/it]slurmstepd: error: *** JOB 46029 ON node001 CANCELLED AT 2025-10-25T14:32:56 ***

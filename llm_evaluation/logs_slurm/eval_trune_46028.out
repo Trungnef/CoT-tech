@@ -1,0 +1,4 @@
+Job started at Sat Oct 25 11:57:46 +07 2025 on node node001
+Successfully activated Conda environment: env_llm
+Working directory: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation
+Job finished at Sat Oct 25 12:30:00 +07 2025

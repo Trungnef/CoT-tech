@@ -1,0 +1,1120 @@
+2025-10-25 22:35:26,234 - root - INFO - Đã tìm thấy NLTK resource punkt
+2025-10-25 22:35:26,239 - root - INFO - Đã tìm thấy NLTK resource wordnet
+2025-10-25 22:37:46,811 - utils.memory_utils - INFO - Đã bắt đầu giám sát bộ nhớ
+Tổng tiến trình:   0%|          | 0/1350 [00:00<?, ?it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.82s/it]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.24s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.33s/it]
+Tổng tiến trình:   0%|          | 1/1350 [19:05<429:10:11, 1145.30s/it]Tổng tiến trình:   0%|          | 5/1350 [24:01<87:18:46, 233.70s/it]  Tổng tiến trình:   1%|          | 9/1350 [28:29<52:56:57, 142.15s/it]Tổng tiến trình:   1%|          | 13/1350 [32:49<40:13:00, 108.29s/it]Tổng tiến trình:   1%|▏         | 17/1350 [37:41<35:03:58, 94.70s/it] Tổng tiến trình:   2%|▏         | 21/1350 [42:05<31:11:52, 84.51s/it]Tổng tiến trình:   2%|▏         | 25/1350 [47:20<30:22:41, 82.54s/it]Tổng tiến trình:   2%|▏         | 29/1350 [52:39<29:57:03, 81.62s/it]Tổng tiến trình:   2%|▏         | 33/1350 [57:57<29:37:09, 80.96s/it]Tổng tiến trình:   3%|▎         | 37/1350 [1:02:40<28:21:36, 77.76s/it]Tổng tiến trình:   3%|▎         | 41/1350 [1:07:30<27:41:16, 76.15s/it]Tổng tiến trình:   3%|▎         | 45/1350 [1:12:46<27:55:07, 77.02s/it]Tổng tiến trình:   4%|▎         | 49/1350 [1:15:05<23:11:26, 64.17s/it]Tổng tiến trình:   4%|▍         | 51/1350 [1:20:30<29:29:03, 81.71s/it]Tổng tiến trình:   4%|▍         | 55/1350 [1:24:56<27:32:59, 76.59s/it]Tổng tiến trình:   4%|▍         | 59/1350 [1:30:40<28:34:21, 79.68s/it]Tổng tiến trình:   5%|▍         | 63/1350 [1:36:20<29:04:02, 81.31s/it]Tổng tiến trình:   5%|▍         | 67/1350 [1:41:25<28:25:13, 79.75s/it]Tổng tiến trình:   5%|▌         | 71/1350 [1:47:12<29:06:16, 81.92s/it]Tổng tiến trình:   6%|▌         | 75/1350 [1:52:51<29:18:57, 82.77s/it]Tổng tiến trình:   6%|▌         | 79/1350 [1:58:23<29:15:28, 82.87s/it]Tổng tiến trình:   6%|▌         | 83/1350 [2:02:58<27:39:26, 78.58s/it]Tổng tiến trình:   6%|▋         | 87/1350 [2:08:27<27:57:18, 79.68s/it]Tổng tiến trình:   7%|▋         | 91/1350 [2:13:34<27:33:52, 78.82s/it]Tổng tiến trình:   7%|▋         | 95/1350 [2:18:20<26:42:35, 76.62s/it]Tổng tiến trình:   7%|▋         | 99/1350 [2:21:15<23:10:49, 66.71s/it]Tổng tiến trình:   7%|▋         | 101/1350 [2:26:14<28:12:31, 81.31s/it]Tổng tiến trình:   8%|▊         | 105/1350 [2:31:43<28:14:33, 81.67s/it]Tổng tiến trình:   8%|▊         | 109/1350 [2:38:20<30:06:53, 87.36s/it]Tổng tiến trình:   8%|▊         | 113/1350 [2:44:30<30:34:05, 88.96s/it]Tổng tiến trình:   9%|▊         | 117/1350 [2:49:55<29:39:22, 86.59s/it]Tổng tiến trình:   9%|▉         | 121/1350 [2:55:55<29:55:34, 87.66s/it]Tổng tiến trình:   9%|▉         | 125/1350 [3:02:15<30:34:16, 89.84s/it]Tổng tiến trình:  10%|▉         | 129/1350 [3:08:43<31:13:10, 92.05s/it]Tổng tiến trình:  10%|▉         | 133/1350 [3:15:01<31:22:47, 92.82s/it]Tổng tiến trình:  10%|█         | 137/1350 [3:20:39<30:25:10, 90.28s/it]Tổng tiến trình:  10%|█         | 141/1350 [3:26:19<29:46:42, 88.67s/it]Tổng tiến trình:  11%|█         | 145/1350 [3:31:41<28:51:36, 86.22s/it]Tổng tiến trình:  11%|█         | 149/1350 [3:34:18<24:03:48, 72.13s/it]Tổng tiến trình:  11%|█         | 151/1350 [3:41:19<32:09:20, 96.55s/it]Tổng tiến trình:  11%|█▏        | 155/1350 [3:48:36<33:27:55, 100.82s/it]Tổng tiến trình:  12%|█▏        | 159/1350 [3:55:28<33:36:12, 101.57s/it]Tổng tiến trình:  12%|█▏        | 163/1350 [4:01:17<31:58:48, 96.99s/it] Tổng tiến trình:  12%|█▏        | 167/1350 [4:07:15<31:06:45, 94.68s/it]Tổng tiến trình:  13%|█▎        | 171/1350 [4:11:51<28:25:24, 86.79s/it]Tổng tiến trình:  13%|█▎        | 175/1350 [4:17:55<28:44:29, 88.06s/it]Tổng tiến trình:  13%|█▎        | 179/1350 [4:24:51<30:12:26, 92.87s/it]Tổng tiến trình:  14%|█▎        | 183/1350 [4:31:19<30:30:51, 94.13s/it]Tổng tiến trình:  14%|█▍        | 187/1350 [4:37:49<30:45:03, 95.19s/it]Tổng tiến trình:  14%|█▍        | 191/1350 [4:45:00<31:51:05, 98.93s/it]Tổng tiến trình:  14%|█▍        | 195/1350 [4:51:30<31:35:47, 98.48s/it]Tổng tiến trình:  15%|█▍        | 199/1350 [4:54:33<26:25:14, 82.64s/it]Tổng tiến trình:  15%|█▍        | 201/1350 [4:58:48<28:55:16, 90.62s/it]Tổng tiến trình:  15%|█▌        | 205/1350 [5:03:56<27:21:08, 86.00s/it]Tổng tiến trình:  15%|█▌        | 209/1350 [5:08:21<25:14:54, 79.66s/it]Tổng tiến trình:  16%|█▌        | 213/1350 [5:12:57<24:05:29, 76.28s/it]Tổng tiến trình:  16%|█▌        | 217/1350 [5:17:54<23:47:49, 75.61s/it]Tổng tiến trình:  16%|█▋        | 221/1350 [5:22:59<23:47:24, 75.86s/it]Tổng tiến trình:  17%|█▋        | 225/1350 [5:28:06<23:46:49, 76.10s/it]Tổng tiến trình:  17%|█▋        | 229/1350 [5:32:53<23:17:04, 74.78s/it]Tổng tiến trình:  17%|█▋        | 233/1350 [5:37:40<22:54:46, 73.85s/it]Tổng tiến trình:  18%|█▊        | 237/1350 [5:41:56<21:54:37, 70.87s/it]Tổng tiến trình:  18%|█▊        | 241/1350 [5:47:33<23:04:39, 74.91s/it]Tổng tiến trình:  18%|█▊        | 245/1350 [5:52:30<22:55:44, 74.70s/it]Tổng tiến trình:  18%|█▊        | 249/1350 [5:54:55<19:18:44, 63.15s/it]Tổng tiến trình:  19%|█▊        | 251/1350 [6:00:12<24:25:29, 80.01s/it]Tổng tiến trình:  19%|█▉        | 255/1350 [6:06:41<26:05:56, 85.81s/it]Tổng tiến trình:  19%|█▉        | 259/1350 [6:12:19<25:52:02, 85.36s/it]Tổng tiến trình:  19%|█▉        | 263/1350 [6:19:07<27:22:52, 90.68s/it]Tổng tiến trình:  20%|█▉        | 267/1350 [6:25:07<27:12:18, 90.43s/it]Tổng tiến trình:  20%|██        | 271/1350 [6:32:07<28:26:38, 94.90s/it]Tổng tiến trình:  20%|██        | 275/1350 [6:38:25<28:18:58, 94.83s/it]Tổng tiến trình:  21%|██        | 279/1350 [6:43:53<27:02:25, 90.89s/it]Tổng tiến trình:  21%|██        | 283/1350 [6:50:23<27:31:49, 92.89s/it]Tổng tiến trình:  21%|██▏       | 287/1350 [6:56:23<27:09:53, 92.00s/it]Tổng tiến trình:  22%|██▏       | 291/1350 [7:02:21<26:51:34, 91.31s/it]Tổng tiến trình:  22%|██▏       | 295/1350 [7:08:17<26:32:55, 90.59s/it]Tổng tiến trình:  22%|██▏       | 299/1350 [7:11:43<23:00:41, 78.82s/it]Tổng tiến trình:  22%|██▏       | 301/1350 [7:19:22<30:44:15, 105.49s/it]Tổng tiến trình:  23%|██▎       | 305/1350 [7:26:53<31:19:44, 107.93s/it]Tổng tiến trình:  23%|██▎       | 309/1350 [7:34:15<31:26:28, 108.73s/it]Tổng tiến trình:  23%|██▎       | 313/1350 [7:41:13<30:56:51, 107.44s/it]Tổng tiến trình:  23%|██▎       | 317/1350 [7:48:03<30:22:39, 105.87s/it]Tổng tiến trình:  24%|██▍       | 321/1350 [7:55:13<30:24:17, 106.37s/it]Tổng tiến trình:  24%|██▍       | 325/1350 [8:03:05<31:17:21, 109.89s/it]Tổng tiến trình:  24%|██▍       | 329/1350 [8:10:05<30:44:42, 108.41s/it]Tổng tiến trình:  25%|██▍       | 333/1350 [8:16:53<30:04:58, 106.49s/it]Tổng tiến trình:  25%|██▍       | 337/1350 [8:23:43<29:38:01, 105.31s/it]Tổng tiến trình:  25%|██▌       | 341/1350 [8:31:13<30:07:06, 107.46s/it]Tổng tiến trình:  26%|██▌       | 345/1350 [8:38:34<30:14:02, 108.30s/it]Tổng tiến trình:  26%|██▌       | 349/1350 [8:42:29<25:58:14, 93.40s/it] Tổng tiến trình:  26%|██▌       | 351/1350 [8:50:21<32:54:28, 118.59s/it]Tổng tiến trình:  26%|██▋       | 355/1350 [8:58:57<33:44:43, 122.09s/it]Tổng tiến trình:  27%|██▋       | 359/1350 [9:07:09<33:42:07, 122.43s/it]Tổng tiến trình:  27%|██▋       | 363/1350 [9:14:14<32:09:04, 117.27s/it]Tổng tiến trình:  27%|██▋       | 367/1350 [9:20:46<30:22:49, 111.26s/it]Tổng tiến trình:  27%|██▋       | 371/1350 [9:28:08<30:12:18, 111.07s/it]Tổng tiến trình:  28%|██▊       | 375/1350 [9:35:51<30:28:02, 112.49s/it]Tổng tiến trình:  28%|██▊       | 379/1350 [9:43:33<30:34:25, 113.35s/it]Tổng tiến trình:  28%|██▊       | 383/1350 [9:51:16<30:39:24, 114.13s/it]Tổng tiến trình:  29%|██▊       | 387/1350 [9:58:15<29:45:51, 111.27s/it]Tổng tiến trình:  29%|██▉       | 391/1350 [10:05:42<29:40:33, 111.40s/it]Tổng tiến trình:  29%|██▉       | 395/1350 [10:13:22<29:50:38, 112.50s/it]Tổng tiến trình:  30%|██▉       | 399/1350 [10:16:52<24:56:58, 94.45s/it] Tổng tiến trình:  30%|██▉       | 401/1350 [10:21:01<26:18:51, 99.82s/it]Tổng tiến trình:  30%|███       | 405/1350 [10:25:14<22:58:44, 87.54s/it]Tổng tiến trình:  30%|███       | 409/1350 [10:29:44<21:10:54, 81.04s/it]Tổng tiến trình:  31%|███       | 413/1350 [10:34:45<20:36:33, 79.18s/it]Tổng tiến trình:  31%|███       | 417/1350 [10:38:38<18:49:35, 72.64s/it]Tổng tiến trình:  31%|███       | 421/1350 [10:44:17<19:43:03, 76.41s/it]Tổng tiến trình:  31%|███▏      | 425/1350 [10:48:39<18:46:22, 73.06s/it]Tổng tiến trình:  32%|███▏      | 429/1350 [10:53:13<18:20:10, 71.67s/it]Tổng tiến trình:  32%|███▏      | 433/1350 [10:58:47<19:09:47, 75.23s/it]Tổng tiến trình:  32%|███▏      | 437/1350 [11:04:05<19:25:04, 76.57s/it]Tổng tiến trình:  33%|███▎      | 441/1350 [11:11:12<21:37:00, 85.61s/it]Tổng tiến trình:  33%|███▎      | 445/1350 [11:15:03<19:25:34, 77.28s/it]Tổng tiến trình:  33%|███▎      | 449/1350 [11:17:05<15:49:10, 63.21s/it]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards:  50%|█████     | 1/2 [03:56<03:56, 236.46s/it]
+Loading checkpoint shards: 100%|██████████| 2/2 [05:56<00:00, 167.95s/it]Loading checkpoint shards: 100%|██████████| 2/2 [05:56<00:00, 178.24s/it]
+Tổng tiến trình:  33%|███▎      | 451/1350 [11:28:14<27:45:14, 111.14s/it]Tổng tiến trình:  34%|███▎      | 455/1350 [11:33:10<24:32:35, 98.72s/it] Tổng tiến trình:  34%|███▍      | 459/1350 [11:38:03<22:23:17, 90.46s/it]Tổng tiến trình:  34%|███▍      | 463/1350 [11:42:54<20:53:42, 84.81s/it]Tổng tiến trình:  35%|███▍      | 467/1350 [11:47:39<19:46:12, 80.60s/it]Tổng tiến trình:  35%|███▍      | 471/1350 [11:52:29<19:04:25, 78.12s/it]Tổng tiến trình:  35%|███▌      | 475/1350 [11:57:19<18:34:41, 76.44s/it]Tổng tiến trình:  35%|███▌      | 479/1350 [12:02:03<18:05:14, 74.76s/it]Tổng tiến trình:  36%|███▌      | 483/1350 [12:06:47<17:43:59, 73.63s/it]Tổng tiến trình:  36%|███▌      | 487/1350 [12:11:29<17:25:45, 72.71s/it]Tổng tiến trình:  36%|███▋      | 491/1350 [12:16:20<17:20:21, 72.67s/it]Tổng tiến trình:  37%|███▋      | 495/1350 [12:21:13<17:17:58, 72.84s/it]Tổng tiến trình:  37%|███▋      | 499/1350 [12:23:44<14:43:28, 62.29s/it]Tổng tiến trình:  37%|███▋      | 501/1350 [12:28:57<18:37:38, 78.99s/it]Tổng tiến trình:  37%|███▋      | 505/1350 [12:34:14<18:33:44, 79.08s/it]Tổng tiến trình:  38%|███▊      | 509/1350 [12:39:41<18:40:23, 79.93s/it]Tổng tiến trình:  38%|███▊      | 513/1350 [12:44:48<18:20:50, 78.91s/it]Tổng tiến trình:  38%|███▊      | 517/1350 [12:50:04<18:16:27, 78.98s/it]Tổng tiến trình:  39%|███▊      | 521/1350 [12:55:32<18:23:30, 79.87s/it]Tổng tiến trình:  39%|███▉      | 525/1350 [13:00:39<18:04:50, 78.90s/it]Tổng tiến trình:  39%|███▉      | 529/1350 [13:05:58<18:02:57, 79.14s/it]Tổng tiến trình:  39%|███▉      | 533/1350 [13:11:04<17:47:25, 78.39s/it]Tổng tiến trình:  40%|███▉      | 537/1350 [13:16:00<17:23:40, 77.02s/it]Tổng tiến trình:  40%|████      | 541/1350 [13:21:18<17:28:56, 77.80s/it]Tổng tiến trình:  40%|████      | 545/1350 [13:26:14<17:08:15, 76.64s/it]Tổng tiến trình:  41%|████      | 549/1350 [13:28:49<14:31:02, 65.25s/it]Tổng tiến trình:  41%|████      | 551/1350 [13:34:48<18:57:52, 85.45s/it]Tổng tiến trình:  41%|████      | 555/1350 [13:40:48<19:12:42, 87.00s/it]Tổng tiến trình:  41%|████▏     | 559/1350 [13:47:00<19:32:56, 88.97s/it]Tổng tiến trình:  42%|████▏     | 563/1350 [13:53:22<19:53:32, 90.99s/it]Tổng tiến trình:  42%|████▏     | 567/1350 [13:58:14<18:34:42, 85.42s/it]Tổng tiến trình:  42%|████▏     | 571/1350 [14:03:37<18:09:59, 83.95s/it]Tổng tiến trình:  43%|████▎     | 575/1350 [14:09:55<18:46:28, 87.21s/it]Tổng tiến trình:  43%|████▎     | 579/1350 [14:14:59<17:56:44, 83.79s/it]Tổng tiến trình:  43%|████▎     | 583/1350 [14:20:52<18:07:58, 85.11s/it]Tổng tiến trình:  43%|████▎     | 587/1350 [14:26:19<17:49:54, 84.13s/it]Tổng tiến trình:  44%|████▍     | 591/1350 [14:32:28<18:14:46, 86.54s/it]Tổng tiến trình:  44%|████▍     | 595/1350 [14:37:47<17:43:56, 84.55s/it]Tổng tiến trình:  44%|████▍     | 599/1350 [14:40:44<15:06:11, 72.40s/it]Tổng tiến trình:  45%|████▍     | 601/1350 [14:46:57<19:16:01, 92.61s/it]Tổng tiến trình:  45%|████▍     | 605/1350 [14:54:11<20:15:47, 97.92s/it]Tổng tiến trình:  45%|████▌     | 609/1350 [15:00:18<19:44:30, 95.91s/it]Tổng tiến trình:  45%|████▌     | 613/1350 [15:06:57<19:53:02, 97.13s/it]Tổng tiến trình:  46%|████▌     | 617/1350 [15:11:55<18:20:44, 90.10s/it]Tổng tiến trình:  46%|████▌     | 621/1350 [15:18:13<18:30:47, 91.42s/it]Tổng tiến trình:  46%|████▋     | 625/1350 [15:23:20<17:30:32, 86.94s/it]Tổng tiến trình:  47%|████▋     | 629/1350 [15:29:18<17:34:24, 87.74s/it]Tổng tiến trình:  47%|████▋     | 633/1350 [15:35:37<17:53:44, 89.85s/it]Tổng tiến trình:  47%|████▋     | 637/1350 [15:41:46<17:56:09, 90.56s/it]Tổng tiến trình:  47%|████▋     | 641/1350 [15:48:15<18:13:55, 92.57s/it]Tổng tiến trình:  48%|████▊     | 645/1350 [15:54:10<17:54:30, 91.45s/it]Tổng tiến trình:  48%|████▊     | 649/1350 [15:57:18<15:11:59, 78.06s/it]Tổng tiến trình:  48%|████▊     | 651/1350 [16:02:49<18:10:01, 93.56s/it]Tổng tiến trình:  49%|████▊     | 655/1350 [16:08:57<17:57:11, 93.00s/it]Tổng tiến trình:  49%|████▉     | 659/1350 [16:15:16<17:57:49, 93.59s/it]Tổng tiến trình:  49%|████▉     | 663/1350 [16:22:11<18:28:19, 96.80s/it]Tổng tiến trình:  49%|████▉     | 667/1350 [16:28:38<18:21:57, 96.80s/it]Tổng tiến trình:  50%|████▉     | 671/1350 [16:34:59<18:09:44, 96.30s/it]Tổng tiến trình:  50%|█████     | 675/1350 [16:41:38<18:15:03, 97.34s/it]Tổng tiến trình:  50%|█████     | 679/1350 [16:48:27<18:25:52, 98.89s/it]Tổng tiến trình:  51%|█████     | 683/1350 [16:54:36<17:56:42, 96.86s/it]Tổng tiến trình:  51%|█████     | 687/1350 [17:01:11<17:56:27, 97.42s/it]Tổng tiến trình:  51%|█████     | 691/1350 [17:08:02<18:07:55, 99.05s/it]Tổng tiến trình:  51%|█████▏    | 695/1350 [17:13:46<17:18:17, 95.11s/it]Tổng tiến trình:  52%|█████▏    | 699/1350 [17:16:48<14:29:34, 80.14s/it]Tổng tiến trình:  52%|█████▏    | 701/1350 [17:23:47<18:34:26, 103.03s/it]Tổng tiến trình:  52%|█████▏    | 705/1350 [17:30:58<18:44:45, 104.63s/it]Tổng tiến trình:  53%|█████▎    | 709/1350 [17:38:10<18:49:50, 105.76s/it]Tổng tiến trình:  53%|█████▎    | 713/1350 [17:45:31<18:57:47, 107.17s/it]Tổng tiến trình:  53%|█████▎    | 717/1350 [17:52:36<18:47:14, 106.85s/it]Tổng tiến trình:  53%|█████▎    | 721/1350 [17:59:46<18:42:25, 107.07s/it]Tổng tiến trình:  54%|█████▎    | 725/1350 [18:06:55<18:35:43, 107.11s/it]Tổng tiến trình:  54%|█████▍    | 729/1350 [18:14:32<18:51:06, 109.29s/it]Tổng tiến trình:  54%|█████▍    | 733/1350 [18:21:26<18:25:32, 107.51s/it]Tổng tiến trình:  55%|█████▍    | 737/1350 [18:28:30<18:13:44, 107.05s/it]Tổng tiến trình:  55%|█████▍    | 741/1350 [18:35:40<18:08:33, 107.25s/it]Tổng tiến trình:  55%|█████▌    | 745/1350 [18:42:45<17:57:41, 106.88s/it]Tổng tiến trình:  55%|█████▌    | 749/1350 [18:46:06<15:00:39, 89.92s/it] Tổng tiến trình:  56%|█████▌    | 751/1350 [18:54:27<19:40:56, 118.29s/it]Tổng tiến trình:  56%|█████▌    | 755/1350 [19:02:35<19:45:17, 119.52s/it]Tổng tiến trình:  56%|█████▌    | 759/1350 [19:10:50<19:50:22, 120.85s/it]Tổng tiến trình:  57%|█████▋    | 763/1350 [19:18:41<19:33:01, 119.90s/it]Tổng tiến trình:  57%|█████▋    | 767/1350 [19:27:03<19:41:52, 121.63s/it]Tổng tiến trình:  57%|█████▋    | 771/1350 [19:35:25<19:45:07, 122.81s/it]Tổng tiến trình:  57%|█████▋    | 775/1350 [19:43:20<19:24:59, 121.56s/it]Tổng tiến trình:  58%|█████▊    | 779/1350 [19:51:09<19:05:03, 120.32s/it]Tổng tiến trình:  58%|█████▊    | 783/1350 [19:59:30<19:11:07, 121.81s/it]Tổng tiến trình:  58%|█████▊    | 787/1350 [20:06:52<18:30:38, 118.36s/it]Tổng tiến trình:  59%|█████▊    | 791/1350 [20:14:58<18:31:47, 119.33s/it]Tổng tiến trình:  59%|█████▉    | 795/1350 [20:23:22<18:41:59, 121.30s/it]Tổng tiến trình:  59%|█████▉    | 799/1350 [20:27:33<15:52:24, 103.71s/it]Tổng tiến trình:  59%|█████▉    | 801/1350 [20:36:14<20:02:30, 131.42s/it]Tổng tiến trình:  60%|█████▉    | 805/1350 [20:45:36<20:21:47, 134.51s/it]Tổng tiến trình:  60%|█████▉    | 809/1350 [20:54:58<20:30:20, 136.45s/it]Tổng tiến trình:  60%|██████    | 813/1350 [21:04:13<20:27:38, 137.17s/it]Tổng tiến trình:  61%|██████    | 817/1350 [21:13:02<20:04:30, 135.59s/it]Tổng tiến trình:  61%|██████    | 821/1350 [21:22:25<20:09:39, 137.20s/it]Tổng tiến trình:  61%|██████    | 825/1350 [21:31:47<20:09:22, 138.21s/it]Tổng tiến trình:  61%|██████▏   | 829/1350 [21:40:09<19:26:37, 134.35s/it]Tổng tiến trình:  62%|██████▏   | 833/1350 [21:49:28<19:31:51, 136.00s/it]Tổng tiến trình:  62%|██████▏   | 837/1350 [21:57:44<18:51:30, 132.34s/it]Tổng tiến trình:  62%|██████▏   | 841/1350 [22:07:07<19:04:38, 134.93s/it]Tổng tiến trình:  63%|██████▎   | 845/1350 [22:15:37<18:36:42, 132.68s/it]Tổng tiến trình:  63%|██████▎   | 849/1350 [22:20:14<15:48:43, 113.62s/it]Tổng tiến trình:  63%|██████▎   | 851/1350 [22:28:18<18:53:13, 136.26s/it]Tổng tiến trình:  63%|██████▎   | 855/1350 [22:34:25<16:41:06, 121.35s/it]Tổng tiến trình:  64%|██████▎   | 859/1350 [22:42:53<16:47:59, 123.18s/it]Tổng tiến trình:  64%|██████▍   | 863/1350 [22:48:20<14:53:43, 110.11s/it]Tổng tiến trình:  64%|██████▍   | 867/1350 [22:55:31<14:40:19, 109.36s/it]Tổng tiến trình:  65%|██████▍   | 871/1350 [23:05:51<16:25:09, 123.40s/it]Tổng tiến trình:  65%|██████▍   | 875/1350 [23:13:41<16:02:44, 121.61s/it]Tổng tiến trình:  65%|██████▌   | 879/1350 [23:21:05<15:29:09, 118.36s/it]Tổng tiến trình:  65%|██████▌   | 883/1350 [23:29:08<15:27:01, 119.10s/it]Tổng tiến trình:  66%|██████▌   | 887/1350 [23:36:12<14:48:21, 115.12s/it]Tổng tiến trình:  66%|██████▌   | 891/1350 [23:41:40<13:24:29, 105.16s/it]Tổng tiến trình:  66%|██████▋   | 895/1350 [23:49:32<13:46:28, 108.98s/it]Tổng tiến trình:  67%|██████▋   | 899/1350 [23:52:47<11:23:19, 90.91s/it] WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1761492638.334924 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492639.610671 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492641.778722 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492643.614139 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492645.612092 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492647.612351 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492649.615239 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492651.614981 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492653.617638 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492655.618228 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492657.619576 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492659.618879 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492661.619668 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492663.621391 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492665.622350 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492667.636030 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492669.623983 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492671.624711 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492673.625142 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492675.748812 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492678.593601 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492680.649765 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492682.662178 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492684.706724 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492686.593859 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492688.577555 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492690.592803 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492692.579463 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492694.581534 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492696.632994 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492698.581468 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492700.582234 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492702.582577 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492704.583024 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492706.583195 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492708.584600 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492710.589167 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492712.586354 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492714.586969 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492716.587668 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492718.592559 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492720.599074 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492722.609642 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492724.609768 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492726.610052 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492728.730988 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492730.611384 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492732.612485 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492734.667238 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492736.728149 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492738.656838 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492740.683590 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492742.733217 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492744.718996 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492746.894060 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492748.881101 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492750.872517 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492752.873364 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492754.874206 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492756.874756 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492758.875256 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492760.875693 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492762.876380 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492764.877649 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492766.881796 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492768.878158 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492770.878573 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492772.882051 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492774.880309 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492776.880856 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492778.881824 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492780.882202 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492782.886396 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492784.883523 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492786.884618 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492788.886563 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492790.888036 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492792.887198 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492794.888351 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492796.890092 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492798.929149 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492800.952182 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492803.501941 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492805.540631 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492807.582497 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492809.785709 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492811.584147 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492813.584751 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492815.585503 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492817.586581 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492819.587563 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492821.588386 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492823.588845 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492825.589981 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492827.591589 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492829.594064 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492831.592553 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492833.593496 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492835.594197 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492837.594779 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492839.596302 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492841.596879 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492843.597231 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492845.598390 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492847.598871 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492849.599961 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492851.601566 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492853.601942 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492855.602451 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492857.603150 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492859.642406 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492861.659331 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492864.386871 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492866.385515 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492868.394610 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492870.424452 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492873.121831 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492875.097563 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492877.369871 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492879.098513 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492881.099463 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492883.099647 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492885.101410 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492887.101527 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492889.103589 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492891.103154 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492893.103532 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492895.105394 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492897.106831 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492899.106145 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492901.107712 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492903.107829 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492905.108829 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492907.109132 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492909.109622 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492911.111297 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492913.111370 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492915.111778 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492917.113166 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492919.113922 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492921.203422 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492923.438035 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492925.177713 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492927.189079 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492929.687179 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492931.716389 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492933.735806 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492935.721453 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492937.722546 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492939.722607 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492941.724150 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492943.723679 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492945.724080 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492947.725247 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492949.726321 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492951.727589 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492953.728657 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492955.729373 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492957.731059 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492959.730409 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492961.732212 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492963.731638 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492965.731896 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492967.735065 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492969.753463 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492971.733935 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492973.735419 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492975.734300 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492977.735682 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492979.887961 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492981.837942 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492983.792772 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492985.829845 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492987.828242 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492989.871501 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492991.918818 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492993.917042 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492995.948982 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492997.927775 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761492999.928365 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493001.926815 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493003.928047 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493005.996990 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493007.929080 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493009.929837 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493011.930490 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493013.931174 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493015.931944 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493017.933420 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493019.933641 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493021.934067 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493023.934698 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493025.963778 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493027.936275 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493029.937557 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493031.939391 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493033.943220 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493035.941714 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493037.942233 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493039.942858 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493041.943137 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493043.974452 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493045.989402 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493048.022466 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493050.093227 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493052.110398 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493054.101703 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493056.303073 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493058.074349 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493060.074383 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493062.075569 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493064.076025 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493066.078152 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493068.076678 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493070.080379 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493072.079845 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493074.080620 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493076.081754 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493078.081763 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493080.082688 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493082.083229 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493084.083211 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493086.084422 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493088.085465 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493090.087797 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493092.086966 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493094.087005 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493096.088159 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493098.088407 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493100.090586 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493102.089745 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493104.092838 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493106.160633 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493108.218055 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493110.224474 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493112.262314 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493114.472049 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493116.501336 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493118.464490 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493120.463795 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493122.463892 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493124.464311 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493126.465825 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493128.465877 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493130.466650 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493132.470850 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493134.467827 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493136.468790 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493138.469810 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493140.469719 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493142.471034 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493144.471167 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493146.472743 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493148.473310 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493150.476137 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493152.482054 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493154.482279 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493156.483188 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493158.485590 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493160.487588 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493162.487054 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493164.488636 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493166.523153 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493168.564212 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493170.892923 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493172.943559 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493175.342963 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493177.369009 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493179.379852 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493181.348700 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493183.351041 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493185.349599 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493187.351420 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493189.353347 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493191.355485 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493193.354577 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493195.356878 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493197.357000 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493199.363330 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493201.357180 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493203.358236 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493205.361889 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493207.360887 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493209.360079 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493211.360846 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493213.362432 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493215.371507 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493217.363858 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493219.414421 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493221.365437 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493223.365311 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493225.365925 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493227.399684 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493229.415721 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493231.496731 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493233.521089 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493235.551424 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493237.524204 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493239.605640 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493241.597890 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493243.598057 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493245.599422 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493247.599224 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493249.600411 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493251.601359 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493253.601260 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493255.602171 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493257.602178 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493259.603410 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493261.604001 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493263.605135 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493265.607079 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493267.606013 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493269.607013 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493271.607935 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493273.608097 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493275.610871 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493277.609408 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493279.610533 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493281.615728 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493283.619960 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493285.612335 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493287.613220 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493289.646005 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493292.470084 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493294.439530 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493296.445431 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493298.469739 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493301.046336 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493303.031302 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493305.032440 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493307.032337 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493309.033765 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493311.034764 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493313.043859 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493315.036587 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493317.038477 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493319.037098 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493321.045427 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493323.046305 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493325.047038 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493327.047693 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493329.056463 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493331.049601 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493333.050402 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493335.050927 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493337.052072 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493339.053399 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493341.053873 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493343.055249 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493345.055291 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493347.082621 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493349.066211 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493351.096860 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493353.444735 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493355.354062 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493357.397623 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493359.516234 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493361.463145 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493363.461063 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493365.434471 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493367.435213 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493369.436774 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493371.437796 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493373.438255 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493375.438706 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493377.439811 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493379.440479 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493381.440527 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493383.441855 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493385.444717 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493387.444161 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493389.444289 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493391.446544 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493393.448110 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493395.448324 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493397.449612 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493399.450213 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493401.450353 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493403.452288 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493405.451690 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493407.456621 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493409.453200 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493411.506769 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493413.540200 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493415.604519 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493417.593374 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493419.582940 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493421.553679 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493423.554459 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493425.555698 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493427.562087 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493429.562457 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493431.562758 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493433.564074 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493435.564320 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493437.564857 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493439.565655 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493441.566060 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493443.567515 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493445.567807 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493447.568658 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493449.568586 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493451.569446 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493453.570861 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493455.572231 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493457.571998 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493459.576485 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493461.576773 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493463.578758 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493465.578729 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493467.580138 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493469.579944 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493471.583076 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493473.603991 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493475.618077 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493478.264152 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493480.302876 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493482.409374 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493484.282677 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493486.283382 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493488.328809 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493490.285453 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493492.286371 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493494.286892 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493496.287443 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493498.287860 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493500.288662 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493502.291905 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493504.289597 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493506.290945 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493508.291385 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493510.292009 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493512.292567 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493514.292778 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493516.295384 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493518.295617 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493520.296770 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493522.297031 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493524.298266 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493526.298283 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493528.299176 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493530.299466 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493532.300201 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493534.425394 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493536.524984 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493538.439435 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493540.431027 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493543.402247 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+E0000 00:00:1761493545.393195 3521013 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Tổng tiến trình:  67%|██████▋   | 900/1350 [24:07:58<12:03:59, 96.53s/it]
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+2025-10-26 23:53:28,347 - reporting - INFO - Đã khởi tạo Reporting với 1800 kết quả
+2025-10-26 23:53:28,348 - reporting - INFO - Bắt đầu tạo báo cáo...
+2025-10-26 23:53:28,349 - reporting - INFO - Đang tạo biểu đồ: accuracy_by_model
+2025-10-26 23:53:30,272 - reporting - INFO - Đã tạo biểu đồ accuracy_by_model: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/accuracy_by_model_20251025_223748.png
+2025-10-26 23:53:30,273 - reporting - INFO - Đang tạo biểu đồ: accuracy_by_prompt
+2025-10-26 23:53:30,833 - reporting - INFO - Đã tạo biểu đồ accuracy_by_prompt: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/accuracy_by_prompt_20251025_223748.png
+2025-10-26 23:53:30,834 - reporting - INFO - Đang tạo biểu đồ: accuracy_heatmap
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:311: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:315: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:315: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:315: UserWarning: Glyph 7855 (\N{LATIN SMALL LETTER A WITH BREVE AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:315: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:53:31,524 - reporting - INFO - Đã tạo biểu đồ accuracy_heatmap: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/accuracy_heatmap_20251025_223748.png
+2025-10-26 23:53:31,525 - reporting - INFO - Đang tạo biểu đồ: simple_comparison
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:355: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  g.fig.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:359: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+2025-10-26 23:53:32,442 - reporting - INFO - Đã tạo biểu đồ simple_comparison: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/model_comparison_20251025_223748.png
+2025-10-26 23:53:32,443 - reporting - INFO - Đang tạo biểu đồ: reasoning_criteria
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1906: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1906: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1906: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1906: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1906: UserWarning: Glyph 7911 (\N{LATIN SMALL LETTER U WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1906: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1906: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1907: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1907: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1907: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1907: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1907: UserWarning: Glyph 7911 (\N{LATIN SMALL LETTER U WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1907: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1907: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:53:32,889 - reporting - INFO - Đã tạo biểu đồ reasoning_criteria: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/reasoning_criteria_plot_20251025_223748.png
+2025-10-26 23:53:32,890 - reporting - INFO - Đang tạo biểu đồ: reasoning_by_prompt
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2001: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2001: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2001: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2001: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2001: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2005: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2005: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2005: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2005: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2005: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2005: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(plot_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:53:33,465 - reporting - INFO - Đã tạo biểu đồ reasoning_by_prompt: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/reasoning_by_prompt_plot_20251025_223748.png
+2025-10-26 23:53:33,466 - reporting - INFO - Đang tạo biểu đồ: reasoning_by_question_type
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7865 (\N{LATIN SMALL LETTER E WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7885 (\N{LATIN SMALL LETTER O WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7893 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7887 (\N{LATIN SMALL LETTER O WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7855 (\N{LATIN SMALL LETTER A WITH BREVE AND ACUTE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7865 (\N{LATIN SMALL LETTER E WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7885 (\N{LATIN SMALL LETTER O WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7893 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7887 (\N{LATIN SMALL LETTER O WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2083: UserWarning: Glyph 7855 (\N{LATIN SMALL LETTER A WITH BREVE AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:53:33,936 - reporting - INFO - Đã tạo biểu đồ reasoning_by_question_type: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/reasoning_by_question_type_20251025_223748.png
+2025-10-26 23:53:33,937 - reporting - INFO - Đang tạo biểu đồ: reasoning_by_question_type_by_model
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7865 (\N{LATIN SMALL LETTER E WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7885 (\N{LATIN SMALL LETTER O WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7893 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7887 (\N{LATIN SMALL LETTER O WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7855 (\N{LATIN SMALL LETTER A WITH BREVE AND ACUTE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7865 (\N{LATIN SMALL LETTER E WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7885 (\N{LATIN SMALL LETTER O WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7893 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7887 (\N{LATIN SMALL LETTER O WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2174: UserWarning: Glyph 7855 (\N{LATIN SMALL LETTER A WITH BREVE AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7885 (\N{LATIN SMALL LETTER O WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7865 (\N{LATIN SMALL LETTER E WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7893 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7887 (\N{LATIN SMALL LETTER O WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2214: UserWarning: Glyph 7855 (\N{LATIN SMALL LETTER A WITH BREVE AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7885 (\N{LATIN SMALL LETTER O WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7865 (\N{LATIN SMALL LETTER E WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7893 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7887 (\N{LATIN SMALL LETTER O WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2220: UserWarning: Glyph 7855 (\N{LATIN SMALL LETTER A WITH BREVE AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(bar_output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:07,504 - reporting - INFO - Đã tạo biểu đồ reasoning_by_question_type_by_model: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/reasoning_by_question_type_by_model_20251025_223748.png
+2025-10-26 23:55:07,506 - reporting - INFO - Đang tạo biểu đồ: consistency_score
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7901 (\N{LATIN SMALL LETTER O WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7913 (\N{LATIN SMALL LETTER U WITH HORN AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7911 (\N{LATIN SMALL LETTER U WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2878: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(consistency_score_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7927 (\N{LATIN SMALL LETTER Y WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7901 (\N{LATIN SMALL LETTER O WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7893 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7871 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7881 (\N{LATIN SMALL LETTER I WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2906: UserWarning: Glyph 7911 (\N{LATIN SMALL LETTER U WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(agreement_rate_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:10,168 - reporting - INFO - Đã tạo biểu đồ consistency_score: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/consistency_score_20251025_223748.png
+2025-10-26 23:55:10,168 - reporting - INFO - Đang tạo biểu đồ: error_analysis
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 7911 (\N{LATIN SMALL LETTER U WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 7871 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 7913 (\N{LATIN SMALL LETTER U WITH HORN AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3023: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(overall_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3047: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(model_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3047: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(model_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3047: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(model_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/.conda/envs/env_llm/lib/python3.12/site-packages/seaborn/utils.py:61: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  fig.canvas.draw()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3070: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(prompt_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3070: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(prompt_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3070: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(prompt_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7927 (\N{LATIN SMALL LETTER Y WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7841 (\N{LATIN SMALL LETTER A WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7883 (\N{LATIN SMALL LETTER I WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7911 (\N{LATIN SMALL LETTER U WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7893 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:3094: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(pie_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:11,228 - reporting - INFO - Đã tạo biểu đồ error_analysis: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/error_analysis_overall_20251025_223748.png
+2025-10-26 23:55:11,228 - reporting - INFO - Đang tạo biểu đồ: criteria_evaluation
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1498: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1498: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1498: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1502: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1502: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1502: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+2025-10-26 23:55:11,738 - reporting - INFO - Đã tạo biểu đồ criteria_evaluation: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/criteria_evaluation_20251025_223748.png
+2025-10-26 23:55:11,739 - reporting - INFO - Đang tạo biểu đồ: criteria_radar
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1595: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1595: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1595: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1595: UserWarning: Glyph 7847 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1595: UserWarning: Glyph 7911 (\N{LATIN SMALL LETTER U WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1595: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1595: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1595: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+2025-10-26 23:55:12,268 - reporting - INFO - Đã tạo biểu đồ criteria_radar: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/criteria_radar_20251025_223748.png
+2025-10-26 23:55:12,269 - reporting - INFO - Đang tạo biểu đồ: difficulty_performance
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1414: UserWarning: Glyph 7877 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1418: UserWarning: Glyph 7877 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+2025-10-26 23:55:19,437 - reporting - INFO - Đã tạo biểu đồ difficulty_performance: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/difficulty_performance_20251025_223748.png
+2025-10-26 23:55:19,513 - reporting - INFO - Đang tạo biểu đồ: context_adherence
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1647: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1647: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1647: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1647: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1647: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.tight_layout()
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1651: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1651: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1651: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1651: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:1651: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path)
+2025-10-26 23:55:20,377 - reporting - INFO - Đã tạo biểu đồ context_adherence: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/context_adherence_20251025_223748.png
+2025-10-26 23:55:20,394 - reporting - INFO - Đang tạo biểu đồ: exact_match
+2025-10-26 23:55:20,706 - reporting - INFO - Tìm thấy 1800 giá trị Exact Match score hợp lệ để vẽ biểu đồ
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2554: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2554: UserWarning: Glyph 7899 (\N{LATIN SMALL LETTER O WITH HORN AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2554: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2554: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2554: UserWarning: Glyph 7901 (\N{LATIN SMALL LETTER O WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2554: UserWarning: Glyph 7849 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2554: UserWarning: Glyph 7883 (\N{LATIN SMALL LETTER I WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:21,818 - reporting - INFO - Đã tạo biểu đồ exact_match: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/exact_match_score_20251025_223748.png
+2025-10-26 23:55:21,926 - reporting - INFO - Đang tạo biểu đồ: rouge_scores
+2025-10-26 23:55:22,008 - reporting - INFO - Tìm thấy 1800 giá trị rougeL_f hợp lệ để vẽ biểu đồ
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7895 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7913 (\N{LATIN SMALL LETTER U WITH HORN AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7883 (\N{LATIN SMALL LETTER I WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2638: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:22,805 - reporting - INFO - Đã tạo biểu đồ rouge_scores: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/rouge_scores_20251025_223748.png
+2025-10-26 23:55:22,854 - reporting - INFO - Đang tạo biểu đồ: bleu_scores
+2025-10-26 23:55:22,871 - reporting - INFO - Tìm thấy 1800 giá trị bleu hợp lệ để vẽ biểu đồ
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7913 (\N{LATIN SMALL LETTER U WITH HORN AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7901 (\N{LATIN SMALL LETTER O WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7849 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7883 (\N{LATIN SMALL LETTER I WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2726: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:24,013 - reporting - INFO - Đã tạo biểu đồ bleu_scores: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/bleu_scores_20251025_223748.png
+2025-10-26 23:55:24,014 - reporting - INFO - Đang tạo biểu đồ: f1_score
+2025-10-26 23:55:24,015 - reporting - INFO - Tìm thấy 1800 giá trị F1 score hợp lệ để vẽ biểu đồ
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7901 (\N{LATIN SMALL LETTER O WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7863 (\N{LATIN SMALL LETTER A WITH BREVE AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7849 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7883 (\N{LATIN SMALL LETTER I WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2356: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:24,511 - reporting - INFO - Đã tạo biểu đồ f1_score: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/f1_score_20251025_223748.png
+2025-10-26 23:55:24,512 - reporting - INFO - Đang tạo biểu đồ: meteor_score
+2025-10-26 23:55:24,513 - reporting - INFO - Tìm thấy 1800 giá trị METEOR score hợp lệ để vẽ biểu đồ
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7901 (\N{LATIN SMALL LETTER O WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7845 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7907 (\N{LATIN SMALL LETTER O WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7915 (\N{LATIN SMALL LETTER U WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7883 (\N{LATIN SMALL LETTER I WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7853 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2421: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:24,848 - reporting - INFO - Đã tạo biểu đồ meteor_score: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/meteor_score_20251025_223748.png
+2025-10-26 23:55:24,849 - reporting - INFO - Đang tạo biểu đồ: bert_score
+2025-10-26 23:55:24,850 - reporting - INFO - Tìm thấy 1800 giá trị BERT score hợp lệ để vẽ biểu đồ
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 432 (\N{LATIN SMALL LETTER U WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7901 (\N{LATIN SMALL LETTER O WITH HORN AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7897 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 417 (\N{LATIN SMALL LETTER O WITH HORN}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7891 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7873 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7863 (\N{LATIN SMALL LETTER A WITH BREVE AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7919 (\N{LATIN SMALL LETTER U WITH HORN AND TILDE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7843 (\N{LATIN SMALL LETTER A WITH HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7849 (\N{LATIN SMALL LETTER A WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7883 (\N{LATIN SMALL LETTER I WITH DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7875 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7879 (\N{LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7921 (\N{LATIN SMALL LETTER U WITH HORN AND DOT BELOW}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/reporting.py:2493: UserWarning: Glyph 7889 (\N{LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE}) missing from font(s) Liberation Sans.
+  plt.savefig(output_path, dpi=120, bbox_inches='tight')
+2025-10-26 23:55:25,194 - reporting - INFO - Đã tạo biểu đồ bert_score: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/plots/bert_score_20251025_223748.png
+2025-10-26 23:55:25,461 - reporting - INFO - Đã tạo báo cáo HTML tại: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/reports/report_20251025_223748.html
+2025-10-26 23:55:25,972 - reporting - INFO - Đã tạo báo cáo CSV tại: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/reports/report_20251025_223748.csv
+2025-10-26 23:55:26,081 - reporting - INFO - Đã tạo báo cáo JSON tại: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/reports/report_20251025_223748.json
+2025-10-26 23:55:26,226 - reporting - INFO - Đã tạo báo cáo Markdown tại: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251025_223748/reports/report_20251025_223748.md
+2025-10-26 23:55:26,227 - reporting - INFO - Đã tạo 4 báo cáo

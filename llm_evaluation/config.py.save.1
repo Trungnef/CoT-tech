@@ -188,7 +188,7 @@ MODEL_CONFIGS = {
         "max_tokens": 1024,  # Giá trị mặc định, sẽ được ghi đè bởi cấu hình prompt cụ thể
         "temperature": 0.7,
         "top_p": 0.95,
-        "model": "llama-3.3-70b-versatile"  # Default model for Groq
+        "model": "llama-3.1-70b-versatile"  # Default model for Groq
     }
 }
 
@@ -236,13 +236,13 @@ API_CONFIGS = {
             "consecutive_success_threshold": 2  # Số lần thành công liên tiếp để đóng circuit breaker
         },
         "models": {
-            "reasoning_evaluation": "gemini-2.0-flash",  # Model để đánh giá khả năng suy luận
-            "general": "gemini-2.0-flash"  # Model mặc định cho general usage
+            "reasoning_evaluation": "gemini-1.5-pro",  # Model để đánh giá khả năng suy luận
+            "general": "gemini-1.5-flash"  # Model mặc định cho general usage
         }
     },
     "groq": {
-        "requests_per_minute": 30,  # Giảm RPM để tránh rate limit
-        "max_retries": 5,  # Tăng từ 8 lên 10
+        "requests_per_minute": 20,  # Giảm RPM để tránh rate limit
+        "max_retries": 10,  # Tăng từ 8 lên 10
         "retry_base_delay": 2,  # Giảm từ 4s xuống 2s
         "max_retry_delay": 90,  # Giảm từ 120s xuống 90s
         "jitter_factor": 0.3,  # Thêm jitter lớn hơn cho Groq vì API thường quá tải
@@ -256,8 +256,8 @@ API_CONFIGS = {
             "consecutive_success_threshold": 2  # Số lần thành công liên tiếp để đóng circuit breaker
         },
         "models": {
-            "reasoning_evaluation": "llama-3.3-70b-versatile",  # Model để đánh giá khả năng suy luận
-            "general": "llama-3.3-70b-versatile"  # Model mặc định cho general usage
+            "reasoning_evaluation": "llama-3.1-70b-versatile",  # Model để đánh giá khả năng suy luận
+            "general": "llama-3.1-70b-versatile"  # Model mặc định cho general usage
         }
     }
 }
@@ -268,7 +268,7 @@ REASONING_EVALUATION_CONFIG = {
     "sample_size": 50,  # Số lượng mẫu để đánh giá suy luận
     "metrics": ["coherence", "relevance", "logical_structure", "factual_accuracy", "overall"],
     "use_groq": True,  # Sử dụng Groq API để đánh giá
-    "model": "llama-3.3-70b-versatile",  # Model để đánh giá suy luận
+    "model": "groq/llama3-70b-8192",  # Model để đánh giá suy luận
     "criteria_weights": {  # Trọng số cho các tiêu chí đánh giá
         "logical_flow": 0.25,
         "mathematical_correctness": 0.25,

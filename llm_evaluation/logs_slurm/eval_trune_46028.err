@@ -1,0 +1,23 @@
+2025-10-25 12:27:59,528 - root - INFO - Đã tìm thấy NLTK resource punkt
+2025-10-25 12:27:59,529 - root - INFO - Đã tìm thấy NLTK resource wordnet
+Traceback (most recent call last):
+  File "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/result_analyzer.py", line 23, in <module>
+    from ..utils.metrics_utils import calculate_bleu_scores, calculate_exact_match_accuracy, calculate_rouge_scores, calculate_consistency_metrics
+ImportError: attempted relative import beyond top-level package
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/main.py", line 18, in <module>
+    from core.evaluator import Evaluator
+  File "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/__init__.py", line 2, in <module>
+    from .evaluator import Evaluator
+  File "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/evaluator.py", line 30, in <module>
+    from core.result_analyzer import ResultAnalyzer
+  File "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/core/result_analyzer.py", line 29, in <module>
+    from utils.metrics_utils import calculate_bleu_scores, calculate_exact_match_accuracy, calculate_rouge_scores, calculate_consistency_metrics
+  File "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/utils/__init__.py", line 46, in <module>
+    from .config_utils import (
+  File "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/utils/config_utils.py", line 12, in <module>
+    import jsonschema
+ModuleNotFoundError: No module named 'jsonschema'
