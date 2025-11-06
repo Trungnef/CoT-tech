@@ -7257,3 +7257,269 @@ Working directory: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation
 [2025-11-07 00:47:09] [INFO] [model_interface] Tìm thấy header Retry-After: 1721.0s
 [2025-11-07 00:47:09] [WARNING] [model_interface] Key #1 đã hết quota tạm thời. Chuyển sang key #2/2
 [2025-11-07 00:47:10] [WARNING] [model_interface] Đang thử lại lần 4/5 sau lỗi: QUOTA_LIMIT_ERROR: Key #1 đã hết quota tạm thời. Chuyển sang key #2/2. Original error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k9ccgvhteq9bzzdtwpbprgs5` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99724, Requested 2267. Please try again in 28m40.224s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+[2025-11-07 00:48:09] [INFO] [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+[2025-11-07 00:48:09] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k9cd0gbte3aszt70gargdxzt` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99724, Requested 2267. Please try again in 28m40.224s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+[2025-11-07 00:48:09] [ERROR] [model_interface] Status code: 429
+[2025-11-07 00:48:09] [INFO] [model_interface] Tìm thấy header Retry-After: 1721.0s
+[2025-11-07 00:48:09] [ERROR] [model_interface] Tất cả Groq API keys đều đã vượt quá quota. Vui lòng thử lại sau.
+[2025-11-07 00:48:09] [WARNING] [model_interface] Rate limit error #3 cho groq
+[2025-11-07 00:48:09] [WARNING] [model_interface] Circuit breaker cho groq đã mở sau 3 lỗi liên tiếp
+[2025-11-07 00:48:09] [WARNING] [model_interface] Tạm dừng gọi groq trong 90s
+[2025-11-07 00:48:09] [INFO] [model_interface] Sử dụng retry-after từ header: 1721.0s
+[2025-11-07 00:48:09] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #3)
+[2025-11-07 00:48:14] [ERROR] [model_interface] Đã thử lại tối đa 5 lần nhưng vẫn thất bại. Lỗi cuối cùng: QUOTA_LIMIT_ERROR: Tất cả Groq API keys đều đã vượt quá quota. Vui lòng thử lại sau.. Original error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k9cd0gbte3aszt70gargdxzt` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99724, Requested 2267. Please try again in 28m40.224s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+[2025-11-07 00:48:14] [ERROR] [model_interface] Lỗi khi lấy phản hồi từ groq/llama-3.3-70b-versatile: QUOTA_LIMIT_ERROR: Tất cả Groq API keys đều đã vượt quá quota
+[2025-11-07 00:48:14] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:14] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:48:14] [WARNING] [model_interface] Rate limit error #4 cho groq
+[2025-11-07 00:48:14] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.80)
+[2025-11-07 00:48:14] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #4)
+[2025-11-07 00:48:24] [WARNING] [model_interface] Đang thử lại lần 1/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:24] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:24] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:48:24] [WARNING] [model_interface] Rate limit error #5 cho groq
+[2025-11-07 00:48:24] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.05)
+[2025-11-07 00:48:24] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #5)
+[2025-11-07 00:48:34] [WARNING] [model_interface] Đang thử lại lần 2/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:34] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:34] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:48:34] [WARNING] [model_interface] Rate limit error #6 cho groq
+[2025-11-07 00:48:34] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.88)
+[2025-11-07 00:48:34] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #6)
+[2025-11-07 00:48:44] [WARNING] [model_interface] Đang thử lại lần 3/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:44] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:44] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:48:44] [WARNING] [model_interface] Rate limit error #7 cho groq
+[2025-11-07 00:48:44] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.10)
+[2025-11-07 00:48:44] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #7)
+[2025-11-07 00:48:54] [WARNING] [model_interface] Đang thử lại lần 4/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:54] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:48:54] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:48:54] [WARNING] [model_interface] Rate limit error #8 cho groq
+[2025-11-07 00:48:54] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.95)
+[2025-11-07 00:48:54] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #8)
+[2025-11-07 00:49:04] [ERROR] [model_interface] Đã thử lại tối đa 5 lần nhưng vẫn thất bại. Lỗi cuối cùng: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:04] [ERROR] [model_interface] Lỗi khi lấy phản hồi từ groq/llama-3.3-70b-versatile: UNKNOWN_ERROR: Lỗi không rõ
+[2025-11-07 00:49:04] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:04] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:49:04] [WARNING] [model_interface] Rate limit error #9 cho groq
+[2025-11-07 00:49:04] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.81)
+[2025-11-07 00:49:04] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #9)
+[2025-11-07 00:49:14] [WARNING] [model_interface] Đang thử lại lần 1/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:14] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:14] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:49:14] [WARNING] [model_interface] Rate limit error #10 cho groq
+[2025-11-07 00:49:14] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.09)
+[2025-11-07 00:49:14] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #10)
+[2025-11-07 00:49:24] [WARNING] [model_interface] Đang thử lại lần 2/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:24] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:24] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:49:24] [WARNING] [model_interface] Rate limit error #11 cho groq
+[2025-11-07 00:49:24] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.84)
+[2025-11-07 00:49:24] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #11)
+[2025-11-07 00:49:34] [WARNING] [model_interface] Đang thử lại lần 3/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:34] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:34] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:49:34] [WARNING] [model_interface] Rate limit error #12 cho groq
+[2025-11-07 00:49:34] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.20)
+[2025-11-07 00:49:34] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #12)
+[2025-11-07 00:49:44] [WARNING] [model_interface] Đang thử lại lần 4/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:44] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:44] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:49:44] [WARNING] [model_interface] Rate limit error #13 cho groq
+[2025-11-07 00:49:44] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.15)
+[2025-11-07 00:49:45] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #13)
+[2025-11-07 00:49:55] [ERROR] [model_interface] Đã thử lại tối đa 5 lần nhưng vẫn thất bại. Lỗi cuối cùng: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:49:55] [ERROR] [model_interface] Lỗi khi lấy phản hồi từ groq/llama-3.3-70b-versatile: UNKNOWN_ERROR: Lỗi không rõ
+[2025-11-07 00:49:55] [INFO] [checkpoint_manager] Đã lưu checkpoint tại: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251106_180746/checkpoints/checkpoint_20251106_180746_690.json (690 kết quả)
+[2025-11-07 00:49:55] [INFO] [checkpoint_manager] Tìm thấy checkpoint trong thư mục chạy run_20251106_180746
+[2025-11-07 00:49:55] [INFO] [llm_evaluation.evaluator] Đã lưu checkpoint tại /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251106_180746/checkpoints/checkpoint_20251106_180746_690.json
+[2025-11-07 00:49:55] [INFO] [llm_evaluation.evaluator] Trạng thái: llama/cot_self_consistency_5 - 0/50 (0.0%)
+[2025-11-07 00:49:55] [INFO] [llm_evaluation.evaluator] Đã lưu checkpoint sau batch 9/10
+[2025-11-07 00:49:55] [INFO] [llm_evaluation.evaluator] Batch 10/10, ước tính thời gian còn lại: 9.4 phút
+[2025-11-07 00:49:55] [INFO] [llm_evaluation.evaluator] Tiến độ llama/cot_self_consistency_5: 45/50 (90.0%) - Đã chạy 5076.1s
+[2025-11-07 00:49:55] [INFO] [llm_evaluation.evaluator] Đang xử lý batch 10/10 với 5 câu hỏi
+[2025-11-07 00:49:55] [INFO] [model_interface] Đang xử lý batch với 5 prompt trên model llama
+[2025-11-07 00:54:12] [INFO] [model_interface] Circuit breaker cho groq chuyển sang trạng thái half-open sau 267.9s cooldown
+[2025-11-07 00:54:12] [INFO] [model_interface] Giảm interval cho groq từ 60.00s xuống 30.00s
+[2025-11-07 00:54:12] [WARNING] [model_interface] Tất cả Groq API keys đều đã hết quota. Reset danh sách và thử lại.
+[2025-11-07 00:54:13] [INFO] [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+[2025-11-07 00:54:13] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k9ccgvhteq9bzzdtwpbprgs5` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99234, Requested 1434. Please try again in 9m37.152s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+[2025-11-07 00:54:13] [ERROR] [model_interface] Status code: 429
+[2025-11-07 00:54:13] [INFO] [model_interface] Tìm thấy header Retry-After: 578.0s
+[2025-11-07 00:54:13] [WARNING] [model_interface] Key #1 đã hết quota tạm thời. Chuyển sang key #2/2
+[2025-11-07 00:54:14] [WARNING] [model_interface] Đang thử lại lần 1/5 sau lỗi: QUOTA_LIMIT_ERROR: Key #1 đã hết quota tạm thời. Chuyển sang key #2/2. Original error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k9ccgvhteq9bzzdtwpbprgs5` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99234, Requested 1434. Please try again in 9m37.152s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+[2025-11-07 00:54:43] [INFO] [httpx] HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+[2025-11-07 00:54:43] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k9cd0gbte3aszt70gargdxzt` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99268, Requested 1434. Please try again in 10m6.528s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+[2025-11-07 00:54:43] [ERROR] [model_interface] Status code: 429
+[2025-11-07 00:54:43] [INFO] [model_interface] Tìm thấy header Retry-After: 607.0s
+[2025-11-07 00:54:43] [ERROR] [model_interface] Tất cả Groq API keys đều đã vượt quá quota. Vui lòng thử lại sau.
+[2025-11-07 00:54:43] [WARNING] [model_interface] Rate limit error #14 cho groq
+[2025-11-07 00:54:43] [WARNING] [model_interface] Circuit breaker cho groq đã mở sau 14 lỗi liên tiếp
+[2025-11-07 00:54:43] [WARNING] [model_interface] Tạm dừng gọi groq trong 90s
+[2025-11-07 00:54:43] [INFO] [model_interface] Sử dụng retry-after từ header: 607.0s
+[2025-11-07 00:54:43] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 30.00s lên 60.00s (lỗi #14)
+[2025-11-07 00:54:48] [WARNING] [model_interface] Đang thử lại lần 2/5 sau lỗi: QUOTA_LIMIT_ERROR: Tất cả Groq API keys đều đã vượt quá quota. Vui lòng thử lại sau.. Original error: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01k9cd0gbte3aszt70gargdxzt` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99268, Requested 1434. Please try again in 10m6.528s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+[2025-11-07 00:55:17] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:55:33] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:55:35] [WARNING] [model_interface] Rate limit error #15 cho groq
+[2025-11-07 00:55:38] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.06)
+[2025-11-07 00:55:41] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #15)
+[2025-11-07 00:56:00] [WARNING] [model_interface] Đang thử lại lần 3/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:56:10] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:56:17] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:56:18] [WARNING] [model_interface] Rate limit error #16 cho groq
+[2025-11-07 00:56:19] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.00)
+[2025-11-07 00:56:20] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #16)
+[2025-11-07 00:56:31] [WARNING] [model_interface] Đang thử lại lần 4/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:56:31] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:56:31] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:56:31] [WARNING] [model_interface] Rate limit error #17 cho groq
+[2025-11-07 00:56:31] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.17)
+[2025-11-07 00:56:31] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #17)
+[2025-11-07 00:56:41] [ERROR] [model_interface] Đã thử lại tối đa 5 lần nhưng vẫn thất bại. Lỗi cuối cùng: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:56:41] [ERROR] [model_interface] Lỗi khi lấy phản hồi từ groq/llama-3.3-70b-versatile: UNKNOWN_ERROR: Lỗi không rõ
+[2025-11-07 00:56:41] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:56:41] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:56:41] [WARNING] [model_interface] Rate limit error #18 cho groq
+[2025-11-07 00:56:41] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.11)
+[2025-11-07 00:56:41] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #18)
+[2025-11-07 00:56:51] [WARNING] [model_interface] Đang thử lại lần 1/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:56:51] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:56:51] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:56:51] [WARNING] [model_interface] Rate limit error #19 cho groq
+[2025-11-07 00:56:51] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.94)
+[2025-11-07 00:56:51] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #19)
+[2025-11-07 00:57:01] [WARNING] [model_interface] Đang thử lại lần 2/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:01] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:01] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:57:01] [WARNING] [model_interface] Rate limit error #20 cho groq
+[2025-11-07 00:57:01] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.99)
+[2025-11-07 00:57:01] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #20)
+[2025-11-07 00:57:11] [WARNING] [model_interface] Đang thử lại lần 3/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:11] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:11] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:57:11] [WARNING] [model_interface] Rate limit error #21 cho groq
+[2025-11-07 00:57:11] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.16)
+[2025-11-07 00:57:11] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #21)
+[2025-11-07 00:57:21] [WARNING] [model_interface] Đang thử lại lần 4/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:21] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:21] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:57:21] [WARNING] [model_interface] Rate limit error #22 cho groq
+[2025-11-07 00:57:21] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.81)
+[2025-11-07 00:57:21] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #22)
+[2025-11-07 00:57:31] [ERROR] [model_interface] Đã thử lại tối đa 5 lần nhưng vẫn thất bại. Lỗi cuối cùng: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:31] [ERROR] [model_interface] Lỗi khi lấy phản hồi từ groq/llama-3.3-70b-versatile: UNKNOWN_ERROR: Lỗi không rõ
+[2025-11-07 00:57:31] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:31] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:57:31] [WARNING] [model_interface] Rate limit error #23 cho groq
+[2025-11-07 00:57:31] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.98)
+[2025-11-07 00:57:31] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #23)
+[2025-11-07 00:57:41] [WARNING] [model_interface] Đang thử lại lần 1/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:41] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:41] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:57:41] [WARNING] [model_interface] Rate limit error #24 cho groq
+[2025-11-07 00:57:41] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.06)
+[2025-11-07 00:57:41] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #24)
+[2025-11-07 00:57:51] [WARNING] [model_interface] Đang thử lại lần 2/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:51] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:57:51] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:57:51] [WARNING] [model_interface] Rate limit error #25 cho groq
+[2025-11-07 00:57:51] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.14)
+[2025-11-07 00:57:51] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #25)
+[2025-11-07 00:58:01] [WARNING] [model_interface] Đang thử lại lần 3/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:01] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:01] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:58:01] [WARNING] [model_interface] Rate limit error #26 cho groq
+[2025-11-07 00:58:01] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.90)
+[2025-11-07 00:58:01] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #26)
+[2025-11-07 00:58:11] [WARNING] [model_interface] Đang thử lại lần 4/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:11] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:11] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:58:11] [WARNING] [model_interface] Rate limit error #27 cho groq
+[2025-11-07 00:58:11] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.04)
+[2025-11-07 00:58:11] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #27)
+[2025-11-07 00:58:21] [ERROR] [model_interface] Đã thử lại tối đa 5 lần nhưng vẫn thất bại. Lỗi cuối cùng: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:21] [ERROR] [model_interface] Lỗi khi lấy phản hồi từ groq/llama-3.3-70b-versatile: UNKNOWN_ERROR: Lỗi không rõ
+[2025-11-07 00:58:21] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:21] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:58:21] [WARNING] [model_interface] Rate limit error #28 cho groq
+[2025-11-07 00:58:21] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.90)
+[2025-11-07 00:58:21] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #28)
+[2025-11-07 00:58:31] [WARNING] [model_interface] Đang thử lại lần 1/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:31] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:31] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:58:31] [WARNING] [model_interface] Rate limit error #29 cho groq
+[2025-11-07 00:58:31] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.91)
+[2025-11-07 00:58:31] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #29)
+[2025-11-07 00:58:41] [WARNING] [model_interface] Đang thử lại lần 2/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:41] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:41] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:58:41] [WARNING] [model_interface] Rate limit error #30 cho groq
+[2025-11-07 00:58:41] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.84)
+[2025-11-07 00:58:41] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #30)
+[2025-11-07 00:58:51] [WARNING] [model_interface] Đang thử lại lần 3/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:51] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:58:51] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:58:51] [WARNING] [model_interface] Rate limit error #31 cho groq
+[2025-11-07 00:58:51] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.14)
+[2025-11-07 00:58:51] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #31)
+[2025-11-07 00:59:01] [WARNING] [model_interface] Đang thử lại lần 4/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:01] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:01] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:59:01] [WARNING] [model_interface] Rate limit error #32 cho groq
+[2025-11-07 00:59:01] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.97)
+[2025-11-07 00:59:01] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #32)
+[2025-11-07 00:59:11] [ERROR] [model_interface] Đã thử lại tối đa 5 lần nhưng vẫn thất bại. Lỗi cuối cùng: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:11] [ERROR] [model_interface] Lỗi khi lấy phản hồi từ groq/llama-3.3-70b-versatile: UNKNOWN_ERROR: Lỗi không rõ
+[2025-11-07 00:59:11] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:11] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:59:11] [WARNING] [model_interface] Rate limit error #33 cho groq
+[2025-11-07 00:59:11] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.85)
+[2025-11-07 00:59:11] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #33)
+[2025-11-07 00:59:21] [WARNING] [model_interface] Đang thử lại lần 1/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:21] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:21] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:59:21] [WARNING] [model_interface] Rate limit error #34 cho groq
+[2025-11-07 00:59:21] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.97)
+[2025-11-07 00:59:21] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #34)
+[2025-11-07 00:59:31] [WARNING] [model_interface] Đang thử lại lần 2/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:31] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:31] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:59:31] [WARNING] [model_interface] Rate limit error #35 cho groq
+[2025-11-07 00:59:31] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.82)
+[2025-11-07 00:59:31] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #35)
+[2025-11-07 00:59:41] [WARNING] [model_interface] Đang thử lại lần 3/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:41] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:41] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:59:41] [WARNING] [model_interface] Rate limit error #36 cho groq
+[2025-11-07 00:59:41] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 0.86)
+[2025-11-07 00:59:41] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #36)
+[2025-11-07 00:59:51] [WARNING] [model_interface] Đang thử lại lần 4/5 sau lỗi: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:51] [ERROR] [model_interface] Lỗi khi sinh văn bản với Groq API: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 00:59:51] [WARNING] [model_interface] Groq API error: Lỗi không rõ. Đang thử lại...
+[2025-11-07 00:59:51] [WARNING] [model_interface] Rate limit error #37 cho groq
+[2025-11-07 00:59:51] [INFO] [model_interface] Tính toán thời gian retry: 60.00s (base: 120.00s, severity: 5.0, jitter: 1.05)
+[2025-11-07 00:59:51] [INFO] [model_interface] Đã điều chỉnh interval cho groq từ 60.00s lên 60.00s (lỗi #37)
+[2025-11-07 01:00:01] [ERROR] [model_interface] Đã thử lại tối đa 5 lần nhưng vẫn thất bại. Lỗi cuối cùng: UNKNOWN_ERROR: Lỗi không rõ. Đang thử lại.... Original error: Circuit breaker đang mở, đang chờ cooldown
+[2025-11-07 01:00:01] [ERROR] [model_interface] Lỗi khi lấy phản hồi từ groq/llama-3.3-70b-versatile: UNKNOWN_ERROR: Lỗi không rõ
+[2025-11-07 01:00:02] [INFO] [checkpoint_manager] Đã lưu checkpoint tại: /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251106_180746/checkpoints/checkpoint_20251106_180746_700.json (700 kết quả)
+[2025-11-07 01:00:02] [INFO] [checkpoint_manager] Tìm thấy checkpoint trong thư mục chạy run_20251106_180746
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Đã lưu checkpoint tại /data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251106_180746/checkpoints/checkpoint_20251106_180746_700.json
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Trạng thái: llama/cot_self_consistency_5 - 0/50 (0.0%)
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Đã lưu checkpoint sau batch 10/10
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] ===============================================================
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] = Hoàn thành đánh giá llama với prompt cot_self_consistency_5 =
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] ===============================================================
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Tổng số câu hỏi: 50
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Tổng thời gian: 5682.83s
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Thời gian trung bình: 113.66s/câu hỏi
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Độ chính xác: 1.0000
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] ============================================================
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] = Bắt đầu đánh giá llama với prompt cot_self_consistency_7 =
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] ============================================================
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Tổng số câu hỏi: 50
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Đánh giá 50 câu hỏi theo 10 batch, mỗi batch 5 câu hỏi
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Tiến độ llama/cot_self_consistency_7: 0/50 (0.0%) - Đã chạy 0.0s
+[2025-11-07 01:00:02] [INFO] [llm_evaluation.evaluator] Đang xử lý batch 1/10 với 5 câu hỏi
+[2025-11-07 01:00:02] [INFO] [model_interface] Đang xử lý batch với 5 prompt trên model llama
