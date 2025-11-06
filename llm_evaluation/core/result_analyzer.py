@@ -1,7 +1,7 @@
 ﻿"""
 Result Analyzer cho hệ thống đánh giá LLM.
 Phân tích các kết quả từ quá trình đánh giá và tính toán các metrics.
-Hỗ trợ đánh giá chất lượng suy luận qua API Groq và các metrics khác.
+Hỗ trợ đánh giá chất lượng suy luận qua API Gemini và các metrics khác.
 """
 
 import time
@@ -49,7 +49,7 @@ class ResultAnalyzer:
     def __init__(self, 
                  results_df: Optional[pd.DataFrame] = None,
                  reasoning_evaluation_config: Optional[Dict[str, Any]] = None,
-                 reasoning_model: str = "groq/llama3-70b-8192",
+                 reasoning_model: str = "gemini-2.0-flash-exp",
                  language: str = "vietnamese",
                  similarity_model: Optional[str] = None,
                  verbose: bool = True):
@@ -617,27 +617,32 @@ Brief Explanation:
 """
             
             # Sử dụng model API để phân tích lỗi
-            use_groq = self.reasoning_config.get("use_groq", True)
-            if use_groq:
-                # Sử dụng Groq API
+            use_gemini = self.reasoning_config.get("use_gemini", True)
+            if use_gemini:
+                # Sử dụng Gemini API
                 from core.model_interface import generate_text
+                import config as app_config
                 
-                # Lấy tên model Groq
-                model_name = "groq"
+                # Lấy tên model Gemini - ưu tiên từ API_CONFIGS, sau đó từ reasoning_config
+                error_analysis_model = (
+                    app_config.API_CONFIGS.get("gemini", {}).get("models", {}).get("error_analysis") or
+                    self.reasoning_config.get("model") or
+                    "gemini-2.0-flash-exp"
+                )
+                
+                model_name = "gemini"
                 config = {
-                    "model": self.reasoning_config.get("models", {}).get(
-                        "error_analysis", "llama3-70b-8192"
-                    ),
+                    "model": error_analysis_model,
                     "temperature": 0.1,  # Thấp để đảm bảo phân loại nhất quán
                     "max_tokens": 1024
                 }
                 
                 # Gọi API
-                logger.debug("Phân tích lỗi bằng Groq API")
+                logger.debug("Phân tích lỗi bằng Gemini API")
                 response_text, stats = generate_text(model_name, error_analysis_prompt, config)
                 
                 if stats.get("has_error", False):
-                    logger.error(f"Lỗi khi gọi Groq API: {stats.get('error_message')}")
+                    logger.error(f"Lỗi khi gọi Gemini API: {stats.get('error_message')}")
                     # Fallback về giá trị mặc định
                     return {
                         "error_type": "Unknown",
@@ -645,7 +650,7 @@ Brief Explanation:
                     }
             else:
                 # TODO: Sử dụng model khác nếu cần
-                logger.warning("Chỉ hỗ trợ Groq API để phân tích lỗi")
+                logger.warning("Chỉ hỗ trợ Gemini API để phân tích lỗi")
                 response_text = ""
             
             # Phân tích kết quả phân loại lỗi
@@ -959,7 +964,7 @@ Brief Explanation:
         """
         Đánh giá chất lượng suy luận cho một cặp câu hỏi-câu trả lời.
         
-        Sử dụng LLM (mặc định là Llama 3 qua Groq API) để đánh giá chất lượng suy luận
+        Sử dụng LLM (mặc định là Gemini 2.0 Flash Exp) để đánh giá chất lượng suy luận
         dựa trên các tiêu chí như tính logic, tính toán chính xác, rõ ràng, đầy đủ và liên quan.
         
         Args:
@@ -1808,27 +1813,32 @@ Detailed analysis:
             eval_prompt = eval_prompt.format(question=question, answer=model_answer)
             
             # Sử dụng model API để đánh giá
-            use_groq = self.reasoning_config.get("use_groq", True)
-            if use_groq:
-                # Sử dụng Groq API
+            use_gemini = self.reasoning_config.get("use_gemini", True)
+            if use_gemini:
+                # Sử dụng Gemini API
                 from core.model_interface import generate_text
+                import config as app_config
                 
-                # Lấy tên model Groq
-                model_name = "groq"
+                # Lấy tên model Gemini - ưu tiên từ API_CONFIGS, sau đó từ reasoning_config
+                completeness_model = (
+                    app_config.API_CONFIGS.get("gemini", {}).get("models", {}).get("completeness_evaluation") or
+                    self.reasoning_config.get("model") or
+                    "gemini-2.0-flash-exp"
+                )
+                
+                model_name = "gemini"
                 config = {
-                    "model": self.reasoning_config.get("models", {}).get(
-                        "completeness_evaluation", "llama3-70b-8192"
-                    ),
+                    "model": completeness_model,
                     "temperature": 0.2,  # Thấp để đảm bảo tính nhất quán
                     "max_tokens": 1024
                 }
                 
                 # Gọi API
-                logger.debug("Đánh giá tính đầy đủ bằng Groq API")
+                logger.debug("Đánh giá tính đầy đủ bằng Gemini API")
                 response_text, stats = generate_text(model_name, eval_prompt, config)
                 
                 if stats.get("has_error", False):
-                    logger.error(f"Lỗi khi gọi Groq API: {stats.get('error_message')}")
+                    logger.error(f"Lỗi khi gọi Gemini API: {stats.get('error_message')}")
                     # Fallback về giá trị mặc định
                     return {
                         "score": 5.0,
@@ -1836,7 +1846,7 @@ Detailed analysis:
                     }
             else:
                 # TODO: Sử dụng model khác nếu cần
-                logger.warning("Chỉ hỗ trợ Groq API để đánh giá tính đầy đủ")
+                logger.warning("Chỉ hỗ trợ Gemini API để đánh giá tính đầy đủ")
                 response_text = ""
                 
             # Phân tích kết quả đánh giá

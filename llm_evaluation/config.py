@@ -88,7 +88,6 @@ PROMPT_TOKEN_CONFIGS = {
         "llama": 512,
         "qwen": 384,
         "gemini": 1024,
-        "groq": 1024,
         "openai": 1024
     },
     # Prompt đơn giản
@@ -96,7 +95,6 @@ PROMPT_TOKEN_CONFIGS = {
         "llama": 512,
         "qwen": 384,
         "gemini": 1024,
-        "groq": 1024,
         "openai": 1024
     },
     # Few-shot prompts
@@ -104,21 +102,18 @@ PROMPT_TOKEN_CONFIGS = {
         "llama": 768,
         "qwen": 512,
         "gemini": 1536,
-        "groq": 1536,
         "openai": 1536
     },
     "few_shot_5": {
         "llama": 1024,
         "qwen": 768,
         "gemini": 1792,
-        "groq": 1792,
         "openai": 1792
     },
     "few_shot_7": {
         "llama": 1280,
         "qwen": 1024,
         "gemini": 2048,
-        "groq": 2048,
         "openai": 2048
     },
     # Chain-of-Thought prompts
@@ -126,7 +121,6 @@ PROMPT_TOKEN_CONFIGS = {
         "llama": 1024,
         "qwen": 768,
         "gemini": 2048,
-        "groq": 2048,
         "openai": 2048
     },
     # CoT with self-consistency
@@ -134,21 +128,18 @@ PROMPT_TOKEN_CONFIGS = {
         "llama": 1280,
         "qwen": 1024,
         "gemini": 2560,
-        "groq": 2560,
         "openai": 2560
     },
     "cot_self_consistency_5": {
         "llama": 1536,
         "qwen": 1280,
         "gemini": 3072,
-        "groq": 3072,
         "openai": 3072
     },
     "cot_self_consistency_7": {
         "llama": 1792,
         "qwen": 1536,
         "gemini": 3584,
-        "groq": 3584,
         "openai": 3584
     },
     # ReAct prompts (cần nhiều tokens nhất do suy luận phức tạp)
@@ -156,7 +147,6 @@ PROMPT_TOKEN_CONFIGS = {
         "llama": 2048,
         "qwen": 1792,
         "gemini": 4096,
-        "groq": 4096,
         "openai": 4096
     }
 }
@@ -183,12 +173,7 @@ MODEL_CONFIGS = {
         "temperature": 0.7,
         "top_p": 0.95,
         "top_k": 40,
-    },
-    "groq": {
-        "max_tokens": 1024,  # Giá trị mặc định, sẽ được ghi đè bởi cấu hình prompt cụ thể
-        "temperature": 0.7,
-        "top_p": 0.95,
-        "model": "llama3-70b-8192"  # Default model for Groq
+        "model": "gemini-2.0-flash-exp"  # Default model for Gemini (using 2.0 flash exp as 2.5 flash lite may not be available yet)
     }
 }
 
@@ -221,7 +206,7 @@ EMBEDDING_MODELS = {
 # Thông tin về API management
 API_CONFIGS = {
     "gemini": {
-        "requests_per_minute": 30,  # RPM mặc định
+        "requests_per_minute": 15,  # RPM mặc định
         "max_retries": 7,  # Tăng từ 5 lên 7
         "retry_base_delay": 1.5,  # Giảm từ 2s xuống 1.5s
         "max_retry_delay": 45,  # Giảm từ 60s xuống 45s
@@ -236,28 +221,10 @@ API_CONFIGS = {
             "consecutive_success_threshold": 2  # Số lần thành công liên tiếp để đóng circuit breaker
         },
         "models": {
-            "reasoning_evaluation": "gemini-1.5-pro",  # Model để đánh giá khả năng suy luận
-            "general": "gemini-1.5-flash"  # Model mặc định cho general usage
-        }
-    },
-    "groq": {
-        "requests_per_minute": 20,  # Giảm RPM để tránh rate limit
-        "max_retries": 10,  # Tăng từ 8 lên 10
-        "retry_base_delay": 2,  # Giảm từ 4s xuống 2s
-        "max_retry_delay": 90,  # Giảm từ 120s xuống 90s
-        "jitter_factor": 0.3,  # Thêm jitter lớn hơn cho Groq vì API thường quá tải
-        "timeout": 45,  # seconds
-        "error_codes_to_retry": [429, 500, 502, 503, 504],  # Chỉ định cụ thể các mã lỗi cần retry
-        "adaptive_rate_limiting": True,  # Kích hoạt giới hạn tốc độ thích ứng
-        "circuit_breaker": {
-            "failure_threshold": 3,  # Số lần lỗi rate limit liên tiếp trước khi mở circuit breaker
-            "cooldown_period": 90,  # Thời gian cooldown dài hơn cho Groq (giây)
-            "half_open_timeout": 45,  # Thời gian thử lại sau khi cooldown (giây)
-            "consecutive_success_threshold": 2  # Số lần thành công liên tiếp để đóng circuit breaker
-        },
-        "models": {
-            "reasoning_evaluation": "llama3-70b-8192",  # Model để đánh giá khả năng suy luận
-            "general": "llama3-8b-8192"  # Model mặc định cho general usage
+            "reasoning_evaluation": "gemini-2.0-flash-exp",  # Model để đánh giá khả năng suy luận (sử dụng Gemini 2.0 flash exp thay vì Groq)
+            "general": "gemini-2.0-flash-exp",  # Model mặc định cho general usage
+            "error_analysis": "gemini-2.0-flash-exp",  # Model để phân tích lỗi
+            "completeness_evaluation": "gemini-2.0-flash-exp"  # Model để đánh giá tính đầy đủ
         }
     }
 }
@@ -267,8 +234,8 @@ REASONING_EVALUATION_CONFIG = {
     "enabled": True,
     "sample_size": 50,  # Số lượng mẫu để đánh giá suy luận
     "metrics": ["coherence", "relevance", "logical_structure", "factual_accuracy", "overall"],
-    "use_groq": True,  # Sử dụng Groq API để đánh giá
-    "model": "groq/llama3-70b-8192",  # Model để đánh giá suy luận
+    "use_gemini": True,  # Sử dụng Gemini API để đánh giá (thay thế Groq)
+    "model": "gemini-2.0-flash-exp",  # Model để đánh giá suy luận (sử dụng Gemini 2.0 flash exp)
     "criteria_weights": {  # Trọng số cho các tiêu chí đánh giá
         "logical_flow": 0.25,
         "mathematical_correctness": 0.25,
@@ -294,7 +261,7 @@ def get_max_tokens(model_name, prompt_type):
     Lấy giá trị max_tokens phù hợp dựa trên loại model và prompt.
     
     Args:
-        model_name (str): Tên model (llama, qwen, gemini, groq)
+        model_name (str): Tên model (llama, qwen, gemini)
         prompt_type (str): Loại prompt (zero_shot, few_shot_3, cot, react, etc.)
     
     Returns:
@@ -323,8 +290,8 @@ def validate_config():
     if not GEMINI_API_KEYS:
         warnings.append("GEMINI_API_KEYS không được thiết lập trong .env")
     
-    if not GROQ_API_KEYS and REASONING_EVALUATION_CONFIG["enabled"] and REASONING_EVALUATION_CONFIG["use_groq"]:
-        warnings.append("GROQ_API_KEYS không được thiết lập trong .env, nhưng cấu hình để sử dụng Groq cho đánh giá suy luận")
+    if not GEMINI_API_KEYS and REASONING_EVALUATION_CONFIG["enabled"] and REASONING_EVALUATION_CONFIG.get("use_gemini", True):
+        warnings.append("GEMINI_API_KEYS không được thiết lập trong .env, nhưng cấu hình để sử dụng Gemini cho đánh giá suy luận")
     
     # Kiểm tra model paths cho các model được chọn
     for model_name in DEFAULT_MODELS:
@@ -337,9 +304,6 @@ def validate_config():
         elif model_name.lower() == "gemini":
             if not GEMINI_API_KEYS:
                 errors.append(f"GEMINI_API_KEYS không được thiết lập, nhưng '{model_name}' có trong DEFAULT_MODELS")
-        elif model_name.lower() == "groq":
-            if not GROQ_API_KEYS:
-                errors.append(f"GROQ_API_KEYS không được thiết lập, nhưng '{model_name}' có trong DEFAULT_MODELS")
     
     # Kiểm tra file questions
     if not Path(QUESTIONS_FILE).exists():
@@ -436,7 +400,6 @@ def display_config_summary():
     # Hiển thị thông tin API
     logger.info("=== Thông tin API ===")
     logger.info(f"Gemini API: {len(GEMINI_API_KEYS)} keys")
-    logger.info(f"Groq API: {len(GROQ_API_KEYS)} keys")
     logger.info(f"OpenAI API: {len(OPENAI_API_KEYS)} keys")
     
     # Hiển thị thông tin model local
@@ -449,7 +412,8 @@ def display_config_summary():
     logger.info(f"Enabled: {REASONING_EVALUATION_CONFIG['enabled']}")
     if REASONING_EVALUATION_CONFIG['enabled']:
         logger.info(f"Metrics: {REASONING_EVALUATION_CONFIG['metrics']}")
-        logger.info(f"Sử dụng Groq: {REASONING_EVALUATION_CONFIG['use_groq']}")
+        logger.info(f"Sử dụng Gemini: {REASONING_EVALUATION_CONFIG.get('use_gemini', True)}")
+        logger.info(f"Model: {REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.0-flash-exp')}")
         
     # Hiển thị cấu hình cache
     logger.info("=== Cấu hình cache ===")

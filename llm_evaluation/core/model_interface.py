@@ -2,7 +2,7 @@
 Giao diện thống nhất để tương tác với các model LLM khác nhau bao gồm cả model local và API.
 
 Chức năng:
-- Tạo ra giao diện thống nhất cho cả model local (Llama, Qwen) và API (Gemini, Groq)
+- Tạo ra giao diện thống nhất cho cả model local (Llama, Qwen) và API (Gemini)
 - Quản lý bộ nhớ và cache model để tránh OOM
 - Xử lý rate limiting và error handling với circuit breaker
 - Quản lý inference trên nhiều GPU
@@ -46,11 +46,7 @@ import huggingface_hub
 # API clients
 import google.generativeai as genai
 
-# Nếu Groq được sử dụng
-try:
-    import groq
-except ImportError:
-    pass
+# Groq đã được thay thế bằng Gemini - không cần import groq nữa
 
 logger = logging.getLogger("model_interface")
 
@@ -75,7 +71,7 @@ def create_smart_retry(api_name):
     - Backoff thích ứng dựa trên kiểu lỗi
     
     Args:
-        api_name (str): Tên của API ('gemini', 'groq', etc.)
+        api_name (str): Tên của API ('gemini', etc.)
         
     Returns:
         Function: Retry decorator tùy chỉnh
@@ -229,7 +225,7 @@ def create_smart_retry(api_name):
 class ModelInterface:
     """
     Interface thống nhất cho việc tương tác với các model LLM,
-    bao gồm cả model local (Llama, Qwen) và API (Gemini, Groq).
+    bao gồm cả model local (Llama, Qwen) và API (Gemini).
     """
     
     def __init__(self, use_cache=True, use_disk_cache=None):
@@ -253,12 +249,10 @@ class ModelInterface:
             
         # Khởi tạo quản lý API keys
         self.current_gemini_key_index = 0
-        self.current_groq_key_index = 0
         
         # Thay thế set bằng dict để lưu thông tin hết hạn
         # Key: API key, Value: Dictionary {timestamp: thời gian hết hạn, reason: lý do}
         self.exhausted_gemini_keys = {}
-        self.exhausted_groq_keys = {}
         
         # Tần suất kiểm tra key hết hạn (giây)
         self.key_refresh_interval = 3600  # 1 giờ
@@ -369,7 +363,7 @@ class ModelInterface:
         Sinh văn bản từ model được chỉ định với prompt và cấu hình cho trước.
         
         Args:
-            model_name (str): Tên của model (llama, qwen, gemini, groq)
+            model_name (str): Tên của model (llama, qwen, gemini)
             prompt (str): Prompt input
             config (dict): Cấu hình generation (temperature, max_tokens, etc.) 
                            Có thể chứa prompt_type để lấy max_tokens phù hợp từ cấu hình
@@ -401,8 +395,6 @@ class ModelInterface:
             return self._generate_with_local_model(model_name, prompt, model_config)
         elif model_name.lower() == "gemini":
             return self._generate_with_gemini(prompt, model_config)
-        elif model_name.lower() == "groq":
-            return self._generate_with_groq(prompt, model_config)
         else:
             error_msg = f"Model không được hỗ trợ: {model_name}"
             logger.error(error_msg)
@@ -557,8 +549,14 @@ class ModelInterface:
             top_p = gen_config.get("top_p", 0.95)
             top_k = gen_config.get("top_k", 40)
             
-            # Get model to use
-            model_name = gen_config.get("model", "gemini-1.5-flash")
+            # Get model to use - ưu tiên từ gen_config, sau đó từ MODEL_CONFIGS, cuối cùng từ API_CONFIGS
+            import config as app_config
+            default_model = (
+                app_config.MODEL_CONFIGS.get("gemini", {}).get("model") or
+                app_config.API_CONFIGS.get("gemini", {}).get("models", {}).get("general") or
+                "gemini-2.0-flash-exp"
+            )
+            model_name = gen_config.get("model", default_model)
             
             # Log tham số
             logger.debug(f"Tham số sinh cho Gemini: model={model_name}, max_tokens={max_tokens}, "
@@ -728,314 +726,7 @@ class ModelInterface:
             # Raise để retry được kích hoạt
             raise Exception(f"{error_type}: {detail_msg}. Original error: {str(e)}")
     
-    @property
-    def groq_retry_decorator(self):
-        """Tạo decorator retry cho Groq tại runtime để đọc cấu hình mới nhất"""
-        return create_smart_retry("groq")
-        
-    def _generate_with_groq(self, prompt, gen_config):
-        """
-        Sinh văn bản sử dụng Groq API.
-        
-        Args:
-            prompt (str): Prompt đầu vào
-            gen_config (dict): Cấu hình generation
-            
-        Returns:
-            tuple: (text, stats)
-        """
-        start_time = time.time()
-        max_retries = 5  # Số lần thử lại tối đa
-        
-        # Áp dụng decorator tại runtime để đảm bảo cấu hình mới nhất
-        decorated_function = self.groq_retry_decorator(self._generate_with_groq_impl)
-        
-        for attempt in range(max_retries):
-            try:
-                return decorated_function(prompt, gen_config)
-            except Exception as e:
-                error_msg = str(e)
-                
-                # Trích xuất loại lỗi
-                error_type = None
-                if ":" in error_msg:
-                    error_type = error_msg.split(":")[0].strip()
-                
-                # Kiểm tra nếu đã đến lần retry cuối cùng
-                if attempt == max_retries - 1:
-                    logger.error(f"Đã thử lại tối đa {max_retries} lần nhưng vẫn thất bại. Lỗi cuối cùng: {error_msg}")
-                    
-                    # Trả về thông báo lỗi thay vì throw exception
-                    detail_msg = error_msg.split(".")[0] if "." in error_msg else error_msg
-                    return f"[Error: {detail_msg}]", {
-                        "has_error": True,
-                        "error_message": detail_msg,
-                        "error_type": error_type or "UNKNOWN_ERROR",
-                        "elapsed_time": time.time() - start_time
-                    }
-                
-                # Kiểm tra các lỗi đặc biệt không thể recover
-                if "INVALID_API_KEY_ERROR" in error_msg and "Tất cả Groq API keys đều không hợp lệ" in error_msg:
-                    logger.error("Tất cả API keys đều không hợp lệ, không thể tiếp tục retry")
-                    return f"[Error: Tất cả API keys không hợp lệ]", {
-                        "has_error": True,
-                        "error_message": "Tất cả API keys không hợp lệ",
-                        "error_type": "INVALID_API_KEY_ERROR",
-                        "elapsed_time": time.time() - start_time
-                    }
-                
-                # Các lỗi đã được xử lý ở _generate_with_groq_impl, 
-                # decorator sẽ tự động retry
-                logger.warning(f"Đang thử lại lần {attempt + 1}/{max_retries} sau lỗi: {error_msg}")
-        
-        # Không bao giờ nên đến đây do đã có xử lý ở trên,
-        # nhưng thêm để đảm bảo code an toàn
-        return f"[Error: Quá nhiều lần thử không thành công]", {
-            "has_error": True,
-            "error_message": "Quá nhiều lần thử không thành công",
-            "error_type": "MAX_RETRIES_EXCEEDED",
-            "elapsed_time": time.time() - start_time
-        }
-    
-    def _generate_with_groq_impl(self, prompt, gen_config):
-        """
-        Triển khai thực tế của việc gọi Groq API.
-        """
-        start_time = time.time()
-        api_name = "groq"
-        
-        try:
-            # Áp dụng rate limiting với circuit breaker
-            if not self._apply_rate_limiting(api_name):
-                # Circuit breaker đang mở, raise exception để trigger retry
-                raise Exception("Circuit breaker đang mở, đang chờ cooldown")
-            
-            # Lấy Groq client
-            client = self._get_groq_client()
-            if client is None:
-                error_msg = "Không thể kết nối tới Groq API. Vui lòng kiểm tra API key."
-                logger.error(error_msg)
-                return f"[Error: {error_msg}]", {
-                    "has_error": True,
-                    "error_message": error_msg,
-                    "error_type": "API_CONNECTION_ERROR",
-                    "elapsed_time": time.time() - start_time
-                }
-            
-            # Lấy tham số generation
-            max_tokens = gen_config.get("max_tokens", 1024)
-            temperature = gen_config.get("temperature", 0.7)
-            top_p = gen_config.get("top_p", 0.95)
-            model_name = gen_config.get("model", "llama3-70b-8192")
-            
-            # Log tham số
-            logger.debug(f"Tham số sinh cho Groq: model={model_name}, max_tokens={max_tokens}, "
-                        f"temp={temperature}, top_p={top_p}")
-            
-            # Sinh văn bản
-            start_generate = time.time()
-            
-            # Set a timeout for the request
-            timeout = gen_config.get("timeout", 30)
-            
-            # Gọi Groq API
-            completion = client.chat.completions.create(
-                model=model_name,
-                messages=[
-                    {"role": "system", "content": "Bạn là một trợ lý AI hữu ích."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=max_tokens,
-                temperature=temperature,
-                top_p=top_p,
-                timeout=timeout
-            )
-            
-            # Đặt lại circuit breaker sau khi request thành công
-            self._reset_circuit_breaker(api_name)
-            
-            # Trích xuất phản hồi
-            generated_text = completion.choices[0].message.content
-            
-            # Tính thời gian và tốc độ
-            end_time = time.time()
-            generation_time = end_time - start_time
-            decoding_time = end_time - start_generate
-            output_length = len(generated_text.split())
-            
-            tokens_per_second = output_length / decoding_time if decoding_time > 0 else 0
-            
-            # Trả về văn bản và thống kê
-            stats = {
-                "token_count": output_length,
-                "elapsed_time": generation_time,
-                "decoding_time": decoding_time,
-                "tokens_per_second": tokens_per_second,
-                "has_error": False,
-                "model": model_name
-            }
-            
-            return generated_text.strip(), stats
-            
-        except Exception as e:
-            error_type = type(e).__name__
-            error_msg = f"Lỗi khi sinh văn bản với Groq API: {str(e)}"
-            logger.error(error_msg)
-            
-            # Log status code nếu có
-            status_code = None
-            if hasattr(e, 'status_code'):
-                status_code = e.status_code
-                logger.error(f"Status code: {status_code}")
-            elif hasattr(e, 'response') and hasattr(e.response, 'status_code'):
-                status_code = e.response.status_code
-                logger.error(f"Status code: {status_code}")
-            
-            logger.debug(traceback.format_exc())
-            
-            # Trích xuất retry-after header nếu có
-            retry_after = None
-            if hasattr(e, 'headers') and e.headers and 'retry-after' in e.headers:
-                try:
-                    retry_after = float(e.headers['retry-after'])
-                    logger.info(f"Tìm thấy header Retry-After: {retry_after}s")
-                except (ValueError, TypeError):
-                    pass
-            elif hasattr(e, 'response') and hasattr(e.response, 'headers') and 'retry-after' in e.response.headers:
-                try:
-                    retry_after = float(e.response.headers['retry-after'])
-                    logger.info(f"Tìm thấy header Retry-After: {retry_after}s")
-                except (ValueError, TypeError):
-                    pass
-            
-            # Xử lý lỗi 503 Service Unavailable
-            if status_code == 503 or 'service unavailable' in str(e).lower():
-                logger.warning(f"Groq API error: Lỗi không rõ. Đang thử lại...")
-                
-                # Tùy chỉnh thời gian chờ
-                wait_time = self._handle_rate_limit_error(api_name, e, retry_after)
-                
-                # Thực hiện retry ngay tại đây thay vì lan truyền lỗi
-                time.sleep(min(wait_time, 10))  # Giới hạn tối đa 10 giây
-                
-                # Throw lỗi để retry decorator bắt và xử lý
-                raise Exception(f"RETRIABLE_ERROR: Lỗi 503 Service Unavailable. Đang thử lại.")
-            
-            # Xử lý lỗi 500 Internal Server Error 
-            if status_code == 500 or 'internal server error' in str(e).lower():
-                logger.warning(f"Groq API error: Lỗi không rõ. Đang thử lại...")
-                
-                # Tùy chỉnh thời gian chờ
-                wait_time = self._handle_rate_limit_error(api_name, e, retry_after)
-                
-                # Thực hiện retry ngay tại đây thay vì lan truyền lỗi
-                time.sleep(min(wait_time, 10))  # Giới hạn tối đa 10 giây
-                
-                # Throw lỗi để retry decorator bắt và xử lý
-                raise Exception(f"RETRIABLE_ERROR: Lỗi 500 Internal Server Error. Đang thử lại.")
-            
-            # Customized error message based on error type
-            if 'quota' in str(e).lower() or 'rate limit' in str(e).lower() or (status_code == 429):
-                # Đánh dấu key hiện tại đã hết quota
-                current_key = config.GROQ_API_KEYS[self.current_groq_key_index]
-                
-                # Xác định loại lỗi quota: hết quota theo ngày hay chỉ là rate limit tạm thời
-                is_daily_quota = False
-                reason = "rate_limit_exceeded"
-                wait_time = 0
-                
-                # Phân tích lỗi để xác định đúng loại lỗi quota
-                error_str = str(e).lower()
-                if 'daily' in error_str and 'quota' in error_str:
-                    is_daily_quota = True
-                    reason = "daily_quota_exceeded"
-                elif 'quota exceeded' in error_str or 'quota limit' in error_str:
-                    is_daily_quota = True
-                    reason = "daily_quota_exceeded"
-                
-                # Lưu thông tin hết hạn với timestamp hiện tại
-                self.exhausted_groq_keys[current_key] = {
-                    'timestamp': time.time(),
-                    'reason': reason,
-                    'error': str(e)
-                }
-                
-                # Chuyển sang key tiếp theo
-                old_index = self.current_groq_key_index
-                self.current_groq_key_index = (self.current_groq_key_index + 1) % len(config.GROQ_API_KEYS)
-                
-                # Kiểm tra xem còn key khả dụng không
-                if len(self.exhausted_groq_keys) >= len(config.GROQ_API_KEYS):
-                    detail_msg = "Tất cả Groq API keys đều đã vượt quá quota. Vui lòng thử lại sau."
-                    logger.error(detail_msg)
-                    
-                    # Vẫn tạm thời reset rate limiters để ngăn circuit breaker nếu đó là lỗi tạm thời
-                    if not is_daily_quota:
-                        wait_time = self._handle_rate_limit_error(api_name, e, retry_after)
-                else:
-                    # Nếu còn key khả dụng, thử lại với key mới
-                    quota_type = "theo ngày" if is_daily_quota else "tạm thời"
-                    detail_msg = f"Key #{old_index + 1} đã hết quota {quota_type}. Chuyển sang key #{self.current_groq_key_index + 1}/{len(config.GROQ_API_KEYS)}"
-                    logger.warning(detail_msg)
-                    
-                    # Khởi tạo lại client với key mới
-                    self._get_groq_client()
-                    
-                    # Giảm thời gian chờ vì chúng ta đã đổi key
-                    wait_time = 1.0  # 1 second để đảm bảo không quá nhanh
-                
-                error_type = "QUOTA_LIMIT_ERROR"
-                
-                # Thực hiện sleep ngay tại đây để đảm bảo chờ đủ thời gian
-                time.sleep(min(wait_time, 5))  # Giới hạn tối đa 5s khi đổi key
-                
-            elif 'invalid api key' in str(e).lower() or 'authentication' in str(e).lower():
-                # Đánh dấu key hiện tại không hợp lệ
-                current_key = config.GROQ_API_KEYS[self.current_groq_key_index]
-                
-                # Lưu thông tin lỗi với timestamp hiện tại
-                self.exhausted_groq_keys[current_key] = {
-                    'timestamp': time.time(),
-                    'reason': "invalid_api_key",
-                    'error': str(e)
-                }
-                
-                # Chuyển sang key tiếp theo
-                self.current_groq_key_index = (self.current_groq_key_index + 1) % len(config.GROQ_API_KEYS)
-                
-                # Kiểm tra xem còn key khả dụng không
-                if len(self.exhausted_groq_keys) >= len(config.GROQ_API_KEYS):
-                    detail_msg = "Tất cả Groq API keys đều không hợp lệ. Vui lòng kiểm tra cấu hình."
-                    logger.error(detail_msg)
-                    error_type = "INVALID_API_KEY_ERROR"
-                else:
-                    # Nếu còn key khả dụng, thử lại với key mới
-                    detail_msg = f"Key #{self.current_groq_key_index} không hợp lệ. Chuyển sang key #{self.current_groq_key_index + 1}/{len(config.GROQ_API_KEYS)}"
-                    logger.warning(detail_msg)
-                    
-                    # Khởi tạo lại client với key mới
-                    self._get_groq_client()
-                    
-                    # Thử lại lập tức với key mới
-                    error_type = "INVALID_API_KEY_ERROR"
-            else:
-                # Lỗi khác, xem như lỗi chung và retry
-                detail_msg = f"Lỗi không rõ. Đang thử lại..."
-                logger.warning(f"Groq API error: {detail_msg}")
-                
-                # Tạm thời đặt lại rate limiters và cập nhật circuit breaker
-                wait_time = self._handle_rate_limit_error(api_name, e, retry_after)
-                
-                # Thực hiện sleep ngay tại đây
-                time.sleep(min(wait_time, 10))  # Giới hạn tối đa 10 giây
-                
-                error_type = "UNKNOWN_ERROR"
-            
-            # Tạo thông điệp lỗi chi tiết
-            detail_msg = detail_msg if 'detail_msg' in locals() else "Lỗi không rõ. Đang thử lại..."
-            
-            # Throw lỗi để retry decorator bắt và xử lý
-            raise Exception(f"{error_type}: {detail_msg}. Original error: {str(e)}")
+    # Groq methods đã được loại bỏ - sử dụng Gemini thay thế
     
     def _apply_rate_limiting(self, api_name):
         """
@@ -1176,7 +867,7 @@ class ModelInterface:
             
             # Trích xuất từ nhiều định dạng thông báo lỗi khác nhau
             retry_patterns = [
-                r"try again in ([0-9.]+)s",  # Groq: try again in 20s
+                r"try again in ([0-9.]+)s",  # API: try again in 20s
                 r"retry after ([0-9.]+)",    # Gemini: retry after 10 
                 r"wait ([0-9.]+) seconds",   # Generic: wait 30 seconds
                 r"available in ([0-9.]+)",   # Available in 15 seconds
@@ -1903,54 +1594,7 @@ class ModelInterface:
         
         return genai
     
-    def _get_groq_client(self):
-        """
-        Lấy hoặc tạo Groq API client với key hiện tại.
-        
-        Returns:
-            groq.Client: Groq client
-        """
-        # Trước tiên kiểm tra và làm mới danh sách keys đã hết hạn
-        self._refresh_exhausted_keys()
-        
-        # Xóa client cũ nếu có để cấu hình lại với key mới
-        if "groq" in _API_CLIENTS:
-            del _API_CLIENTS["groq"]
-        
-        # Đảm bảo thư viện groq được cài đặt
-        if 'groq' not in sys.modules:
-            logger.error("Thư viện groq không được cài đặt")
-            return None
-        
-        # Lấy key hiện tại
-        keys = config.GROQ_API_KEYS
-        if not keys:
-            logger.error("Không có Groq API key nào được cấu hình")
-            return None
-        
-        # Nếu tất cả các key đều đã hết quota, reset danh sách key đã thử
-        if len(self.exhausted_groq_keys) >= len(keys):
-            logger.warning("Tất cả Groq API keys đều đã hết quota. Reset danh sách và thử lại.")
-            self.exhausted_groq_keys.clear()
-        
-        # Đảm bảo key_index nằm trong phạm vi hợp lệ
-        self.current_groq_key_index = self.current_groq_key_index % len(keys)
-        
-        # Lấy key hiện tại
-        current_key = keys[self.current_groq_key_index]
-        
-        # Nếu key hiện tại đã hết quota, tìm key tiếp theo
-        while self._is_key_exhausted(current_key, self.exhausted_groq_keys) and len(self.exhausted_groq_keys) < len(keys):
-            self.current_groq_key_index = (self.current_groq_key_index + 1) % len(keys)
-            current_key = keys[self.current_groq_key_index]
-        
-        logger.debug(f"Sử dụng Groq API key #{self.current_groq_key_index + 1}/{len(keys)}")
-        
-        # Tạo client mới với key hiện tại
-        client = groq.Client(api_key=current_key)
-        _API_CLIENTS["groq"] = client
-        
-        return client
+    # _get_groq_client method đã được loại bỏ - sử dụng Gemini thay thế
     
     def _clear_memory(self):
         """Giải phóng bộ nhớ GPU và CPU."""
@@ -2116,14 +1760,19 @@ class ModelInterface:
         Returns:
             str: Phản hồi từ model
         """
-        # Xử lý trường hợp đặc biệt "groq/model_name"
+        # Xử lý trường hợp đặc biệt "gemini/model_name" hoặc model name trực tiếp
         actual_model_name = model_name
         model_config = {}
         
-        if model_name.startswith("groq/"):
+        if model_name.startswith("gemini/"):
             # Trích xuất tên model thực tế 
-            actual_model_name = "groq"
-            model_config["model"] = model_name.replace("groq/", "")
+            actual_model_name = "gemini"
+            model_config["model"] = model_name.replace("gemini/", "")
+            logger.debug(f"Đã chuyển đổi {model_name} -> {actual_model_name} với model config: {model_config}")
+        elif "/" in model_name and not model_name.startswith("gemini/"):
+            # Nếu có dạng "model_name" trực tiếp (không có prefix), giả sử là Gemini
+            actual_model_name = "gemini"
+            model_config["model"] = model_name
             logger.debug(f"Đã chuyển đổi {model_name} -> {actual_model_name} với model config: {model_config}")
         
         # Import lại config để đảm bảo dùng phiên bản mới nhất
@@ -2212,22 +1861,14 @@ class ModelInterface:
         if refreshed_keys:
             logger.info(f"Đã làm mới {len(refreshed_keys)} Gemini API keys: {', '.join(refreshed_keys)}")
         
-        # Kiểm tra keys Groq
-        refreshed_keys = []
-        for key in list(self.exhausted_groq_keys.keys()):
-            if not self._is_key_exhausted(key, self.exhausted_groq_keys):
-                del self.exhausted_groq_keys[key]
-                refreshed_keys.append(key[:10] + "...")
-                
-        if refreshed_keys:
-            logger.info(f"Đã làm mới {len(refreshed_keys)} Groq API keys: {', '.join(refreshed_keys)}")
+        # Groq keys đã được loại bỏ - chỉ sử dụng Gemini
 
     def batch_generate_text(self, model_name, prompts, config=None):
         """
         Sinh văn bản cho nhiều prompt cùng lúc, tận dụng khả năng xử lý batch của model.
         
         Args:
-            model_name (str): Tên của model (llama, qwen, gemini, groq)
+            model_name (str): Tên của model (llama, qwen, gemini)
             prompts (list): Danh sách các prompt đầu vào
             config (dict): Cấu hình generation (temperature, max_tokens, etc.)
             
@@ -2270,13 +1911,10 @@ class ModelInterface:
                 logger.debug(traceback.format_exc())
                 return [f"[Error: {str(e)}]"] * len(prompts)
             
-        elif model_name.lower() in ["gemini", "groq"]:
+        elif model_name.lower() == "gemini":
             # API models không xử lý được batch thực sự, nên xử lý tuần tự
             for prompt in prompts:
-                if model_name.lower() == "gemini":
-                    response, _ = self._generate_with_gemini(prompt, model_config)
-                else:
-                    response, _ = self._generate_with_groq(prompt, model_config)
+                response, _ = self._generate_with_gemini(prompt, model_config)
                 responses.append(response)
                 
             return responses
@@ -2373,12 +2011,7 @@ def get_available_models():
             "keys_count": len(app_config.GEMINI_API_KEYS)
         }
     
-    if app_config.GROQ_API_KEYS:
-        models["groq"] = {
-            "type": "api",
-            "api": "groq",
-            "keys_count": len(app_config.GROQ_API_KEYS)
-        }
+    # Groq đã được thay thế bằng Gemini - không cần thêm vào danh sách models nữa
     
     return models
 

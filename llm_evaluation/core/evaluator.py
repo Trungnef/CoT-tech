@@ -617,16 +617,24 @@ class Evaluator:
                     # Tạo prompt đánh giá với các tiêu chí mới tối ưu cho tiếng Việt
                     reasoning_prompt = self._create_reasoning_evaluation_prompt(question_text, response, expected_answer)
 
-                    # Lấy phản hồi đánh giá từ mô hình giám khảo (Llama3-70B qua Groq API)
-                    logger.debug(f"Gửi yêu cầu đánh giá reasoning đến model: {app_config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')}")
+                    # Lấy phản hồi đánh giá từ mô hình giám khảo (Gemini 2.0 Flash Exp)
+                    reasoning_model_name = app_config.REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.0-flash-exp')
+                    logger.debug(f"Gửi yêu cầu đánh giá reasoning đến model: {reasoning_model_name}")
                     
-                    # Định dạng tên model đúng cho Groq
-                    reasoning_model = "groq/" + app_config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')
+                    # Định dạng tên model đúng cho Gemini
+                    reasoning_model = "gemini"
                     
-                    reasoning_eval = self.model_interface.get_response(
+                    # Cấu hình model cho reasoning evaluation
+                    reasoning_config = {
+                        "model": reasoning_model_name,
+                        "max_tokens": 800,  # Tăng max_tokens để đảm bảo nhận được phản hồi đầy đủ
+                        "temperature": 0.2  # Thấp để đảm bảo tính nhất quán
+                    }
+                    # Gọi với config đầy đủ
+                    reasoning_eval, _ = self.model_interface.generate_text(
                         model_name=reasoning_model,
                         prompt=reasoning_prompt,
-                        max_tokens=800  # Tăng max_tokens để đảm bảo nhận được phản hồi đầy đủ
+                        config=reasoning_config
                     )
 
                     # Parse kết quả đánh giá với các tiêu chí mới
@@ -1198,7 +1206,7 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
             analyzer = ResultAnalyzer(
                 results_df=results_df,
                 reasoning_evaluation_config=config.REASONING_EVALUATION_CONFIG,
-                reasoning_model=config.REASONING_EVALUATION_CONFIG.get("model", "groq/llama3-70b-8192"),
+                reasoning_model=config.REASONING_EVALUATION_CONFIG.get("model", "gemini-2.0-flash-exp"),
                 language="vietnamese"
             )
             
@@ -1931,7 +1939,7 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
         """
         Đánh giá chất lượng suy luận cho một cặp câu hỏi-câu trả lời.
         
-        Sử dụng LLM (mặc định là Llama 3 qua Groq API) để đánh giá chất lượng suy luận
+        Sử dụng LLM (mặc định là Gemini 2.0 Flash Exp) để đánh giá chất lượng suy luận
         dựa trên các tiêu chí như tính logic, tính toán chính xác, rõ ràng, đầy đủ và liên quan.
         
         Args:
@@ -2253,12 +2261,19 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
                     reasoning_prompt = self._create_reasoning_evaluation_prompt(question_text, response, expected_answer)
 
                     # Lấy phản hồi đánh giá
-                    reasoning_model = "groq/" + app_config.REASONING_EVALUATION_CONFIG.get('model', 'llama3-70b-8192')
+                    reasoning_model_name = app_config.REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.0-flash-exp')
+                    reasoning_model = "gemini"
                     
-                    reasoning_eval = self.model_interface.get_response(
+                    # Cấu hình model cho reasoning evaluation
+                    reasoning_config = {
+                        "model": reasoning_model_name,
+                        "max_tokens": 800,
+                        "temperature": 0.2
+                    }
+                    reasoning_eval, _ = self.model_interface.generate_text(
                         model_name=reasoning_model,
                         prompt=reasoning_prompt,
-                        max_tokens=800
+                        config=reasoning_config
                     )
 
                     # Parse kết quả đánh giá
