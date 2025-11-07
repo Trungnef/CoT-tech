@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-11-07T03:33:37.351235",
+  "results": [],
+  "current_model": "llama",
+  "current_prompt": "zero_shot",
+  "current_question_idx": 0,
+  "completed_combinations": [],
+  "total_questions": 10,
+  "models": [
+    "llama",
+    "qwen"
+  ],
+  "prompts": [
+    "zero_shot",
+    "few_shot_3",
+    "few_shot_5",
+    "few_shot_7",
+    "cot",
+    "cot_self_consistency_3",
+    "cot_self_consistency_5",
+    "cot_self_consistency_7",
+    "react"
+  ],
+  "results_file": "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251107_033042/raw_results/evaluation_results_20251107_033042.csv",
+  "checkpoint_timestamp": "2025-11-07T03:33:37.351273",
+  "checkpoint_version": "1.0",
+  "checkpoint_path": "/data2/cmdir/home/ioit107/trune/CoT-tech/llm_evaluation/results/run_20251107_033042/checkpoints/checkpoint_20251107_033042_0.json"
+}
