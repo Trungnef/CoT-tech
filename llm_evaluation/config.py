@@ -173,7 +173,7 @@ MODEL_CONFIGS = {
         "temperature": 0.7,
         "top_p": 0.95,
         "top_k": 40,
-        "model": "gemini-2.0-flash-exp"  # Default model for Gemini (using 2.0 flash exp as 2.5 flash lite may not be available yet)
+        "model": "gemini-2.5-flash-lite"  # Default model for Gemini (using 2.0 flash exp as 2.5 flash lite may not be available yet)
     }
 }
 
@@ -221,10 +221,10 @@ API_CONFIGS = {
             "consecutive_success_threshold": 2  # Số lần thành công liên tiếp để đóng circuit breaker
         },
         "models": {
-            "reasoning_evaluation": "gemini-2.0-flash-exp",  # Model để đánh giá khả năng suy luận (sử dụng Gemini 2.0 flash exp thay vì Groq)
-            "general": "gemini-2.0-flash-exp",  # Model mặc định cho general usage
-            "error_analysis": "gemini-2.0-flash-exp",  # Model để phân tích lỗi
-            "completeness_evaluation": "gemini-2.0-flash-exp"  # Model để đánh giá tính đầy đủ
+            "reasoning_evaluation": "gemini-2.5-flash-lite",  # Model để đánh giá khả năng suy luận (sử dụng Gemini 2.0 flash exp thay vì Groq)
+            "general": "gemini-2.5-flash-lite",  # Model mặc định cho general usage
+            "error_analysis": "gemini-2.5-flash-lite",  # Model để phân tích lỗi
+            "completeness_evaluation": "gemini-2.5-flash-lite"  # Model để đánh giá tính đầy đủ
         }
     }
 }
@@ -235,7 +235,7 @@ REASONING_EVALUATION_CONFIG = {
     "sample_size": 50,  # Số lượng mẫu để đánh giá suy luận
     "metrics": ["coherence", "relevance", "logical_structure", "factual_accuracy", "overall"],
     "use_gemini": True,  # Sử dụng Gemini API để đánh giá (thay thế Groq)
-    "model": "gemini-2.0-flash-exp",  # Model để đánh giá suy luận (sử dụng Gemini 2.0 flash exp)
+    "model": "gemini-2.5-flash-lite",  # Model để đánh giá suy luận (sử dụng Gemini 2.0 flash exp)
     "criteria_weights": {  # Trọng số cho các tiêu chí đánh giá
         "logical_flow": 0.25,
         "mathematical_correctness": 0.25,
@@ -413,7 +413,7 @@ def display_config_summary():
     if REASONING_EVALUATION_CONFIG['enabled']:
         logger.info(f"Metrics: {REASONING_EVALUATION_CONFIG['metrics']}")
         logger.info(f"Sử dụng Gemini: {REASONING_EVALUATION_CONFIG.get('use_gemini', True)}")
-        logger.info(f"Model: {REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.0-flash-exp')}")
+        logger.info(f"Model: {REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.5-flash-lite')}")
         
     # Hiển thị cấu hình cache
     logger.info("=== Cấu hình cache ===")

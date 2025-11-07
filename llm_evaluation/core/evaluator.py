@@ -618,7 +618,7 @@ class Evaluator:
                     reasoning_prompt = self._create_reasoning_evaluation_prompt(question_text, response, expected_answer)
 
                     # Lấy phản hồi đánh giá từ mô hình giám khảo (Gemini 2.0 Flash Exp)
-                    reasoning_model_name = app_config.REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.0-flash-exp')
+                    reasoning_model_name = app_config.REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.5-flash-lite')
                     logger.debug(f"Gửi yêu cầu đánh giá reasoning đến model: {reasoning_model_name}")
                     
                     # Định dạng tên model đúng cho Gemini
@@ -1206,7 +1206,7 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
             analyzer = ResultAnalyzer(
                 results_df=results_df,
                 reasoning_evaluation_config=config.REASONING_EVALUATION_CONFIG,
-                reasoning_model=config.REASONING_EVALUATION_CONFIG.get("model", "gemini-2.0-flash-exp"),
+                reasoning_model=config.REASONING_EVALUATION_CONFIG.get("model", "gemini-2.5-flash-lite"),
                 language="vietnamese"
             )
             
@@ -2261,7 +2261,7 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
                     reasoning_prompt = self._create_reasoning_evaluation_prompt(question_text, response, expected_answer)
 
                     # Lấy phản hồi đánh giá
-                    reasoning_model_name = app_config.REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.0-flash-exp')
+                    reasoning_model_name = app_config.REASONING_EVALUATION_CONFIG.get('model', 'gemini-2.5-flash-lite')
                     reasoning_model = "gemini"
                     
                     # Cấu hình model cho reasoning evaluation

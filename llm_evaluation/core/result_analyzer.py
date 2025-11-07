@@ -49,7 +49,7 @@ class ResultAnalyzer:
     def __init__(self, 
                  results_df: Optional[pd.DataFrame] = None,
                  reasoning_evaluation_config: Optional[Dict[str, Any]] = None,
-                 reasoning_model: str = "gemini-2.0-flash-exp",
+                 reasoning_model: str = "gemini-2.5-flash-lite",
                  language: str = "vietnamese",
                  similarity_model: Optional[str] = None,
                  verbose: bool = True):
@@ -627,7 +627,7 @@ Brief Explanation:
                 error_analysis_model = (
                     app_config.API_CONFIGS.get("gemini", {}).get("models", {}).get("error_analysis") or
                     self.reasoning_config.get("model") or
-                    "gemini-2.0-flash-exp"
+                    "gemini-2.5-flash-lite"
                 )
                 
                 model_name = "gemini"
@@ -1823,7 +1823,7 @@ Detailed analysis:
                 completeness_model = (
                     app_config.API_CONFIGS.get("gemini", {}).get("models", {}).get("completeness_evaluation") or
                     self.reasoning_config.get("model") or
-                    "gemini-2.0-flash-exp"
+                    "gemini-2.5-flash-lite"
                 )
                 
                 model_name = "gemini"

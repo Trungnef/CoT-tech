@@ -554,7 +554,7 @@ class ModelInterface:
             default_model = (
                 app_config.MODEL_CONFIGS.get("gemini", {}).get("model") or
                 app_config.API_CONFIGS.get("gemini", {}).get("models", {}).get("general") or
-                "gemini-2.0-flash-exp"
+                "gemini-2.5-flash-lite"
             )
             model_name = gen_config.get("model", default_model)
             
