@@ -39,7 +39,7 @@ sys.path.append(str(Path(__file__).parents[1].absolute()))
 
 # Import các module cần thiết
 import config
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, wait_fixed, retry_if_result
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, wait_fixed, retry_if_result, retry_if_exception
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import huggingface_hub
 
@@ -249,6 +249,8 @@ class ModelInterface:
             
         # Khởi tạo quản lý API keys
         self.current_gemini_key_index = 0
+    # Lock để bảo vệ thao tác xoay key trong môi trường đa luồng
+    self._key_lock = threading.Lock()
         
         # Thay thế set bằng dict để lưu thông tin hết hạn
         # Key: API key, Value: Dictionary {timestamp: thời gian hết hạn, reason: lý do}
@@ -628,76 +630,84 @@ class ModelInterface:
             # Customized error message based on error type
             if 'quota' in str(e).lower() or 'rate limit' in str(e).lower() or hasattr(e, 'status_code') and getattr(e, 'status_code') == 429:
                 # Đánh dấu key hiện tại đã hết quota
-                current_key = config.GEMINI_API_KEYS[self.current_gemini_key_index]
-                
-                # Xác định loại lỗi quota: hết quota theo ngày hay chỉ là rate limit tạm thời
-                is_daily_quota = False
-                reason = "rate_limit_exceeded"
-                
-                # Phân tích lỗi để xác định đúng loại lỗi quota
-                error_str = str(e).lower()
-                if 'daily' in error_str and 'quota' in error_str:
-                    is_daily_quota = True
-                    reason = "daily_quota_exceeded"
-                elif 'quota exceeded' in error_str or 'quota limit' in error_str:
-                    is_daily_quota = True
-                    reason = "daily_quota_exceeded"
-                
-                # Lưu thông tin hết hạn với timestamp hiện tại
-                self.exhausted_gemini_keys[current_key] = {
-                    'timestamp': time.time(),
-                    'reason': reason,
-                    'error': str(e)
-                }
-                
-                # Chuyển sang key tiếp theo
-                old_index = self.current_gemini_key_index
-                self.current_gemini_key_index = (self.current_gemini_key_index + 1) % len(config.GEMINI_API_KEYS)
-                
-                # Kiểm tra xem còn key khả dụng không
-                if len(self.exhausted_gemini_keys) >= len(config.GEMINI_API_KEYS):
-                    detail_msg = "Tất cả Gemini API keys đều đã vượt quá quota. Vui lòng thử lại sau."
-                    logger.error(detail_msg)
-                else:
-                    # Nếu còn key khả dụng, thử lại với key mới
-                    quota_type = "theo ngày" if is_daily_quota else "tạm thời"
-                    detail_msg = f"Key #{old_index + 1} đã hết quota {quota_type}. Chuyển sang key #{self.current_gemini_key_index + 1}/{len(config.GEMINI_API_KEYS)}"
-                    logger.warning(detail_msg)
-                    
-                    # Khởi tạo lại client với key mới
-                    self._get_gemini_client()
-                    
-                    # Giảm thời gian chờ vì chúng ta đã đổi key
-                    wait_time = 1.0  # 1 second để đảm bảo không quá nhanh
-                
+                # Đảm bảo luôn có một wait_time mặc định
+                wait_time = 1.0
+
+                # Bảo vệ thao tác với index và danh sách exhausted bằng lock
+                with self._key_lock:
+                    current_key = config.GEMINI_API_KEYS[self.current_gemini_key_index]
+
+                    # Xác định loại lỗi quota: hết quota theo ngày hay chỉ là rate limit tạm thời
+                    is_daily_quota = False
+                    reason = "rate_limit_exceeded"
+
+                    # Phân tích lỗi để xác định đúng loại lỗi quota
+                    error_str = str(e).lower()
+                    if 'daily' in error_str and 'quota' in error_str:
+                        is_daily_quota = True
+                        reason = "daily_quota_exceeded"
+                    elif 'quota exceeded' in error_str or 'quota limit' in error_str:
+                        is_daily_quota = True
+                        reason = "daily_quota_exceeded"
+
+                    # Lưu thông tin hết hạn với timestamp hiện tại
+                    self.exhausted_gemini_keys[current_key] = {
+                        'timestamp': time.time(),
+                        'reason': reason,
+                        'error': str(e)
+                    }
+
+                    # Chuyển sang key tiếp theo
+                    old_index = self.current_gemini_key_index
+                    self.current_gemini_key_index = (self.current_gemini_key_index + 1) % len(config.GEMINI_API_KEYS)
+
+                    # Kiểm tra xem còn key khả dụng không
+                    if len(self.exhausted_gemini_keys) >= len(config.GEMINI_API_KEYS):
+                        detail_msg = "Tất cả Gemini API keys đều đã vượt quá quota. Vui lòng thử lại sau."
+                        logger.error(detail_msg)
+                        # Khi tất cả keys exhausted, tăng wait_time để tránh retry quá nhanh
+                        wait_time = config.API_CONFIGS.get('gemini', {}).get('max_retry_delay', 30)
+                    else:
+                        # Nếu còn key khả dụng, thử lại với key mới
+                        quota_type = "theo ngày" if is_daily_quota else "tạm thời"
+                        detail_msg = f"Key #{old_index + 1} đã hết quota {quota_type}. Chuyển sang key #{self.current_gemini_key_index + 1}/{len(config.GEMINI_API_KEYS)}"
+                        logger.warning(detail_msg)
+
+                        # Khởi tạo lại client với key mới (bên trong _get_gemini_client có lock)
+                        self._get_gemini_client()
+
+                        # Giảm thời gian chờ vì chúng ta đã đổi key
+                        wait_time = 1.0  # 1 second để đảm bảo không quá nhanh
+
                 error_type = "QUOTA_LIMIT_ERROR"
-                
+
                 # Thực hiện sleep ngay tại đây để đảm bảo chờ đủ thời gian
                 time.sleep(min(wait_time, 5))  # Giới hạn tối đa 5s khi đổi key
                 
             elif 'invalid api key' in str(e).lower():
                 # Đánh dấu key hiện tại không hợp lệ
-                current_key = config.GEMINI_API_KEYS[self.current_gemini_key_index]
-                
-                # Lưu thông tin lỗi với timestamp hiện tại
-                self.exhausted_gemini_keys[current_key] = {
-                    'timestamp': time.time(),
-                    'reason': "invalid_api_key",
-                    'error': str(e)
-                }
-                
-                # Chuyển sang key tiếp theo
-                self.current_gemini_key_index = (self.current_gemini_key_index + 1) % len(config.GEMINI_API_KEYS)
-                
-                # Kiểm tra xem còn key khả dụng không
-                if len(self.exhausted_gemini_keys) >= len(config.GEMINI_API_KEYS):
-                    detail_msg = "Tất cả Gemini API keys đều không hợp lệ. Vui lòng kiểm tra cấu hình."
-                else:
-                    detail_msg = f"Key không hợp lệ. Chuyển sang key #{self.current_gemini_key_index + 1}/{len(config.GEMINI_API_KEYS)}"
-                    
-                    # Khởi tạo lại client với key mới
-                    self._get_gemini_client()
-                
+                with self._key_lock:
+                    current_key = config.GEMINI_API_KEYS[self.current_gemini_key_index]
+
+                    # Lưu thông tin lỗi với timestamp hiện tại
+                    self.exhausted_gemini_keys[current_key] = {
+                        'timestamp': time.time(),
+                        'reason': "invalid_api_key",
+                        'error': str(e)
+                    }
+
+                    # Chuyển sang key tiếp theo
+                    self.current_gemini_key_index = (self.current_gemini_key_index + 1) % len(config.GEMINI_API_KEYS)
+
+                    # Kiểm tra xem còn key khả dụng không
+                    if len(self.exhausted_gemini_keys) >= len(config.GEMINI_API_KEYS):
+                        detail_msg = "Tất cả Gemini API keys đều không hợp lệ. Vui lòng kiểm tra cấu hình."
+                    else:
+                        detail_msg = f"Key không hợp lệ. Chuyển sang key #{self.current_gemini_key_index + 1}/{len(config.GEMINI_API_KEYS)}"
+
+                        # Khởi tạo lại client với key mới
+                        self._get_gemini_client()
+
                 error_type = "INVALID_API_KEY_ERROR"
             elif 'timeout' in str(e).lower():
                 detail_msg = "Request bị timeout. Đang thử lại..."
