@@ -249,8 +249,8 @@ class ModelInterface:
             
         # Khởi tạo quản lý API keys
         self.current_gemini_key_index = 0
-    # Lock để bảo vệ thao tác xoay key trong môi trường đa luồng
-    self._key_lock = threading.Lock()
+        # Lock để bảo vệ thao tác xoay key trong môi trường đa luồng
+        self._key_lock = threading.Lock()
         
         # Thay thế set bằng dict để lưu thông tin hết hạn
         # Key: API key, Value: Dictionary {timestamp: thời gian hết hạn, reason: lý do}
@@ -1578,10 +1578,49 @@ class ModelInterface:
             logger.error("Không có Gemini API key nào được cấu hình")
             return None
         
-        # Nếu tất cả các key đều đã hết quota, reset danh sách key đã thử
+        # Nếu tất cả các key đều đã hết quota, thử làm mới và kiểm tra lại từng key
         if len(self.exhausted_gemini_keys) >= len(keys):
-            logger.warning("Tất cả Gemini API keys đều đã hết quota. Reset danh sách và thử lại.")
-            self.exhausted_gemini_keys.clear()
+            logger.warning("Tất cả Gemini API keys đều được đánh dấu exhausted. Kiểm tra lại xem có key nào đã reset theo ngày không...")
+
+            # Làm mới danh sách exhausted keys (nếu có key daily quota đã sang ngày mới, nó sẽ bị xóa)
+            self._refresh_exhausted_keys()
+
+            # Tìm key nào không còn exhausted nữa
+            available_key_index = None
+            for idx, k in enumerate(keys):
+                if not self._is_key_exhausted(k, self.exhausted_gemini_keys):
+                    available_key_index = idx
+                    break
+
+            if available_key_index is None:
+                # Nếu không có key khả dụng, ước tính thời gian tới lần reset tiếp theo (dựa trên các key bị daily_quota)
+                next_reset_seconds = None
+                for k, info in self.exhausted_gemini_keys.items():
+                    if info.get('reason') == 'daily_quota_exceeded' and 'timestamp' in info:
+                        try:
+                            ts = info['timestamp']
+                            # Tính tới 00:00 UTC tiếp theo kể từ timestamp
+                            exhausted_dt = datetime.datetime.fromtimestamp(ts, datetime.timezone.utc)
+                            next_midnight = (exhausted_dt + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+                            sec = (next_midnight - datetime.datetime.now(datetime.timezone.utc)).total_seconds()
+                            if sec < 0:
+                                sec = 0
+                            if next_reset_seconds is None or sec < next_reset_seconds:
+                                next_reset_seconds = sec
+                        except Exception:
+                            continue
+
+                # Nếu không thể tính được thời gian reset, fallback sang max_retry_delay
+                if next_reset_seconds is None:
+                    next_reset_seconds = config.API_CONFIGS.get('gemini', {}).get('max_retry_delay', 30)
+
+                logger.error(f"Tất cả Gemini API keys đều exhausted và chưa reset. Ước tính thời gian chờ đến lần reset gần nhất: {next_reset_seconds:.0f}s")
+                # Trả về None để caller xử lý (retry/backoff) thay vì reset ngay lập tức
+                return None
+            else:
+                # Nếu tìm thấy key đã reset, sử dụng key đó
+                self.current_gemini_key_index = available_key_index
+                logger.info(f"Tìm thấy key đã reset: sử dụng Gemini API key #{self.current_gemini_key_index + 1}/{len(keys)}")
         
         # Đảm bảo key_index nằm trong phạm vi hợp lệ
         self.current_gemini_key_index = self.current_gemini_key_index % len(keys)
