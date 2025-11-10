@@ -1179,21 +1179,39 @@ class ModelInterface:
                     # Cấu hình quantization nếu sử dụng GPU
                     quantization_config = None
                     if use_gpu:
-                        nf4_config = BitsAndBytesConfig(
-                            load_in_4bit=True,
-                            bnb_4bit_quant_type="nf4",
-                            bnb_4bit_use_double_quant=True,
-                            bnb_4bit_compute_dtype=torch.bfloat16
-                        )
-                        
-                        int8_config = BitsAndBytesConfig(
-                            load_in_8bit=True,
-                            llm_int8_threshold=6.0,
-                            llm_int8_skip_modules=None,
-                            llm_int8_enable_fp32_cpu_offload=True
-                        )
-                        
-                        quantization_config = nf4_config if not tried_8bit else int8_config
+                        # Read quantization preferences from config (QUANTIZATION_CONFIG). Default: disabled
+                        quant_cfg = getattr(config, "QUANTIZATION_CONFIG", {"enabled": False})
+                        enabled = bool(quant_cfg.get("enabled", False))
+                        bits = int(quant_cfg.get("bits", 4)) if enabled else None
+
+                        # Map compute dtype string to torch dtype
+                        compute_dtype_name = str(quant_cfg.get("compute_dtype", "bfloat16")).lower() if enabled else None
+                        if compute_dtype_name == "bfloat16":
+                            compute_dtype = getattr(torch, "bfloat16", torch.float16)
+                        elif compute_dtype_name == "float16" or compute_dtype_name == "fp16":
+                            compute_dtype = torch.float16
+                        else:
+                            compute_dtype = torch.float32
+
+                        if enabled and bits == 4:
+                            # 4-bit nf4 configuration
+                            quantization_config = BitsAndBytesConfig(
+                                load_in_4bit=True,
+                                bnb_4bit_quant_type=str(quant_cfg.get("quant_type", "nf4")),
+                                bnb_4bit_use_double_quant=bool(quant_cfg.get("use_double_quant", True)),
+                                bnb_4bit_compute_dtype=compute_dtype
+                            )
+                        elif enabled and bits == 8:
+                            # 8-bit configuration
+                            quantization_config = BitsAndBytesConfig(
+                                load_in_8bit=True,
+                                llm_int8_threshold=float(quant_cfg.get("llm_int8_threshold", 6.0)),
+                                llm_int8_skip_modules=quant_cfg.get("llm_int8_skip_modules", None),
+                                llm_int8_enable_fp32_cpu_offload=bool(quant_cfg.get("llm_int8_enable_fp32_cpu_offload", True))
+                            )
+                        else:
+                            # Quantization disabled via config; leave quantization_config = None
+                            quantization_config = None
                     
                     # Tạo device map & memory config
                     device_map = "auto" if use_gpu else "cpu"

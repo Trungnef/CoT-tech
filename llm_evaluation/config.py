@@ -64,6 +64,23 @@ MAX_GPU_MEMORY_GB = float(os.getenv("MAX_GPU_MEMORY_GB", 140))
 SYSTEM_RESERVE_MEMORY_GB = float(os.getenv("SYSTEM_RESERVE_MEMORY_GB", 2.5))
 CPU_OFFLOAD_GB = float(os.getenv("CPU_OFFLOAD_GB", 24))
 
+# Quantization configuration for local model loading (default: disabled)
+# Can be controlled via environment variables:
+#   QUANTIZATION_ENABLED=true|false
+#   QUANTIZATION_BITS=4|8
+#   QUANTIZATION_TYPE=nf4
+#   QUANTIZATION_DOUBLE_QUANT=true|false
+#   QUANTIZATION_COMPUTE_DTYPE=bfloat16|float16
+QUANTIZATION_ENABLED = os.getenv("QUANTIZATION_ENABLED", "false").lower() == "true"
+QUANTIZATION_BITS = int(os.getenv("QUANTIZATION_BITS", "4"))
+QUANTIZATION_CONFIG = {
+    "enabled": QUANTIZATION_ENABLED,
+    "bits": QUANTIZATION_BITS,
+    "quant_type": os.getenv("QUANTIZATION_TYPE", "nf4"),
+    "use_double_quant": os.getenv("QUANTIZATION_DOUBLE_QUANT", "true").lower() == "true",
+    "compute_dtype": os.getenv("QUANTIZATION_COMPUTE_DTYPE", "bfloat16")
+}
+
 # Danh sách models và prompts mặc định
 DEFAULT_MODELS = ["llama", "qwen", "gemini"]
 DEFAULT_PROMPTS = [
