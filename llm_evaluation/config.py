@@ -75,7 +75,7 @@ DEFAULT_PROMPTS = [
 ]
 
 # Cấu hình đánh giá mặc định
-DEFAULT_BATCH_SIZE = 20  # Kích thước batch tối ưu cho 3 GPU: xử lý 15 câu hỏi trong 1 lần chạy
+DEFAULT_BATCH_SIZE = 15  # Kích thước batch tối ưu cho 3 GPU: xử lý 15 câu hỏi trong 1 lần chạy
 DEFAULT_MAX_QUESTIONS = None  # None = all questions
 DEFAULT_CHECKPOINT_FREQUENCY = 5  # Save checkpoint after every X questions
 MAX_CHECKPOINTS = 5  # Maximum number of checkpoints to keep
@@ -207,8 +207,8 @@ EMBEDDING_MODELS = {
 API_CONFIGS = {
     "gemini": {
         "requests_per_minute": 15,  # RPM mặc định
-        "max_retries": 7,  # Tăng từ 5 lên 7
-        "retry_base_delay": 1.5,  # Giảm từ 2s xuống 1.5s
+        "max_retries": 5,  # Tăng từ 5 lên 7
+        "retry_base_delay": 2,  # Giảm từ 2s xuống 1.5s
         "max_retry_delay": 45,  # Giảm từ 60s xuống 45s
         "jitter_factor": 0.25,  # Thêm jitter để tránh thundering herd
         "timeout": 30,  # seconds

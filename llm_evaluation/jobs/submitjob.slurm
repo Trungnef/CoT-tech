@@ -30,9 +30,9 @@ echo "Working directory: $(pwd)"
 # Ví dụ: chạy llama và gemini với zero_shot, giới hạn 50 câu hỏi để test
 
 python main.py \
-    --models llama qwen \
+    --models qwen \
     --prompts zero_shot few_shot_3 few_shot_5 few_shot_7 cot cot_self_consistency_3 cot_self_consistency_5 cot_self_consistency_7 react \
-    --max-questions 20 \
+    --max-questions 400 \
     --batch-size 10
 
 echo "Job finished at $(date)"

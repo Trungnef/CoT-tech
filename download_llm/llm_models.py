@@ -11,13 +11,13 @@ quantization_config = BitsAndBytesConfig(
 
 # List of models to download
 models = [
-    "meta-llama/Llama-3.2-3B-Instruct",
+    # "meta-llama/Llama-3.2-3B-Instruct",
     # "meta-llama/Llama-3.1-70B-Instruct",
     # "meta-llama/Meta-Llama-3-70B-Instruct",
     # "deepseek-ai/DeepSeek-R1",
     # "deepseek-ai/DeepSeek-V3",
-    "Qwen/Qwen2.5-3B-Instruct",
-    # "Qwen/Qwen2.5-VL-72B-Instruct",
+    # "Qwen/Qwen2.5-3B-Instruct",
+    "Qwen/Qwen3-4B",
     # "perplexity-ai/r1-1776",
 ]
 
