@@ -32,7 +32,9 @@ import pickle
 import shutil
 import json
 import random
-from datetime import datetime
+# NOTE: avoid `from datetime import datetime` because we use the datetime module
+# and call datetime.datetime.* in this file. Importing the class would shadow the
+# module name and cause attribute errors (see logs).
 
 # Thêm thư mục gốc vào sys.path để import các module
 sys.path.append(str(Path(__file__).parents[1].absolute()))
