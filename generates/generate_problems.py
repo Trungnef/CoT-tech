@@ -48,14 +48,14 @@ class ProblemGenerator:
             "Câu đố logic": {
                 "templates": [
                     {
-                        "template": "Vừa gà vừa thỏ, bó lại cho tròn, ba mươi sáu con, một trăm chân chẵn. Hỏi có bao nhiêu con gà, bao nhiêu con thỏ?",
+                        "template": "Trong một trang trại có cả gà và thỏ. Người ta đếm được tổng cộng {total_animals} con và {total_legs} cái chân. Hỏi có bao nhiêu con gà và bao nhiêu con thỏ?",
                         "solution": ("Đây là dạng toán 'giả thiết tạm'.\n"
-                                     "Giả sử tất cả 36 con đều là thỏ. Khi đó, tổng số chân là: 36 × 4 = 144 (chân).\n"
-                                     "Số chân dôi ra so với thực tế là: 144 - 100 = 44 (chân).\n"
+                                     "Giả sử tất cả {total_animals} con đều là thỏ. Khi đó, tổng số chân là: {total_animals} × 4 = {assumed_legs} (chân).\n"
+                                     "Số chân dôi ra so với thực tế là: {assumed_legs} - {total_legs} = {extra_legs} (chân).\n"
                                      "Số chân dôi ra này là do ta đã thay mỗi con gà (2 chân) bằng một con thỏ (4 chân). Mỗi lần thay như vậy, số chân tăng thêm là: 4 - 2 = 2 (chân).\n"
-                                     "Vậy số con gà là: 44 ÷ 2 = 22 (con).\n"
-                                     "Số con thỏ là: 36 - 22 = 14 (con).\n"
-                                     "Đáp số: 22 con gà, 14 con thỏ.")
+                                     "Vậy số con gà là: {extra_legs} ÷ 2 = {chickens} (con).\n"
+                                     "Số con thỏ là: {total_animals} - {chickens} = {rabbits} (con).\n"
+                                     "Đáp số: {chickens} con gà, {rabbits} con thỏ.")
                     },
                     {
                         "template": "Một người bán cam mua {total_oranges} quả cam với giá {buy_price} đồng một quả. Người đó bán lại với giá {sell_price} đồng một quả nhưng có {bad_oranges} quả bị hỏng không bán được. Hỏi sau khi bán hết số cam, người đó lãi hay lỗ bao nhiêu tiền?",
@@ -103,28 +103,28 @@ class ProblemGenerator:
                 ],
                 "weight": 0.25 # 375 bài
             },
-            "Câu hỏi giải thích, suy luận": { ## <--- CẢI TIẾN: Đổi tên và nội dung cho phù hợp
+            "Câu hỏi giải thích, suy luận": {
                 "templates": [
                     {
-                        "template": "Hãy giải thích tại sao một số có tổng các chữ số chia hết cho 9 thì số đó cũng chia hết cho 9?",
-                        "solution": ("Để chứng minh điều này, ta phân tích cấu tạo của số. Ví dụ, xét số 126.\n"
-                                     "Ta có: 126 = 100 + 20 + 6 = 1×100 + 2×10 + 6.\n"
+                        "template": "Dùng ví dụ số {number}, hãy giải thích tại sao một số có tổng các chữ số chia hết cho 9 thì số đó cũng chia hết cho 9?",
+                        "solution": ("Để chứng minh điều này, ta phân tích cấu tạo của số. Xét ví dụ với số {number}.\n"
+                                     "Ta có: {number} = {h}00 + {t}0 + {u} = {h}×100 + {t}×10 + {u}.\n"
                                      "Mà 100 = 99 + 1, và 10 = 9 + 1.\n"
-                                     "Nên 126 = 1×(99+1) + 2×(9+1) + 6 = (1×99 + 1) + (2×9 + 2) + 6.\n"
-                                     "Nhóm lại: 126 = (1×99 + 2×9) + (1 + 2 + 6).\n"
-                                     "Ta thấy (1×99 + 2×9) là một số chắc chắn chia hết cho 9.\n"
-                                     "Phần còn lại là (1 + 2 + 6) chính là tổng các chữ số của 126.\n"
-                                     "Vì vậy, để 126 chia hết cho 9 thì tổng các chữ số (1+2+6=9) cũng phải chia hết cho 9.\n"
+                                     "Nên {number} = {h}×(99+1) + {t}×(9+1) + {u} = ({h}×99 + {h}) + ({t}×9 + {t}) + {u}.\n"
+                                     "Nhóm lại: {number} = ({h}×99 + {t}×9) + ({h} + {t} + {u}).\n"
+                                     "Ta thấy ({h}×99 + {t}×9) là một số chắc chắn chia hết cho 9.\n"
+                                     "Phần còn lại là ({h} + {t} + {u}) chính là tổng các chữ số của {number}.\n"
+                                     "Vì vậy, để {number} chia hết cho 9 thì tổng các chữ số của nó cũng phải chia hết cho 9.\n"
                                      "Lập luận này đúng với mọi số tự nhiên.")
                     },
                     {
-                        "template": "Tại sao khi nhân một số tự nhiên với 10, ta chỉ cần viết thêm một chữ số 0 vào bên phải số đó? Ví dụ: 25 x 10 = 250.",
+                        "template": "Tại sao khi nhân một số tự nhiên với 10, ta chỉ cần viết thêm một chữ số 0 vào bên phải số đó? Giải thích qua ví dụ: {number} x 10.",
                         "solution": ("Điều này dựa trên hệ đếm thập phân của chúng ta.\n"
                                      "Mỗi chữ số trong một số có một giá trị tùy theo vị trí của nó (hàng đơn vị, hàng chục, hàng trăm,...).\n"
-                                     "Ví dụ, số 25 có nghĩa là 2 chục và 5 đơn vị (2×10 + 5).\n"
-                                     "Khi ta nhân số 25 với 10:\n"
-                                     "25 × 10 = (2×10 + 5) × 10 = 2×10×10 + 5×10 = 2×100 + 5×10.\n"
-                                     "Kết quả này tương ứng với một số có 2 trăm, 5 chục và 0 đơn vị. Đó chính là số 250.\n"
+                                     "Ví dụ, số {number} có nghĩa là {t} chục và {u} đơn vị (tức là {t}×10 + {u}).\n"
+                                     "Khi ta nhân số {number} với 10:\n"
+                                     "{number} × 10 = ({t}×10 + {u}) × 10 = {t}×10×10 + {u}×10 = {t}×100 + {u}×10.\n"
+                                     "Kết quả này tương ứng với một số có {t} trăm, {u} chục và 0 đơn vị. Đó chính là số {result}.\n"
                                      "Việc thêm chữ số 0 vào cuối đã dịch chuyển tất cả các chữ số khác sang trái một hàng, làm cho giá trị của chúng tăng lên 10 lần.")
                     }
                 ],
@@ -297,9 +297,21 @@ class ProblemGenerator:
         try:
             if problem_type == "Câu đố logic":
                 if "gà" in template: # Bài toán gà thỏ
-                    # Đã có sẵn template, không cần sinh số ngẫu nhiên
-                    return { "question": template, "solution": solution_template }
+                    chickens = random.randint(10, 35)
+                    rabbits = random.randint(5, 25)
+                    total_animals = chickens + rabbits
+                    total_legs = chickens * 2 + rabbits * 4
+                    assumed_legs = total_animals * 4
+                    extra_legs = assumed_legs - total_legs
+                    
+                    return {
+                        "question": template.format(total_animals=total_animals, total_legs=total_legs),
+                        "solution": solution_template.format(total_animals=total_animals, total_legs=total_legs,
+                                                           assumed_legs=assumed_legs, extra_legs=extra_legs,
+                                                           chickens=chickens, rabbits=rabbits)
+                    }
                 elif "cam" in template:
+                    # Logic này đã tốt, giữ nguyên
                     total_oranges = random.randint(50, 200)
                     buy_price = random.randint(2, 5) * 1000
                     sell_price = buy_price + random.randint(1, 3) * 1000
@@ -349,8 +361,28 @@ class ProblemGenerator:
                     }
 
             elif problem_type == "Câu hỏi giải thích, suy luận":
-                # Các template này không cần sinh số ngẫu nhiên
-                return { "question": template, "solution": solution_template }
+                if "chia hết cho 9" in template:
+                    # Tạo một số ngẫu nhiên có 3 chữ số và chia hết cho 9
+                    multiplier = random.randint(12, 110)
+                    number = multiplier * 9
+                    
+                    h = number // 100
+                    t = (number % 100) // 10
+                    u = number % 10
+
+                    return {
+                        "question": template.format(number=number),
+                        "solution": solution_template.format(number=number, h=h, t=t, u=u)
+                    }
+                elif "nhân một số tự nhiên với 10" in template:
+                    number = random.randint(11, 99)
+                    result = number * 10
+                    t = number // 10
+                    u = number % 10
+                    return {
+                        "question": template.format(number=number),
+                        "solution": solution_template.format(number=number, result=result, t=t, u=u)
+                    }
 
             elif problem_type == "Thơ toán học":
                 if "cam" in template:
