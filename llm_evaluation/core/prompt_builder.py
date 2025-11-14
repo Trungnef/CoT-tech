@@ -2,89 +2,22 @@
 Prompt Builder cho hệ thống đánh giá LLM.
 Cung cấp các hàm tạo prompt với nhiều chiến lược khác nhau:
 - Zero-shot: Chỉ cung cấp câu hỏi, không có ví dụ
-- Few-shot: Cung cấp một số ví dụ (3, 5, 7) trước câu hỏi
+- Few-shot: Cung cấp một số ví dụ (3, 5, 7) trước câu hỏi. **REQUIRED**: Phải cung cấp examples từ dữ liệu (problems.json)
 - Chain of Thought (CoT): Yêu cầu mô hình giải thích từng bước suy luận
 - Self-consistency: Yêu cầu mô hình tạo nhiều lời giải khác nhau và chọn kết quả phổ biến nhất
 - ReAct: Kết hợp Reasoning và Acting trong quá trình suy luận
+
+IMPROVEMENTS (Nov 15, 2025):
+1. Removed DEFAULT_EXAMPLES - Few-shot prompts now REQUIRE explicit examples from user data
+2. Fixed extract_final_answer to preserve original casing while doing case-insensitive matching
+3. Improved self-consistency answer extraction: correctly identifies most common answer
+
+See IMPROVEMENTS.md for detailed changelog.
 """
 
 import re
 import random
 from typing import List, Dict, Any, Tuple, Optional, Union
-
-# Thêm các ví dụ mặc định cho few-shot learning
-DEFAULT_EXAMPLES = [
-    # Bài toán công việc
-    {
-        "question": "Thợ A làm một công việc hết 6 giờ, thợ B làm hết 4 giờ. Hỏi nếu hai thợ cùng làm thì sau bao lâu sẽ hoàn thành công việc?",
-        "answer": "Trong 1 giờ, thợ A làm được 1/6 công việc, thợ B làm được 1/4 công việc. Hai thợ cùng làm trong 1 giờ được: 1/6 + 1/4 = 5/12 công việc. Thời gian cần: 1 ÷ (5/12) = 12/5 = 2.4 giờ."
-    },
-    # Bài toán chia kẹo
-    {
-        "question": "Có 143 viên kẹo chia cho 5 người. Người thứ hai được gấp 2 lần người thứ nhất, người thứ ba được gấp 2 lần người thứ hai. Hỏi mỗi người được bao nhiêu viên kẹo?",
-        "answer": "Gọi số kẹo người thứ nhất là x. Theo đề bài: x + 2x + 4x + người thứ 4 + người thứ 5 = 143. Ta chưa biết số kẹo của người 4 và 5, giả sử bằng nhau và bằng x. Khi đó: x + 2x + 4x + x + x = 9x = 143. Giải ra: x = 143/9 ≈ 15.89, không hợp lý. Giả sử người 4 và 5 đều nhận x viên như người 1: x + 2x + 4x + x + x = 9x = 143. Vậy x = 143/9 ≈ 15.89, làm tròn x = 16. Kiểm tra: 16 + 32 + 64 + 16 + 16 = 144 > 143, nên x = 15.89 không chính xác. Vậy người 1, 4, 5 mỗi người nhận ít hơn 16 viên."
-    },
-    # Bài toán hình học
-    {
-        "question": "Cho hình chữ nhật có chiều dài 17cm, chiều rộng 14cm. Tính diện tích và chu vi của hình chữ nhật.",
-        "answer": "Diện tích = dài × rộng = 17 × 14 = 238cm². Chu vi = 2 × (dài + rộng) = 2 × (17 + 14) = 2 × 31 = 62cm."
-    },
-    # Bài toán số học
-    {
-        "question": "Tìm số tự nhiên có 3 chữ số, biết rằng tổng các chữ số là 6 và tích các chữ số là 6.",
-        "answer": "Gọi các chữ số là a, b, c (với a ≠ 0). Ta có: a + b + c = 6 và a × b × c = 6. Xét các cách phân tích 6 thành tích của 3 số: 6 = 1×2×3 = 1×1×6 = 2×1×3. Thử với a, b, c = 1, 2, 3: 1 + 2 + 3 = 6 ✓. Số cần tìm: 123."
-    },
-    # Bài toán chuyển động
-    {
-        "question": "Hai xe xuất phát cùng lúc từ A và B cách nhau 276 km. Xe thứ nhất đi với vận tốc 55 km/h, xe thứ hai đi với vận tốc 43 km/h. Hỏi sau bao lâu hai xe gặp nhau?",
-        "answer": "Gọi thời gian gặp nhau là t giờ. Khoảng cách hai xe đi được bằng khoảng cách AB: 55t + 43t = 276. Giải ra: t = 276/(55+43) = 276/98 = 2.82 giờ."
-    },
-    # Bài toán về tuổi
-    {
-        "question": "Hiện nay tuổi cha là 46 tuổi, tuổi con là 10 tuổi. Hỏi sau bao nhiêu năm nữa thì tuổi cha gấp 3 lần tuổi con?",
-        "answer": "Gọi số năm cần tìm là x. Ta có: (46+x)/(10+x)=3. Giải ra: (46+x) = 3(10+x) → 46+x = 30+3x → x = 8 năm."
-    },
-    # Bài toán phân số
-    {
-        "question": "Cho hai phân số 5/7 và 3/4. Tìm tổng và tích của hai phân số này.",
-        "answer": "Quy đồng mẫu số: 5/7 = 20/28, 3/4 = 21/28. Tổng = 20/28 + 21/28 = 41/28. Tích = (5/7) × (3/4) = 15/28."
-    },
-    # Bài toán hồ bơi
-    {
-        "question": "Một hồ bơi có 4588 m³ nước. Có 5 ống nước chảy vào với lưu lượng 74 m³/giờ và 1 ống thoát với lưu lượng 36 m³/giờ. Hỏi sau bao lâu hồ sẽ đầy?",
-        "answer": "Lưu lượng nước vào mỗi giờ: 5×74=370 m³/giờ. Lưu lượng nước ra mỗi giờ: 1×36=36 m³/giờ. Lưu lượng thực tế: 370-36=334 m³/giờ. Thời gian cần: 4588/334=13.74 giờ."
-    },
-    # Bài toán hỗn hợp
-    {
-        "question": "Hòa tan 441g muối vào 1748ml nước được dung dịch 20.15%. Hỏi phải thêm bao nhiêu gam muối nữa để được dung dịch 27.15%?",
-        "answer": "Khối lượng muối ban đầu: 441g. Khối lượng dung dịch: 441 + 1748 = 2189g. Gọi số gam muối cần thêm là x. Ta có: (441 + x)/(2189 + x) = 27.15/100. Giải ra: (441 + x)/(2189 + x) = 0.2715 → 441 + x = 0.2715(2189 + x) → 441 + x = 594.3 + 0.2715x → 0.7285x = 153.3 → x = 210.45g."
-    },
-    # Câu đố logic
-    {
-        "question": "Một người nông dân có 18 con vật gồm gà và thỏ. Đếm tổng số chân thì thấy có 48 cái chân. Hỏi người nông dân có bao nhiêu con gà và bao nhiêu con thỏ?",
-        "answer": "Gọi số gà là x con. Khi đó số thỏ là 18 - x con. Số chân gà: 2x. Số chân thỏ: 4(18 - x). Theo đề bài: 2x + 4(18 - x) = 48. Giải ra: 2x + 72 - 4x = 48 → -2x = -24 → x = 12 con gà. Vậy có 6 con thỏ."
-    },
-    # Câu hỏi trắc nghiệm
-    {
-        "question": "Kết quả của phép tính 46 + 7 × 9 là bao nhiêu?\nA. 114\nB. 109\nC. 104\nD. 2898",
-        "answer": "Theo thứ tự ưu tiên, ta thực hiện phép nhân trước: 7 × 9 = 63. Sau đó cộng với 46: 46 + 63 = 109. Đáp án đúng là B. 109."
-    },
-    # Thơ toán học
-    {
-        "question": "Có 88 quả cam ngon,\nChia đều cho 6 người em.\nMỗi người được mấy quả?\nCòn dư mấy quả cam?",
-        "answer": "Số cam chia được: 88 ÷ 6 = 14 quả mỗi người. Số cam còn dư: 88 - (6 × 14) = 88 - 84 = 4 quả."
-    },
-    # Bài toán từ vựng toán học
-    {
-        "question": "Một cửa hàng bán thước với giá 5385đ một quyển. Nếu mua 49 quyển, sau đó được giảm 29%, hỏi phải trả bao nhiêu tiền?",
-        "answer": "Giá gốc: 5385 × 49 = 263865đ. Số tiền được giảm: 263865 × 29/100 = 76520đ. Số tiền phải trả: 263865 - 76520 = 187345đ."
-    },
-    # Câu hỏi kiểu bài luận
-    {
-        "question": "Giải thích tại sao khi chia một số cho 9, nếu tổng các chữ số của số đó chia hết cho 9 thì số đó cũng chia hết cho 9?",
-        "answer": "Để chứng minh điều này, ta xét một số N có n chữ số: N = a₁×10^(n-1) + a₂×10^(n-2) + ... + aₙ. Khi chia 10^k cho 9, ta luôn được dư 1. Do đó, N ≡ a₁ + a₂ + ... + aₙ (mod 9). Vì vậy, nếu tổng các chữ số chia hết cho 9 thì N cũng chia hết cho 9."
-    }
-]
 
 class PromptBuilder:
     """
@@ -125,9 +58,7 @@ class PromptBuilder:
                 },
                 "self_consistency": {
                     "prefix": "Hãy giải bài toán sau đây bằng NHIỀU cách tiếp cận khác nhau để kiểm tra tính nhất quán của kết quả:\n\n",
-                    # Yêu cầu rõ ràng: tách từng cách giải bằng dòng '---' (3 dấu gạch ngang)
-                    # mỗi cách giải phải kết thúc bằng một dòng rõ ràng bắt đầu bằng 'Đáp án:'
-                    "suffix": "\n\nHãy cung cấp {count} cách giải khác nhau. Mỗi cách giải hãy tách bằng một dòng gồm chỉ '---' (ba dấu gạch ngang).\nMỗi cách giải phải có các bước lập luận rõ ràng và kết thúc bằng một dòng 'Đáp án: <kết quả>'.\nVí dụ:\n1) ...\nĐáp án: 42\n---\n2) ...\nĐáp án: 43"
+                    "suffix": "\n\nHãy cung cấp {count} cách giải khác nhau, mỗi cách đều phải trình bày từng bước logic và kết quả cuối cùng."
                 },
                 "react": {
                     "prefix": "Hãy giải bài toán sau đây. Sử dụng phương pháp ReAct (Reasoning and Acting):\n\n",
@@ -152,7 +83,7 @@ class PromptBuilder:
                 },
                 "self_consistency": {
                     "prefix": "Solve the following problem using MULTIPLE different approaches to check the consistency of the result:\n\n",
-                    "suffix": "\n\nPlease provide {count} different solution methods. Separate each method with a line containing only '---' (three hyphens).\nEach method should include step-by-step reasoning and end with a line 'Answer: <result>'.\nExample:\n1) ...\nAnswer: 42\n---\n2) ...\nAnswer: 43"
+                    "suffix": "\n\nPlease provide {count} different solution methods, each with step-by-step reasoning and a final result."
                 },
                 "react": {
                     "prefix": "Solve the following problem. Use the ReAct (Reasoning and Acting) approach:\n\n",
@@ -174,11 +105,15 @@ class PromptBuilder:
             prompt_type (str): Loại prompt (zero_shot, few_shot_3, few_shot_5, few_shot_7, 
                                           cot, self_consistency_3, self_consistency_5, 
                                           self_consistency_7, react)
-            examples (List[Dict]): Danh sách các ví dụ (mỗi ví dụ chứa 'question' và 'answer')
+            examples (List[Dict]): Danh sách các ví dụ cho few-shot prompts (mỗi ví dụ chứa 'question' và 'answer').
+                                  Bắt buộc cho few-shot prompts. Ví dụ nên được cung cấp từ dữ liệu problems.json.
             count (int): Số lượng cách tiếp cận cho self-consistency
             
         Returns:
             str: Prompt đã được tạo
+            
+        Raises:
+            ValueError: Nếu few-shot prompt được yêu cầu nhưng không có ví dụ được cung cấp
         """
         # Xác định ngôn ngữ sử dụng
         lang = "vietnamese" if self.language == "vietnamese" else "english"
@@ -192,21 +127,21 @@ class PromptBuilder:
             # Lấy số lượng ví dụ từ tên prompt
             num_examples = int(prompt_type.split("_")[-1])
             
-            # Sử dụng ví dụ mặc định nếu không có ví dụ được cung cấp hoặc không đủ số lượng
-            if not examples or len(examples) < num_examples:
-                if not examples:
-                    examples = DEFAULT_EXAMPLES.copy()
-                elif len(examples) < num_examples:
-                    # Bổ sung thêm các ví dụ mặc định nếu thiếu
-                    additional_examples = [ex for ex in DEFAULT_EXAMPLES if all(e.get('question') != ex.get('question') for e in examples)]
-                    examples = examples + additional_examples
-                
-                if len(examples) < num_examples:
-                    # Nếu vẫn không đủ, đưa ra cảnh báo nhưng vẫn sử dụng số lượng hiện có
-                    print(f"Cảnh báo: Chỉ có {len(examples)} ví dụ cho few-shot với {num_examples} shot")
+            # Kiểm tra xem có ví dụ được cung cấp không
+            if not examples:
+                raise ValueError(
+                    f"few-shot prompt yêu cầu ví dụ được cung cấp qua tham số 'examples'. "
+                    f"Vui lòng cung cấp danh sách ví dụ từ dữ liệu problems.json hoặc từ cơ sở dữ liệu."
+                )
+            
+            # Kiểm tra nếu không đủ ví dụ
+            actual_num_examples = min(num_examples, len(examples))
+            if len(examples) < num_examples:
+                print(f"Cảnh báo: Yêu cầu {num_examples} ví dụ nhưng chỉ có {len(examples)} ví dụ được cung cấp. "
+                      f"Sử dụng {actual_num_examples} ví dụ.")
                 
             return self._create_few_shot_prompt(
-                question, frames["few_shot"], examples, min(num_examples, len(examples))
+                question, frames["few_shot"], examples, actual_num_examples
             )
         
         elif prompt_type == "cot":
@@ -215,9 +150,8 @@ class PromptBuilder:
         elif prompt_type.startswith("self_consistency_") or prompt_type.startswith("cot_self_consistency_"):
             # Lấy số lượng cách tiếp cận từ tên prompt
             count = int(prompt_type.split("_")[-1])
-            cot_flag = prompt_type.startswith("cot_self_consistency_")
             return self._create_self_consistency_prompt(
-                question, frames, count, cot=cot_flag
+                question, frames["self_consistency"], count
             )
         
         elif prompt_type == "react":
@@ -290,9 +224,8 @@ class PromptBuilder:
     
     def _create_self_consistency_prompt(self, 
                                        question: str, 
-                                       frames: Dict[str, Any],
-                                       count: int,
-                                       cot: bool = False) -> str:
+                                       frame: Dict[str, str],
+                                       count: int) -> str:
         """
         Tạo Self-Consistency prompt, yêu cầu mô hình đưa ra nhiều cách tiếp cận.
         
@@ -304,16 +237,8 @@ class PromptBuilder:
         Returns:
             str: Self-Consistency prompt
         """
-        # If cot is requested, combine CoT prefix with self-consistency instruction
-        sc_frame = frames['self_consistency']
-        if cot:
-            # Use CoT prefix then self-consistency suffix/instructions
-            cot_prefix = frames['cot']['prefix']
-            suffix = sc_frame['suffix'].format(count=count)
-            return f"{self.system_message}\n\n{cot_prefix}{question}{suffix}"
-        else:
-            suffix = sc_frame['suffix'].format(count=count)
-            return f"{self.system_message}\n\n{sc_frame['prefix']}{question}{suffix}"
+        suffix = frame['suffix'].format(count=count)
+        return f"{self.system_message}\n\n{frame['prefix']}{question}{suffix}"
     
     def _create_react_prompt(self, question: str, frame: Dict[str, str]) -> str:
         """
@@ -331,140 +256,157 @@ class PromptBuilder:
     def extract_final_answer(self, response: str, prompt_type: str) -> str:
         """
         Trích xuất câu trả lời cuối cùng từ phản hồi của mô hình.
+        Giữ nguyên casing gốc của đáp án từ response.
         
         Args:
             response (str): Phản hồi từ mô hình
             prompt_type (str): Loại prompt đã sử dụng
-            # Xử lý trường hợp không có phản hồi
-            if not response:
-                return ""
-
-            response_orig = response
-
-            # Helper: try a list of patterns on the original response (case-insensitive)
-            def try_patterns(patterns_list):
-                for p in patterns_list:
-                    m = re.search(p, response_orig, re.IGNORECASE | re.DOTALL)
-                    if m:
-                        return m.group(1).strip()
-                return None
-
-            # Xử lý khác nhau dựa trên loại prompt
-            if prompt_type == "zero_shot":
-                patterns = [
-                    r"đáp án:?[\s]*([\s\S]*?)$",
-                    r"vậy đáp án là:?[\s]*([\s\S]*?)$",
-                    r"kết quả là:?[\s]*([\s\S]*?)$",
-                    r"kết luận:?[\s]*([\s\S]*?)$"
-                ]
-                ans = try_patterns(patterns)
-                return ans if ans else response_orig.strip()
-
-            elif prompt_type.startswith("few_shot_"):
-                patterns = [
-                    r"đáp án:?[\s]*([\s\S]*?)$",
-                    r"vậy đáp án là:?[\s]*([\s\S]*?)$",
-                    r"kết quả là:?[\s]*([\s\S]*?)$",
-                    r"kết luận:?[\s]*([\s\S]*?)$"
-                ]
-                ans = try_patterns(patterns)
-                if ans:
-                    return ans
-                # Nếu không tìm thấy pattern, trả về câu cuối cùng (nguyên bản)
-                sentences = re.split(r'[.!?]\s*', response_orig)
-                return sentences[-1].strip()
-
-            elif prompt_type == "cot" or prompt_type.startswith("cot_"):
-                patterns = [
-                    r"vậy đáp án là:?[\s]*([\s\S]*?)$",
-                    r"kết quả là:?[\s]*([\s\S]*?)$",
-                    r"đáp án:?[\s]*([\s\S]*?)$",
-                    r"vậy[\s,]*kết quả:?[\s]*([\s\S]*?)$",
-                    r"vậy[\s,]*kết luận:?[\s]*([\s\S]*?)$",
-                    r"kết luận:?[\s]*([\s\S]*?)$",
-                    r"do đó[\s,]*đáp án:?[\s]*([\s\S]*?)$",
-                    r"do đó[\s,]*([\s\S]*?)$"
-                ]
-                ans = try_patterns(patterns)
-                if ans:
-                    return ans
-                sentences = re.split(r'[.!?]\s*', response_orig)
-                return sentences[-1].strip()
-
-            elif prompt_type.startswith("self_consistency_") or prompt_type.startswith("cot_self_consistency_"):
-                # Tìm tất cả đáp án trong các cách tiếp cận khác nhau
-                answers = []
-                sc_patterns = [
-                    r"(?:^|\n)đáp án:?[\s]*([^\n]+)",
-                    r"(?:^|\n)kết quả:?[\s]*([^\n]+)",
-                    r"(?:^|\n)vậy đáp án là:?[\s]*([^\n]+)",
-                    r"(?:^|\n)vậy kết quả là:?[\s]*([^\n]+)",
-                    r"(?:^|\n)kết luận:?[\s]*([^\n]+)",
-                    r"(?:^|\n)\d+\.\s*đáp án:?[\s]*([^\n]+)",
-                    r"(?:^|\n)Answer:?[\s]*([^\n]+)"
-                ]
-
-                for p in sc_patterns:
-                    for m in re.finditer(p, response_orig, re.IGNORECASE):
-                        val = m.group(1).strip()
-                        if val:
-                            answers.append(val)
-
-                if answers:
-                    # Normalize answers for counting but preserve first-seen original form
-                    counts = {}
-                    originals = {}
-                    for a in answers:
-                        # Normalize by lowercasing and collapsing whitespace and stripping punctuation
-                        norm = re.sub(r'[\s\.,;:]+', ' ', a.lower()).strip().strip('.,;:')
-                        if not norm:
-                            continue
-                        counts[norm] = counts.get(norm, 0) + 1
-                        if norm not in originals:
-                            originals[norm] = a
-
-                    # pick most common normalized answer
-                    best = max(counts.items(), key=lambda x: x[1])[0]
-                    return originals.get(best, best)
-
-                # Nếu không tìm thấy đáp án rõ ràng, tìm câu kết luận cuối cùng
-                conclusions = re.findall(r"(?:vậy|do đó)[,\s]*([^\n]+)", response_orig, re.IGNORECASE)
-                if conclusions:
-                    return conclusions[-1].strip()
-
-                # Fallback: return last non-empty line
-                for line in reversed(response_orig.splitlines()):
-                    if line.strip():
-                        return line.strip()
-                return response_orig.strip()
-
-            elif prompt_type == "react":
-                patterns = [
-                    r"đáp án cuối cùng:?[\s]*([^\n]+)",
-                    r"final answer:?[\s]*([^\n]+)",
-                    r"kết quả cuối cùng:?[\s]*([^\n]+)",
-                    r"kết luận cuối cùng:?[\s]*([^\n]+)"
-                ]
-                ans = try_patterns(patterns)
-                if ans:
-                    return ans
-
-                patterns = [
-                    r"đáp án:?[\s]*([^\n]+)",
-                    r"kết quả:?[\s]*([^\n]+)",
-                    r"kết luận:?[\s]*([^\n]+)"
-                ]
-                ans = try_patterns(patterns)
-                if ans:
-                    return ans
-
-                for line in reversed(response_orig.splitlines()):
-                    if line.strip():
-                        return line.strip()
-                return response_orig.strip()
-
-            else:
-                return response_orig.strip()
+            
+        Returns:
+            str: Câu trả lời cuối cùng (giữ nguyên casing gốc)
+        """
+        # Xử lý trường hợp không có phản hồi
+        if not response:
+            return ""
+        
+        # Hàm trợ giúp: trích xuất câu trả lời từ response dùng pattern, giữ nguyên casing
+        def extract_with_pattern(response_text, patterns):
+            """Tìm pattern và trả về match group giữ nguyên casing gốc"""
+            response_lower = response_text.lower()
+            for pattern in patterns:
+                match = re.search(pattern, response_lower, re.DOTALL)
+                if match:
+                    # Lấy phần tương ứng từ response gốc dựa trên vị trí của match
+                    start = match.start(1)
+                    end = match.end(1)
+                    # Tìm vị trí thực tế trong response gốc
+                    answer_text = response_text[start:end].strip()
+                    return answer_text
+            return None
+            
+        # Xử lý khác nhau dựa trên loại prompt
+        if prompt_type == "zero_shot":
+            patterns = [
+                r"đáp án:?\s*(.*?)$",
+                r"vậy đáp án là:?\s*(.*?)$",
+                r"kết quả là:?\s*(.*?)$", 
+                r"kết luận:?\s*(.*?)$"
+            ]
+            
+            answer = extract_with_pattern(response, patterns)
+            if answer:
+                return answer
+                
+            return response.strip()
+        
+        elif prompt_type.startswith("few_shot_"):
+            patterns = [
+                r"đáp án:?\s*(.*?)$",
+                r"vậy đáp án là:?\s*(.*?)$",
+                r"kết quả là:?\s*(.*?)$", 
+                r"kết luận:?\s*(.*?)$"
+            ]
+            
+            answer = extract_with_pattern(response, patterns)
+            if answer:
+                return answer
+                
+            # Nếu không tìm thấy pattern, trả về câu cuối cùng giữ nguyên casing
+            sentences = re.split(r'[.!?]', response)
+            return sentences[-1].strip()
+        
+        elif prompt_type == "cot" or prompt_type.startswith("cot_"):
+            # Đối với CoT, tìm câu trả lời cuối cùng sau các bước lập luận
+            patterns = [
+                r"vậy đáp án là:?\s*(.*?)$",
+                r"kết quả là:?\s*(.*?)$", 
+                r"đáp án:?\s*(.*?)$",
+                r"vậy?[,\s]*kết quả:?\s*(.*?)$",
+                r"vậy?[,\s]*kết luận:?\s*(.*?)$",
+                r"kết luận:?\s*(.*?)$",
+                r"do đó[,\s]*đáp án:?\s*(.*?)$",
+                r"do đó[,\s]*(.*?)$"
+            ]
+            
+            answer = extract_with_pattern(response, patterns)
+            if answer:
+                return answer
+            
+            # Nếu không tìm thấy, lấy câu cuối cùng
+            sentences = re.split(r'[.!?]', response)
+            return sentences[-1].strip()
+        
+        elif prompt_type.startswith("self_consistency_") or prompt_type.startswith("cot_self_consistency_"):
+            # Đối với self-consistency, tìm kết quả phổ biến nhất
+            # Lưu trữ cả lowercase để so sánh và original để trả về
+            answer_count = {}  # key: lowercase answer, value: count
+            answers_map = {}   # key: lowercase answer, value: original answer (lần đầu tiên)
+            
+            # Tìm các đáp án trong mỗi cách giải
+            # Pattern cần linh hoạt để match cả ở đầu dòng và giữa khoảng trắng
+            patterns = [
+                r"đáp án:?\s*(.*?)(?:\n|$)",
+                r"kết quả:?\s*(.*?)(?:\n|$)",
+                r"vậy đáp án là:?\s*(.*?)(?:\n|$)",
+                r"vậy kết quả là:?\s*(.*?)(?:\n|$)",
+                r"kết luận:?\s*(.*?)(?:\n|$)",
+            ]
+            
+            # Áp dụng pattern và thu thập tất cả đáp án
+            for pattern in patterns:
+                # Tìm trên response gốc nhưng với regex case-insensitive
+                matches = re.finditer(pattern, response, re.IGNORECASE | re.DOTALL)
+                for match in matches:
+                    original_answer = match.group(1).strip()
+                    if original_answer:  # Chỉ lấy nếu không rỗng
+                        answer_lower = original_answer.lower().strip()
+                        
+                        # Đếm tần suất (dùng lowercase để so sánh)
+                        if answer_lower not in answer_count:
+                            answer_count[answer_lower] = 0
+                            answers_map[answer_lower] = original_answer  # Lưu version gốc đầu tiên
+                        answer_count[answer_lower] += 1
+            
+            if answer_count:
+                # Trả về đáp án gốc của cái phổ biến nhất
+                most_common_lower = max(answer_count.items(), key=lambda x: x[1])[0]
+                return answers_map[most_common_lower]
+            
+            # Nếu không tìm thấy đáp án rõ ràng, tìm cách khác
+            conclusions = re.findall(r"(?:vậy|do đó)[,\s]*(.*?)(?:\n|$)", response, re.IGNORECASE | re.DOTALL)
+            if conclusions:
+                # Lấy kết luận cuối cùng
+                return conclusions[-1].strip()
+                
+            # Nếu không tìm thấy kết luận, trả về câu cuối cùng
+            return response.strip().split('\n')[-1]
+        
+        elif prompt_type == "react":
+            # Đối với ReAct, tìm "Đáp án cuối cùng"
+            patterns = [
+                r"đáp án cuối cùng:?\s*(.*?)(?:\n|$)", 
+                r"final answer:?\s*(.*?)(?:\n|$)",
+                r"kết quả cuối cùng:?\s*(.*?)(?:\n|$)",
+                r"kết luận cuối cùng:?\s*(.*?)(?:\n|$)"
+            ]
+            
+            answer = extract_with_pattern(response, patterns)
+            if answer:
+                return answer
+            
+            # Nếu không tìm thấy, tìm bất kỳ đáp án nào
+            patterns = [
+                r"đáp án:?\s*(.*?)(?:\n|$)",
+                r"kết quả:?\s*(.*?)(?:\n|$)",
+                r"kết luận:?\s*(.*?)(?:\n|$)"
+            ]
+            
+            answer = extract_with_pattern(response, patterns)
+            if answer:
+                return answer
+            
+            # Nếu tất cả đều thất bại, trả về câu cuối cùng
+            return response.strip().split('\n')[-1]
         
         else:
             # Trường hợp mặc định
@@ -480,10 +422,14 @@ def create_prompt(query, prompt_type, task_type=None, question_type=None, custom
         prompt_type (str): Loại prompt (zero_shot, few_shot_3, few_shot_5, few_shot_7, etc.)
         task_type (str, optional): Loại nhiệm vụ, không sử dụng trong PromptBuilder hiện tại
         question_type (str, optional): Loại câu hỏi, không sử dụng trong PromptBuilder hiện tại
-        custom_examples (List[Dict], optional): Các ví dụ tùy chỉnh cho few-shot prompts
-        
+        custom_examples (List[Dict], optional): Các ví dụ tùy chỉnh cho few-shot prompts.
+                                              Bắt buộc khi prompt_type là few_shot_* hoặc cot_few_shot_*.
+            
     Returns:
         str: Prompt đã được tạo
+        
+    Raises:
+        ValueError: Nếu few-shot prompt được yêu cầu nhưng không có ví dụ được cung cấp
     """
     builder = PromptBuilder()
     return builder.create_prompt(
