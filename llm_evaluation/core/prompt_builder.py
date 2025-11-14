@@ -125,7 +125,9 @@ class PromptBuilder:
                 },
                 "self_consistency": {
                     "prefix": "Hãy giải bài toán sau đây bằng NHIỀU cách tiếp cận khác nhau để kiểm tra tính nhất quán của kết quả:\n\n",
-                    "suffix": "\n\nHãy cung cấp {count} cách giải khác nhau, mỗi cách đều phải trình bày từng bước logic và kết quả cuối cùng."
+                    # Yêu cầu rõ ràng: tách từng cách giải bằng dòng '---' (3 dấu gạch ngang)
+                    # mỗi cách giải phải kết thúc bằng một dòng rõ ràng bắt đầu bằng 'Đáp án:'
+                    "suffix": "\n\nHãy cung cấp {count} cách giải khác nhau. Mỗi cách giải hãy tách bằng một dòng gồm chỉ '---' (ba dấu gạch ngang).\nMỗi cách giải phải có các bước lập luận rõ ràng và kết thúc bằng một dòng 'Đáp án: <kết quả>'.\nVí dụ:\n1) ...\nĐáp án: 42\n---\n2) ...\nĐáp án: 43"
                 },
                 "react": {
                     "prefix": "Hãy giải bài toán sau đây. Sử dụng phương pháp ReAct (Reasoning and Acting):\n\n",
@@ -150,7 +152,7 @@ class PromptBuilder:
                 },
                 "self_consistency": {
                     "prefix": "Solve the following problem using MULTIPLE different approaches to check the consistency of the result:\n\n",
-                    "suffix": "\n\nPlease provide {count} different solution methods, each with step-by-step reasoning and a final result."
+                    "suffix": "\n\nPlease provide {count} different solution methods. Separate each method with a line containing only '---' (three hyphens).\nEach method should include step-by-step reasoning and end with a line 'Answer: <result>'.\nExample:\n1) ...\nAnswer: 42\n---\n2) ...\nAnswer: 43"
                 },
                 "react": {
                     "prefix": "Solve the following problem. Use the ReAct (Reasoning and Acting) approach:\n\n",
@@ -213,8 +215,9 @@ class PromptBuilder:
         elif prompt_type.startswith("self_consistency_") or prompt_type.startswith("cot_self_consistency_"):
             # Lấy số lượng cách tiếp cận từ tên prompt
             count = int(prompt_type.split("_")[-1])
+            cot_flag = prompt_type.startswith("cot_self_consistency_")
             return self._create_self_consistency_prompt(
-                question, frames["self_consistency"], count
+                question, frames, count, cot=cot_flag
             )
         
         elif prompt_type == "react":
@@ -287,8 +290,9 @@ class PromptBuilder:
     
     def _create_self_consistency_prompt(self, 
                                        question: str, 
-                                       frame: Dict[str, str],
-                                       count: int) -> str:
+                                       frames: Dict[str, Any],
+                                       count: int,
+                                       cot: bool = False) -> str:
         """
         Tạo Self-Consistency prompt, yêu cầu mô hình đưa ra nhiều cách tiếp cận.
         
@@ -300,8 +304,16 @@ class PromptBuilder:
         Returns:
             str: Self-Consistency prompt
         """
-        suffix = frame['suffix'].format(count=count)
-        return f"{self.system_message}\n\n{frame['prefix']}{question}{suffix}"
+        # If cot is requested, combine CoT prefix with self-consistency instruction
+        sc_frame = frames['self_consistency']
+        if cot:
+            # Use CoT prefix then self-consistency suffix/instructions
+            cot_prefix = frames['cot']['prefix']
+            suffix = sc_frame['suffix'].format(count=count)
+            return f"{self.system_message}\n\n{cot_prefix}{question}{suffix}"
+        else:
+            suffix = sc_frame['suffix'].format(count=count)
+            return f"{self.system_message}\n\n{sc_frame['prefix']}{question}{suffix}"
     
     def _create_react_prompt(self, question: str, frame: Dict[str, str]) -> str:
         """
@@ -323,146 +335,136 @@ class PromptBuilder:
         Args:
             response (str): Phản hồi từ mô hình
             prompt_type (str): Loại prompt đã sử dụng
-            
-        Returns:
-            str: Câu trả lời cuối cùng
-        """
-        # Xử lý trường hợp không có phản hồi
-        if not response:
-            return ""
-            
-        # Chuyển response về lowercase để dễ tìm kiếm pattern
-        response_lower = response.lower()
-        
-        # Xử lý khác nhau dựa trên loại prompt
-        if prompt_type == "zero_shot":
-            # Đối với zero-shot, câu trả lời thường là toàn bộ phản hồi hoặc phần sau "Đáp án:"
-            # Thử các pattern tìm đáp án cuối cùng
-            patterns = [
-                r"đáp án:?\s*(.*?)$",
-                r"vậy đáp án là:?\s*(.*?)$",
-                r"kết quả là:?\s*(.*?)$", 
-                r"kết luận:?\s*(.*?)$"
-            ]
-            
-            for pattern in patterns:
-                match = re.search(pattern, response_lower, re.DOTALL)
-                if match:
-                    return match.group(1).strip()
-                    
-            # Nếu không tìm thấy pattern, trả về toàn bộ phản hồi
-            return response.strip()
-        
-        elif prompt_type.startswith("few_shot_"):
-            # Đối với few-shot, tìm câu trả lời sau "Đáp án:" ở cuối
-            patterns = [
-                r"đáp án:?\s*(.*?)$",
-                r"vậy đáp án là:?\s*(.*?)$",
-                r"kết quả là:?\s*(.*?)$", 
-                r"kết luận:?\s*(.*?)$"
-            ]
-            
-            for pattern in patterns:
-                match = re.search(pattern, response_lower, re.DOTALL)
-                if match:
-                    return match.group(1).strip()
-                    
-            # Nếu không tìm thấy pattern, trả về câu cuối cùng
-            sentences = re.split(r'[.!?]', response)
-            return sentences[-1].strip()
-        
-        elif prompt_type == "cot" or prompt_type.startswith("cot_"):
-            # Đối với CoT, tìm câu trả lời cuối cùng sau các bước lập luận
-            # Thường là phần sau "Vậy đáp án là" hoặc "Kết quả là" hoặc "Đáp án:"
-            patterns = [
-                r"vậy đáp án là:?\s*(.*?)$",
-                r"kết quả là:?\s*(.*?)$", 
-                r"đáp án:?\s*(.*?)$",
-                r"vậy?[,\s]*kết quả:?\s*(.*?)$",
-                r"vậy?[,\s]*kết luận:?\s*(.*?)$",
-                r"kết luận:?\s*(.*?)$",
-                r"do đó[,\s]*đáp án:?\s*(.*?)$",
-                r"do đó[,\s]*(.*?)$"
-            ]
-            
-            for pattern in patterns:
-                match = re.search(pattern, response_lower, re.DOTALL)
-                if match:
-                    return match.group(1).strip()
-            
-            # Nếu không tìm thấy, lấy câu cuối cùng
-            sentences = re.split(r'[.!?]', response)
-            return sentences[-1].strip()
-        
-        elif prompt_type.startswith("self_consistency_") or prompt_type.startswith("cot_self_consistency_"):
-            # Đối với self-consistency, tìm kết quả phổ biến nhất
-            # Tìm tất cả đáp án trong các cách tiếp cận khác nhau
-            answers = []
-            
-            # Tìm các đáp án trong mỗi cách giải
-            patterns = [
-                r"(?:^|\n)đáp án:?\s*(.*?)(?:\n|$)",
-                r"(?:^|\n)kết quả:?\s*(.*?)(?:\n|$)",
-                r"(?:^|\n)vậy đáp án là:?\s*(.*?)(?:\n|$)",
-                r"(?:^|\n)vậy kết quả là:?\s*(.*?)(?:\n|$)",
-                r"(?:^|\n)kết luận:?\s*(.*?)(?:\n|$)",
-                r"(?:^|\n)\d+\.\s*đáp án:?\s*(.*?)(?:\n|$)"
-            ]
-            
-            for pattern in patterns:
-                matches = re.finditer(pattern, response_lower, re.DOTALL)
-                for match in matches:
-                    answers.append(match.group(1).strip())
-            
-            if answers:
-                # Tìm đáp án phổ biến nhất
-                answer_count = {}
-                for ans in answers:
-                    if ans in answer_count:
-                        answer_count[ans] += 1
-                    else:
-                        answer_count[ans] = 1
-                
-                # Trả về đáp án có tần suất xuất hiện nhiều nhất
-                return max(answer_count.items(), key=lambda x: x[1])[0]
-            
-            # Nếu không tìm thấy đáp án rõ ràng, tìm cách khác
-            # Tìm câu kết luận cuối cùng
-            conclusions = re.findall(r"(?:vậy|do đó)[,\s]*(.*?)(?:\n|$)", response_lower, re.DOTALL)
-            if conclusions:
-                return conclusions[-1].strip()
-                
-            # Nếu không tìm thấy kết luận, trả về câu cuối cùng
-            return response.strip().split('\n')[-1]
-        
-        elif prompt_type == "react":
-            # Đối với ReAct, tìm "Đáp án cuối cùng"
-            patterns = [
-                r"đáp án cuối cùng:?\s*(.*?)(?:\n|$)", 
-                r"final answer:?\s*(.*?)(?:\n|$)",
-                r"kết quả cuối cùng:?\s*(.*?)(?:\n|$)",
-                r"kết luận cuối cùng:?\s*(.*?)(?:\n|$)"
-            ]
-            
-            for pattern in patterns:
-                match = re.search(pattern, response_lower, re.DOTALL)
-                if match:
-                    return match.group(1).strip()
-            
-            # Nếu không tìm thấy, tìm bất kỳ đáp án nào
-            patterns = [
-                r"đáp án:?\s*(.*?)(?:\n|$)",
-                r"kết quả:?\s*(.*?)(?:\n|$)",
-                r"kết luận:?\s*(.*?)(?:\n|$)"
-            ]
-            
-            for pattern in patterns:
-                match = re.search(pattern, response_lower, re.DOTALL)
-                if match:
-                    return match.group(1).strip()
-            
-            # Nếu tất cả đều thất bại, trả về câu cuối cùng
-            return response.strip().split('\n')[-1]
+            # Xử lý trường hợp không có phản hồi
+            if not response:
+                return ""
+
+            response_orig = response
+
+            # Helper: try a list of patterns on the original response (case-insensitive)
+            def try_patterns(patterns_list):
+                for p in patterns_list:
+                    m = re.search(p, response_orig, re.IGNORECASE | re.DOTALL)
+                    if m:
+                        return m.group(1).strip()
+                return None
+
+            # Xử lý khác nhau dựa trên loại prompt
+            if prompt_type == "zero_shot":
+                patterns = [
+                    r"đáp án:?[\s]*([\s\S]*?)$",
+                    r"vậy đáp án là:?[\s]*([\s\S]*?)$",
+                    r"kết quả là:?[\s]*([\s\S]*?)$",
+                    r"kết luận:?[\s]*([\s\S]*?)$"
+                ]
+                ans = try_patterns(patterns)
+                return ans if ans else response_orig.strip()
+
+            elif prompt_type.startswith("few_shot_"):
+                patterns = [
+                    r"đáp án:?[\s]*([\s\S]*?)$",
+                    r"vậy đáp án là:?[\s]*([\s\S]*?)$",
+                    r"kết quả là:?[\s]*([\s\S]*?)$",
+                    r"kết luận:?[\s]*([\s\S]*?)$"
+                ]
+                ans = try_patterns(patterns)
+                if ans:
+                    return ans
+                # Nếu không tìm thấy pattern, trả về câu cuối cùng (nguyên bản)
+                sentences = re.split(r'[.!?]\s*', response_orig)
+                return sentences[-1].strip()
+
+            elif prompt_type == "cot" or prompt_type.startswith("cot_"):
+                patterns = [
+                    r"vậy đáp án là:?[\s]*([\s\S]*?)$",
+                    r"kết quả là:?[\s]*([\s\S]*?)$",
+                    r"đáp án:?[\s]*([\s\S]*?)$",
+                    r"vậy[\s,]*kết quả:?[\s]*([\s\S]*?)$",
+                    r"vậy[\s,]*kết luận:?[\s]*([\s\S]*?)$",
+                    r"kết luận:?[\s]*([\s\S]*?)$",
+                    r"do đó[\s,]*đáp án:?[\s]*([\s\S]*?)$",
+                    r"do đó[\s,]*([\s\S]*?)$"
+                ]
+                ans = try_patterns(patterns)
+                if ans:
+                    return ans
+                sentences = re.split(r'[.!?]\s*', response_orig)
+                return sentences[-1].strip()
+
+            elif prompt_type.startswith("self_consistency_") or prompt_type.startswith("cot_self_consistency_"):
+                # Tìm tất cả đáp án trong các cách tiếp cận khác nhau
+                answers = []
+                sc_patterns = [
+                    r"(?:^|\n)đáp án:?[\s]*([^\n]+)",
+                    r"(?:^|\n)kết quả:?[\s]*([^\n]+)",
+                    r"(?:^|\n)vậy đáp án là:?[\s]*([^\n]+)",
+                    r"(?:^|\n)vậy kết quả là:?[\s]*([^\n]+)",
+                    r"(?:^|\n)kết luận:?[\s]*([^\n]+)",
+                    r"(?:^|\n)\d+\.\s*đáp án:?[\s]*([^\n]+)",
+                    r"(?:^|\n)Answer:?[\s]*([^\n]+)"
+                ]
+
+                for p in sc_patterns:
+                    for m in re.finditer(p, response_orig, re.IGNORECASE):
+                        val = m.group(1).strip()
+                        if val:
+                            answers.append(val)
+
+                if answers:
+                    # Normalize answers for counting but preserve first-seen original form
+                    counts = {}
+                    originals = {}
+                    for a in answers:
+                        # Normalize by lowercasing and collapsing whitespace and stripping punctuation
+                        norm = re.sub(r'[\s\.,;:]+', ' ', a.lower()).strip().strip('.,;:')
+                        if not norm:
+                            continue
+                        counts[norm] = counts.get(norm, 0) + 1
+                        if norm not in originals:
+                            originals[norm] = a
+
+                    # pick most common normalized answer
+                    best = max(counts.items(), key=lambda x: x[1])[0]
+                    return originals.get(best, best)
+
+                # Nếu không tìm thấy đáp án rõ ràng, tìm câu kết luận cuối cùng
+                conclusions = re.findall(r"(?:vậy|do đó)[,\s]*([^\n]+)", response_orig, re.IGNORECASE)
+                if conclusions:
+                    return conclusions[-1].strip()
+
+                # Fallback: return last non-empty line
+                for line in reversed(response_orig.splitlines()):
+                    if line.strip():
+                        return line.strip()
+                return response_orig.strip()
+
+            elif prompt_type == "react":
+                patterns = [
+                    r"đáp án cuối cùng:?[\s]*([^\n]+)",
+                    r"final answer:?[\s]*([^\n]+)",
+                    r"kết quả cuối cùng:?[\s]*([^\n]+)",
+                    r"kết luận cuối cùng:?[\s]*([^\n]+)"
+                ]
+                ans = try_patterns(patterns)
+                if ans:
+                    return ans
+
+                patterns = [
+                    r"đáp án:?[\s]*([^\n]+)",
+                    r"kết quả:?[\s]*([^\n]+)",
+                    r"kết luận:?[\s]*([^\n]+)"
+                ]
+                ans = try_patterns(patterns)
+                if ans:
+                    return ans
+
+                for line in reversed(response_orig.splitlines()):
+                    if line.strip():
+                        return line.strip()
+                return response_orig.strip()
+
+            else:
+                return response_orig.strip()
         
         else:
             # Trường hợp mặc định
