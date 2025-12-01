@@ -725,35 +725,35 @@ class Evaluator:
     
     def _create_reasoning_evaluation_prompt(self, question, model_answer, correct_answer):
         """
-        Tạo prompt để đánh giá chất lượng suy luận theo các tiêu chí tối ưu cho bài toán tiếng Việt.
+        Tạo prompt để đánh giá chất lượng lời giải toán tiếng Việt theo 5 tiêu chí cải tiến.
         """
         return f"""
-Là chuyên gia đánh giá chất lượng lời giải toán tiếng Việt, hãy đánh giá chi tiết câu trả lời của mô hình theo 5 tiêu chí sau:
+Bạn là chuyên gia đánh giá chất lượng lời giải bài toán tiếng Việt. Hãy đánh giá chi tiết câu trả lời của mô hình theo 5 tiêu chí sau:
 
-1. Độ chính xác (Accuracy): So sánh kết quả cuối cùng với đáp án chuẩn. Đánh giá cả quá trình giải và kết quả cuối.
-   - 5 điểm: Hoàn toàn đúng về kết quả và cách giải
-   - 3 điểm: Kết quả đúng nhưng cách giải có sai sót nhỏ
-   - 1 điểm: Kết quả sai hoàn toàn
+1. ACCURACY (Độ chính xác - STRICT): Kết quả cuối cùng có khớp với đáp án chuẩn không?
+   - 5 điểm: Kết quả cuối cùng CHÍNH XÁC hoàn toàn (số, dấu, đơn vị đều đúng)
+   - 3 điểm: Kết quả đúng nhưng có sai sót nhỏ trong quá trình (sai dấu, sai đơn vị, sai bước nhưng đáp án đúng)
+   - 1 điểm: Kết quả HOÀN TOÀN SAI hoặc không trả lời
 
-2. Quá trình suy luận (Reasoning): Đánh giá tính logic và hợp lý trong các bước giải.
-   - 5 điểm: Trình bày rõ ràng các bước suy luận, công thức và tính toán chính xác
-   - 3 điểm: Có các bước suy luận nhưng thiếu một số giải thích quan trọng
-   - 1 điểm: Suy luận không hợp lý, thiếu các bước cần thiết
+2. COMPLETENESS (Tính đầy đủ): Tất cả các bước trung gian có được trình bày không?
+   - 5 điểm: Trình bày ĐẦY ĐỦ tất cả bước giải: từ dữ liệu ban đầu → công thức → tính toán → kết quả
+   - 3 điểm: Thiếu một số bước trung gian hoặc nhảy cóc (vẫn dẫn đến đáp án đúng)
+   - 1 điểm: Thiếu RẤT NHIỀU bước hoặc chỉ có đáp án cuối cùng mà không giải thích
 
-3. Tính đầy đủ (Completeness): Đánh giá việc giải quyết tất cả các yêu cầu của bài toán.
-   - 5 điểm: Giải quyết đầy đủ tất cả yêu cầu của bài toán
-   - 3 điểm: Có giải quyết các yêu cầu chính nhưng bỏ qua một số yêu cầu phụ
-   - 1 điểm: Thiếu nhiều yêu cầu quan trọng của bài toán
+3. EXPLANATION QUALITY (Chất lượng giải thích): Lời giải có dễ theo dõi và dễ hiểu không?
+   - 5 điểm: Rõ ràng, mạch lạc, các ký hiệu được giải thích, các bước logic rõ ràng
+   - 3 điểm: Tương đối dễ hiểu nhưng có chỗ mơ hồ, thiếu giải thích ở một số bước
+   - 1 điểm: Khó hiểu, không mạch lạc, các bước liên tiếp không rõ
 
-4. Khả năng diễn giải (Explanation): Khả năng giải thích rõ ràng bằng tiếng Việt.
-   - 5 điểm: Lời giải rõ ràng, dễ hiểu, sử dụng thuật ngữ toán học tiếng Việt chính xác
-   - 3 điểm: Giải thích tương đối hiểu được nhưng đôi khi không rõ ràng
-   - 1 điểm: Diễn đạt khó hiểu, không mạch lạc
+4. ARGUMENTATION (Tính logic): Lý luận có chặt chẽ không? Có hallucination (bịa chuyện) không?
+   - 5 điểm: Logic hoàn toàn chính xác, không có mâu thuẫn, không hallucination
+   - 3 điểm: Logic chủ yếu đúng nhưng có một số vấn đề nhỏ về reasoning
+   - 1 điểm: Logic sai hoặc có hallucination rõ rệt (công thức sai, giải thích không có cơ sở)
 
-5. Phù hợp ngữ cảnh văn hóa (Cultural Context): Đánh giá mức độ phù hợp với bối cảnh văn hóa Việt Nam.
-   - 5 điểm: Lời giải hoàn toàn phù hợp với cách diễn đạt và giải toán trong chương trình giáo dục Việt Nam
-   - 3 điểm: Lời giải chấp nhận được nhưng có một số điểm không quen thuộc với học sinh Việt Nam
-   - 1 điểm: Lời giải theo phong cách nước ngoài, không phù hợp với cách giải toán ở Việt Nam
+5. CULTURAL/LINGUISTIC APPROPRIATENESS (Tiếng Việt & Thuật ngữ): Sử dụng tiếng Việt có tự nhiên không? Các thuật ngữ toán học có đúng không?
+   - 5 điểm: Tiếng Việt tự nhiên, thuật ngữ toán chính xác (ví dụ: "số dư", "thương", dấu phẩy vs dấu chấm cho phần thập phân)
+   - 3 điểm: Tiếng Việt chấp nhận được nhưng có chỗ không tự nhiên hoặc thuật ngữ chưa chính xác
+   - 1 điểm: Tiếng Việt lạc hậu, dịch máy, hoặc sử dụng sai thuật ngữ (ví dụ: "số dư" thành "remainder", decimal separator sai)
 
 BÀI TOÁN:
 {question}
@@ -764,21 +764,28 @@ BÀI TOÁN:
 CÂU TRẢ LỜI CẦN ĐÁNH GIÁ:
 {model_answer}
 
-HÃY ĐÁNH GIÁ THEO CÁC TIÊU CHÍ SAU (điểm từ 1-5):
-1. Độ chính xác (Accuracy): ?/5
-2. Quá trình suy luận (Reasoning): ?/5
-3. Tính đầy đủ (Completeness): ?/5
-4. Khả năng diễn giải (Explanation): ?/5
-5. Phù hợp ngữ cảnh văn hóa (Cultural Context): ?/5
+HÃY ĐÁNH GIÁ THEO CÁC TIÊU CHÍ SAU (mỗi tiêu chí 1-5 điểm):
+1. Accuracy (Độ chính xác): ?/5
+2. Completeness (Tính đầy đủ): ?/5
+3. Explanation Quality (Chất lượng giải thích): ?/5
+4. Argumentation (Tính logic): ?/5
+5. Cultural/Linguistic Appropriateness (Tiếng Việt & Thuật ngữ): ?/5
 
 Điểm trung bình: ?/5
 
-Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
+Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn, tối đa 1-2 câu):
 """
 
     def _parse_reasoning_evaluation(self, eval_response):
         """
-        Phân tích phản hồi đánh giá suy luận và trích xuất điểm số.
+        Phân tích phản hồi đánh giá suy luận và trích xuất điểm số theo các tiêu chí mới.
+        
+        Tiêu chí:
+        1. accuracy: Độ chính xác (strict - kết quả cuối cùng khớp không)
+        2. reasoning: Tính đầy đủ (completeness - có hết bước trung gian không)
+        3. completeness: Chất lượng giải thích (explanation quality - dễ hiểu không)
+        4. explanation: Tính logic (argumentation - logic chặt chẽ không, có hallucination không)
+        5. cultural_context: Tiếng Việt & Thuật ngữ (cultural/linguistic appropriateness)
         
         Args:
             eval_response (str): Phản hồi từ mô hình đánh giá
@@ -847,17 +854,17 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
                 logger.debug(f"Không thể parse JSON: {json_str}")
                 # Tiếp tục với regex nếu không parse được JSON
             
-            # Các biểu thức chính quy để trích xuất điểm số
+            # Các biểu thức chính quy để trích xuất điểm số theo tiêu chí mới
             patterns = {
                 'accuracy': r'(?:Accuracy|Độ chính xác).*?(\d+)[/\s]*5',
-                'reasoning': r'(?:Reasoning|Suy luận|Độ suy luận).*?(\d+)[/\s]*5',
-                'completeness': r'(?:Completeness|Tính đầy đủ).*?(\d+)[/\s]*5',
-                'explanation': r'(?:Explanation|Giải thích).*?(\d+)[/\s]*5',
-                'cultural_context': r'(?:Cultural context|Ngữ cảnh văn hóa).*?(\d+)[/\s]*5'
+                'reasoning': r'(?:Completeness|Tính đầy đủ).*?(\d+)[/\s]*5',
+                'completeness': r'(?:Explanation Quality|Chất lượng giải thích).*?(\d+)[/\s]*5',
+                'explanation': r'(?:Argumentation|Tính logic).*?(\d+)[/\s]*5',
+                'cultural_context': r'(?:Cultural/Linguistic|Tiếng Việt|Thuật ngữ).*?(\d+)[/\s]*5'
             }
             
             # Mẫu để trích xuất điểm trung bình
-            avg_pattern = r'(?:Average|Trung bình).*?(\d+\.?\d*)[/\s]*5'
+            avg_pattern = r'(?:Average|Trung bình|Điểm trung bình).*?(\d+\.?\d*)[/\s]*5'
             
             # Trích xuất điểm số bằng regex
             import re
@@ -883,7 +890,7 @@ Giải thích chi tiết cho từng tiêu chí (nhưng ngắn gọn):
                     scores['average'] = sum(valid_scores) / len(valid_scores)
             
             # Thêm log để debug
-            logger.debug(f"Điểm đánh giá reasoning: {scores}")
+            logger.debug(f"Điểm đánh giá reasoning (tiêu chí mới): {scores}")
                     
         except Exception as e:
             logger.error(f"Lỗi khi phân tích đánh giá suy luận: {str(e)}")
